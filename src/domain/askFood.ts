@@ -48,20 +48,26 @@ const SYNONYMS: Record<string, string> = {
   pflaumen: 'pflaume', zwetschge: 'pflaume', zwetschgen: 'pflaume',
   lachsfilet: 'lachs', tahin: 'sesam', tahini: 'sesam', hummus: 'kichererbsen',
   brötchen: 'brot', toast: 'brot',
+  // Englisch
+  carrots: 'karotte', chicken: 'huhn', beef: 'rind', mince: 'rind', peanuts: 'erdnuss', almonds: 'mandel',
+  yogurt: 'joghurt', yoghurt: 'joghurt', milk: 'vollmilch', "cow's_milk": 'vollmilch', cows_milk: 'vollmilch',
+  eggs: 'ei', scrambled_egg: 'ei', oats: 'hafer', oatmeal: 'hafer', potatoes: 'kartoffel', noodles: 'nudeln',
+  blueberries: 'heidelbeere', grapes: 'weintraube', strawberries: 'erdbeere', raspberries: 'himbeere', cherries: 'kirsche',
+  plums: 'pflaume', bread: 'brot',
 };
 
 /** Häufige Fragen zu Dingen, die im ersten Jahr gemieden werden. */
 const AVOID_TERMS: { terms: string[]; name: string; emoji: string; detail: string }[] = tr([
-  { terms: ['honig', 'ahornsirup', 'agavendicksaft'], name: 'Honig', emoji: '🍯', detail: 'Im ersten Lebensjahr gar nicht – auch nicht verbacken oder im Tee. Honig kann Sporen enthalten, die Säuglingsbotulismus auslösen.' },
-  { terms: ['salz', 'brühe', 'brühwürfel', 'sojasoße', 'sojasauce', 'maggi'], name: 'Salz und Brühe', emoji: '🧂', detail: 'Babyessen nicht salzen. Die Babyportion vor dem Würzen abnehmen.' },
-  { terms: ['zucker', 'süßigkeiten', 'schokolade', 'kekse', 'saft', 'säfte'], name: 'Zucker und Süßes', emoji: '🍬', detail: 'Im ersten Jahr meiden. Kleine Mengen Saft nur als Zutat im Brei (Vitamin C).' },
-  { terms: ['nüsse', 'nuss', 'walnüsse', 'haselnüsse', 'cashews', 'popcorn'], name: 'Ganze Nüsse', emoji: '🥜', detail: 'Ganze oder gehackte Nüsse sind bis ins Kindergartenalter eine Erstickungsgefahr. Nüsse nur als glattes Mus oder fein gemahlen.' },
-  { terms: ['rohmilch', 'rohmilchkäse', 'vorzugsmilch'], name: 'Rohmilch', emoji: '🧀', detail: 'Nicht im ersten Jahr – Gefahr durch Krankheitserreger. Nur pasteurisierte Milch.' },
-  { terms: ['sushi', 'mett', 'tatar', 'carpaccio', 'roher fisch', 'rohes fleisch'], name: 'Rohes Fleisch und roher Fisch', emoji: '🍣', detail: 'Nicht für Babys. Fleisch und Fisch immer vollständig durchgaren.' },
-  { terms: ['thunfisch', 'schwertfisch', 'hai'], name: 'Thunfisch und Schwertfisch', emoji: '🐟', detail: 'Höhere Quecksilberbelastung – besser Lachs, Forelle, Kabeljau oder Seelachs.' },
-  { terms: ['reiswaffel', 'reiswaffeln', 'reisdrink', 'reismilch'], name: 'Reiswaffeln und Reisdrinks', emoji: '🍘', detail: 'Können Arsen enthalten: Reisdrinks gar nicht, Reiswaffeln nicht als Dauersnack.' },
-  { terms: ['kaffee', 'cola', 'tee', 'schwarztee', 'grüntee', 'energydrink'], name: 'Koffein und Tee mit Teein', emoji: '☕', detail: 'Nicht für Säuglinge. Zu trinken gibt es Muttermilch, Säuglingsmilch und Wasser.' },
-  { terms: ['wurst', 'schinken', 'salami', 'würstchen'], name: 'Wurst und Schinken', emoji: '🌭', detail: 'Sehr salzig und oft gepökelt – im ersten Jahr meiden. Besser frisches, durchgegartes Fleisch.' },
+  { terms: ['honig', 'ahornsirup', 'agavendicksaft', 'honey', 'maple syrup', 'agave'], name: 'Honig', emoji: '🍯', detail: 'Im ersten Lebensjahr gar nicht – auch nicht verbacken oder im Tee. Honig kann Sporen enthalten, die Säuglingsbotulismus auslösen.' },
+  { terms: ['salz', 'brühe', 'brühwürfel', 'sojasoße', 'sojasauce', 'maggi', 'salt', 'stock', 'stock cube', 'soy sauce'], name: 'Salz und Brühe', emoji: '🧂', detail: 'Babyessen nicht salzen. Die Babyportion vor dem Würzen abnehmen.' },
+  { terms: ['zucker', 'süßigkeiten', 'schokolade', 'kekse', 'saft', 'säfte', 'sugar', 'sweets', 'candy', 'chocolate', 'biscuits', 'cookies', 'juice'], name: 'Zucker und Süßes', emoji: '🍬', detail: 'Im ersten Jahr meiden. Kleine Mengen Saft nur als Zutat im Brei (Vitamin C).' },
+  { terms: ['nüsse', 'nuss', 'walnüsse', 'haselnüsse', 'cashews', 'popcorn', 'nuts', 'nut', 'walnuts', 'hazelnuts'], name: 'Ganze Nüsse', emoji: '🥜', detail: 'Ganze oder gehackte Nüsse sind bis ins Kindergartenalter eine Erstickungsgefahr. Nüsse nur als glattes Mus oder fein gemahlen.' },
+  { terms: ['rohmilch', 'rohmilchkäse', 'vorzugsmilch', 'raw milk', 'unpasteurised milk', 'unpasteurized milk'], name: 'Rohmilch', emoji: '🧀', detail: 'Nicht im ersten Jahr – Gefahr durch Krankheitserreger. Nur pasteurisierte Milch.' },
+  { terms: ['sushi', 'mett', 'tatar', 'carpaccio', 'roher fisch', 'rohes fleisch', 'raw fish', 'raw meat', 'tartare'], name: 'Rohes Fleisch und roher Fisch', emoji: '🍣', detail: 'Nicht für Babys. Fleisch und Fisch immer vollständig durchgaren.' },
+  { terms: ['thunfisch', 'schwertfisch', 'hai', 'tuna', 'swordfish', 'shark'], name: 'Thunfisch und Schwertfisch', emoji: '🐟', detail: 'Höhere Quecksilberbelastung – besser Lachs, Forelle, Kabeljau oder Seelachs.' },
+  { terms: ['reiswaffel', 'reiswaffeln', 'reisdrink', 'reismilch', 'rice cake', 'rice cakes', 'rice drink', 'rice milk'], name: 'Reiswaffeln und Reisdrinks', emoji: '🍘', detail: 'Können Arsen enthalten: Reisdrinks gar nicht, Reiswaffeln nicht als Dauersnack.' },
+  { terms: ['kaffee', 'cola', 'tee', 'schwarztee', 'grüntee', 'energydrink', 'coffee', 'tea', 'black tea', 'green tea', 'energy drink'], name: 'Koffein und Tee mit Teein', emoji: '☕', detail: 'Nicht für Säuglinge. Zu trinken gibt es Muttermilch, Säuglingsmilch und Wasser.' },
+  { terms: ['wurst', 'schinken', 'salami', 'würstchen', 'sausage', 'sausages', 'ham'], name: 'Wurst und Schinken', emoji: '🌭', detail: 'Sehr salzig und oft gepökelt – im ersten Jahr meiden. Besser frisches, durchgegartes Fleisch.' },
 ]);
 
 const norm = (s: string) => s.toLowerCase().trim().replace(/\s+/g, ' ').replace(/^darf (mein|unser) baby (schon )?/, '').replace(/^(can|may) (my|our) baby (have|eat) /, '').replace(/[?!.]/g, '').trim();

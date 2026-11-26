@@ -37,6 +37,9 @@ const proxies = new WeakMap<object, object>();
  * Bezeichnungs-Tabellen (z. B. Mahlzeiten, Kategorien) beim Lesen übersetzen.
  * So bleiben die Tabellen deutsch im Code und liefern trotzdem immer die aktuelle Sprache.
  */
+/** Felder mit IDs und Schlüsseln werden nie übersetzt (sonst brächen Vergleiche wie category === 'obst'). */
+const RAW_KEYS = new Set(['id', 'category', 'allergens', 'chokingRisk', 'kind', 'slot', 'foods', 'foodIds', 'foodId', 'newFoodId', 'phase', 'href', 'art', 'emoji', 'tab', 'mark', 'state', 'level', 'type', 'approach', 'milk', 'url', 'terms']);
+
 /** Nur einfache Objekte und Listen übersetzen – keine RegExp, Datumswerte oder React-Elemente. */
 function isPlain(v: object): boolean {
   if (Array.isArray(v)) return true;
@@ -51,6 +54,7 @@ export function tr<T extends object>(obj: T): T {
   const p = new Proxy(obj, {
     get(target, prop, receiver) {
       const v = Reflect.get(target, prop, receiver);
+      if (typeof prop === 'string' && RAW_KEYS.has(prop)) return v;
       if (typeof v === 'string') return t(v);
       if (v && typeof v === 'object' && isPlain(v)) return tr(v as object);
       return v;

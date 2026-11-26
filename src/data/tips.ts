@@ -1,4 +1,5 @@
-/**
+
+import { tr } from '@/i18n';/**
  * Tipps des Tages – allgemeine, alltagspraktische Hinweise aus den Quellen der App
  * (Netzwerk Gesund ins Leben, S3-Leitlinien, NHS, BZgA). Keine individuellen Empfehlungen.
  */
@@ -15,7 +16,7 @@ export interface Tip {
   link?: { label: string; href: string };
 }
 
-export const TIPS: Tip[] = [
+export const TIPS: Tip[] = tr([
   // Vor dem Start
   { id: 'v1', phase: 'vorStart', emoji: '🪑', title: 'Hochstuhl ausprobieren', text: 'Lass dein Baby schon vor dem ersten Brei ein paar Minuten am Familientisch sitzen. So wird Essen etwas Gemeinsames.' },
   { id: 'v2', phase: 'vorStart', emoji: '🥄', title: 'Weiche Löffel', text: 'Ein flacher, weicher Babylöffel ist angenehmer im Mund. Mehr brauchst du am Anfang nicht.' },
@@ -51,4 +52,4 @@ export const TIPS: Tip[] = [
   { id: 'j3', phase: 'immer', months: [11, 12, 1, 2], emoji: '🎃', title: 'Wintergemüse', text: 'Pastinake, Kürbis und Karotte sind im Winter gut verfügbar – mild, leicht süß und gut verträglich.' },
   { id: 'j4', phase: 'immer', months: [12], emoji: '🎄', title: 'Plätzchenzeit', text: 'Lebkuchen, Marzipan und Honiggebäck sind fürs Baby tabu. Ein Stück weiche Birne oder Apfel passt besser.' },
   { id: 'j5', phase: 'immer', months: [3, 4, 5], emoji: '🌱', title: 'Frühlingsgemüse', text: 'Frischer Spinat und Kohlrabi sind jetzt da. Spinat für Brei frisch zubereiten und nicht aufwärmen.' },
-];
+]);

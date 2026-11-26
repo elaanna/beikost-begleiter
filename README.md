@@ -151,7 +151,8 @@ Medizinische Anfragen werden in App und Server abgefangen (`src/ai/guard.ts`, Ko
 - Technik: `src/i18n` – der deutsche Text ist der Schlüssel (`t('Darf {0} schon …?', { 0: name })`), `src/i18n/en.ts` enthält die Übersetzungen. Tabellen mit Texten werden mit `tr(...)` umschlossen und beim Lesen übersetzt. Fehlt eine Übersetzung, erscheint Deutsch.
 - `tests/i18n.test.ts` prüft, dass jeder feste Text und jede `tr()`-Tabelle eine englische Übersetzung hat und Platzhalter erhalten bleiben.
 - **Etappe 1 (fertig):** alle Bildschirme, Hinweise, Sicherheits- und Allergenhinweise, Notfallzeichen, Datenschutztexte.
-- **Etappe 2 (offen):** Inhalte – Lebensmittelnamen und Zubereitung, Rezepte, Tipps des Tages, PDF-Berichte (Wochenplan, Arztbericht, Notfallblatt). Quellentitel bleiben im Original.
+- **Etappe 2 (fertig):** PDF-Berichte (Notfallblatt, Wochenplan, Arztbericht), alle Lebensmittel mit Zubereitung, alle Rezepte (Brei, Familie, Familientisch), Tipps des Tages, Suche auf Englisch („can my baby have …“, englische Begriffe). Quellentitel bleiben im Original, das Impressum bleibt deutsch.
+- Felder mit IDs (`id`, `category`, `allergens`, `terms` …) übersetzt `tr()` nie – Liste `RAW_KEYS` in `src/i18n/index.ts`.
 
 ## Zweckbestimmung & Konzept
 

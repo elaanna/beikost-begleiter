@@ -31,5 +31,6 @@ const FAMILY_AS_LIBRARY: BabyRecipe[] = RECIPES.map((r) => ({
   baby: r.baby,
 }));
 
-export const ALL_RECIPES: BabyRecipe[] = [...BABY_RECIPES, ...FAMILY_AS_LIBRARY, ...TABLE_RECIPES];
+/** Texte werden beim Lesen übersetzt; deshalb erst hier umschließen (FAMILY_AS_LIBRARY wird beim Laden gebaut). */
+export const ALL_RECIPES: BabyRecipe[] = tr([...BABY_RECIPES, ...FAMILY_AS_LIBRARY, ...TABLE_RECIPES]);
 export const RECIPE_BY_ID: Record<string, BabyRecipe> = Object.fromEntries(ALL_RECIPES.map((r) => [r.id, r]));

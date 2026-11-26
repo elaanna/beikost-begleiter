@@ -7,9 +7,9 @@ import { preparationFor } from '@/domain/planner';
 import { useChild } from '@/state/AppContext';
 import { Card, FoodBadge, Heading, Important, P, Pill, PillRow, Row, Screen, Small } from '@/ui/components';
 import { color, radius, space, TOUCH, type } from '@/ui/theme';
-import { t } from '@/i18n';
+import { t, tr } from '@/i18n';
 
-const POPULAR = ['Honig', 'Ei', 'Erdnuss', 'Kuhmilch', 'Erdbeere', 'Nüsse', 'Fisch', 'Salz'];
+const POPULAR = tr(['Honig', 'Ei', 'Erdnuss', 'Kuhmilch', 'Erdbeere', 'Nüsse', 'Fisch', 'Salz']);
 
 /** „Darf mein Baby …?“ – Antwort in einem Blick. */
 export default function Suche() {

@@ -11,7 +11,7 @@ import { tr } from '@/i18n';
  *
  * fromWeek = Woche ab Beikoststart, ab der das Lebensmittel im Plan vorkommen kann.
  */
-export const FOODS: Food[] = [
+const FOODS_DE: Food[] = [
   // ---------- Gemüse: Start des Mittagsbreis ----------
   {
     id: 'pastinake', name: 'Pastinake', emoji: '🥕', category: 'gemuese', fromWeek: 0, allergens: [],
@@ -272,7 +272,10 @@ export const FOODS: Food[] = [
 ];
 
 /** Basis + Erweiterung (insgesamt ca. 100 Lebensmittel). */
-FOODS.push(...FOODS_EXTRA);
+FOODS_DE.push(...FOODS_EXTRA);
+
+/** Alle Lebensmittel; Namen und Zubereitung werden beim Lesen in die gewählte Sprache übersetzt (IDs bleiben). */
+export const FOODS: Food[] = tr(FOODS_DE);
 
 export const FOOD_BY_ID: Record<string, Food> = Object.fromEntries(FOODS.map((f) => [f.id, f]));
 

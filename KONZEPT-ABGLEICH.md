@@ -81,3 +81,9 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 
 - Sprache folgt dem Handy, Umschalter im Menü. Alle Bildschirme, Sicherheits-, Allergen- und Notfallhinweise sowie die Datenschutzseite sind übersetzt (rund 1.500 Texte).
 - Noch Deutsch (Etappe 2): Lebensmittelnamen und Zubereitung, Rezepte, Tipps, PDF-Berichte inkl. Notfallblatt. Vor einem englischen Launch: Übersetzung der Gesundheitstexte fachlich gegenlesen lassen; Leitlinien bleiben die deutschen (für UK/US-Markt eigene Quellen nötig).
+
+## Nachtrag 26.11.2026 – Englisch, Etappe 2
+
+- Notfallblatt, Wochenplan- und Arzt-PDF, alle ~150 Lebensmittel, alle Rezepte und Tipps sind übersetzt (insgesamt rund 2.250 Texte); die Suche versteht englische Begriffe.
+- Nebenbei behoben: In den PDFs standen bei „Bekannte Allergien“ die internen Kürzel (z. B. „ei, milch“) statt der Namen.
+- Vor einem englischen Launch weiterhin: fachliches Gegenlesen der Gesundheitstexte, eigene Quellen für UK/US.

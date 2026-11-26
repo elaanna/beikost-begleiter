@@ -19,14 +19,18 @@ function files(dir: string, out: string[] = []): string[] {
   return out;
 }
 
+const RAW = new Set(['id', 'category', 'allergens', 'chokingRisk', 'kind', 'slot', 'foods', 'foodIds', 'foodId', 'newFoodId', 'phase', 'href', 'art', 'emoji', 'tab', 'mark', 'state', 'level', 'type', 'approach', 'milk', 'url', 'terms']);
+
 function collect(): { statics: Set<string>; tables: Set<string> } {
   const statics = new Set<string>();
   const tables = new Set<string>();
   for (const file of files('src')) {
     const src = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
     const inTr = (n: ts.Node) => {
+      // Felder mit IDs (RAW_KEYS in src/i18n) werden nicht übersetzt
+      if (ts.isPropertyAssignment(n) && ts.isIdentifier(n.name) && RAW.has(n.name.text)) return;
       if ((ts.isStringLiteral(n) || ts.isNoSubstitutionTemplateLiteral(n)) && !(ts.isPropertyAssignment(n.parent) && n.parent.name === n)) {
-        if (/[A-Za-zÄÖÜäöüß]{2}/.test(n.text) && !/^[a-z0-9_-]+$/.test(n.text) && !n.text.startsWith('http')) tables.add(n.text);
+        if (/[A-Za-zÄÖÜäöüß]{2}/.test(n.text) && !/^[a-z0-9_-]+$/.test(n.text) && !/^(https?:|\/)/.test(n.text)) tables.add(n.text);
         return;
       }
       ts.forEachChild(n, inTr);
@@ -72,6 +76,10 @@ test('t() switches language and fills placeholders', () => {
     assert.equal(table.a.label, 'Vegetables');
     assert.equal(table.a.id, 'gemuese');
     assert.equal(table.list[0], 'Fruit');
+    // IDs bleiben unübersetzt, auch wenn es zufällig einen gleichnamigen Text gibt
+    const food = tr({ id: 'x', category: 'Gemüse', name: 'Gemüse' });
+    assert.equal(food.category, 'Gemüse');
+    assert.equal(food.name, 'Vegetables');
   } finally {
     setLang('de');
   }
@@ -84,4 +92,23 @@ test('device language: English only for English locales, otherwise German', () =
   assert.equal(langFromLocale('de-DE'), 'de');
   assert.equal(langFromLocale('fr'), 'de');
   assert.equal(langFromLocale(null), 'de');
+});
+
+test('content tables (foods, recipes, tips) are fully translated in English', async () => {
+  const { FOODS } = await import('../src/data/foods');
+  const { ALL_RECIPES } = await import('../src/data/allRecipes');
+  const { TIPS } = await import('../src/data/tips');
+  setLang('en');
+  try {
+    const de: string[] = [];
+    const check = (s: string | undefined | null) => { if (s && !/rösti/i.test(s) && /[äöüßÄÖÜ]|\b(und|mit|oder|nicht)\b/.test(s)) de.push(s); };
+    for (const f of FOODS) [f.name, f.brei, f.finger, f.hint, f.shopUnit].forEach(check);
+    for (const r of ALL_RECIPES) [r.name, r.consistency, r.baby, r.safety, ...r.ingredients, ...r.steps, r.storage.fridge, r.storage.freeze, r.storage.thaw].forEach(check);
+    for (const tip of TIPS) [tip.title, tip.text, tip.link?.label].forEach(check);
+    assert.deepEqual(de, []);
+    assert.equal(FOODS.find((f) => f.id === 'pastinake')?.name, 'Parsnip');
+    assert.equal(FOODS.find((f) => f.id === 'pastinake')?.category, 'gemuese');
+  } finally {
+    setLang('de');
+  }
 });

@@ -84,7 +84,7 @@ export const TABLE_RECIPES: (BabyRecipe & { kind: 'fleisch' | 'fisch' | 'vegetar
     foods: ['kartoffel', 'quark', 'gurke', 'rapsoel'],
     ingredients: ['800 g festkochende Kartoffeln', '250 g Quark', '3 EL Milch', 'Kräuter (Schnittlauch, Petersilie)', '1 Gurke', '2 EL Rapsöl'],
     steps: ['Kartoffeln waschen, in Spalten schneiden, mit Öl mischen.', 'Bei 200 °C etwa 30 Minuten backen, bis sie weich sind.', 'Quark mit Milch und gehackten Kräutern glatt rühren.', 'Gurke in Scheiben dazu.'],
-    storage: FRESH, baby: `${KIDS} Kartoffelspalten etwas abkühlen lassen.`,
+    storage: FRESH, baby: 'Kinderportion vor dem Salzen und scharfen Würzen abnehmen. Kartoffelspalten etwas abkühlen lassen.',
   },
   {
     id: 'kk-spinat-lasagne', name: 'Spinat-Ricotta-Lasagne', emoji: '🍝', category: 'kleinkind', kind: 'vegetarisch', slot: 'mittag',
@@ -92,7 +92,7 @@ export const TABLE_RECIPES: (BabyRecipe & { kind: 'fleisch' | 'fisch' | 'vegetar
     foods: ['nudeln', 'spinat', 'ricotta', 'tomate', 'mozzarella', 'olivenoel'],
     ingredients: ['12 Lasagneplatten', '450 g Blattspinat (TK)', '250 g Ricotta', '1 Dose stückige Tomaten', '125 g Mozzarella', '1 EL Olivenöl'],
     steps: ['Spinat auftauen, gut ausdrücken und mit Ricotta mischen.', 'Tomaten mit Öl 10 Minuten köcheln.', 'Abwechselnd Platten, Spinat-Ricotta und Tomaten schichten, Mozzarella oben.', 'Bei 180 °C etwa 35 Minuten backen.'],
-    storage: TABLE_STORAGE, baby: `${KIDS} Lasagne in mundgerechte Stücke schneiden.`,
+    storage: TABLE_STORAGE, baby: 'Kinderportion vor dem Salzen und scharfen Würzen abnehmen. Lasagne in mundgerechte Stücke schneiden.',
   },
   {
     id: 'kk-fischstaebchen', name: 'Selbstgemachte Fischstäbchen mit Kartoffelpüree und Erbsen', emoji: '🐟', category: 'kleinkind', kind: 'fisch', slot: 'mittag',
@@ -100,7 +100,7 @@ export const TABLE_RECIPES: (BabyRecipe & { kind: 'fleisch' | 'fisch' | 'vegetar
     foods: ['kabeljau', 'ei', 'brot', 'kartoffel', 'vollmilch', 'butter', 'erbsen', 'rapsoel'],
     ingredients: ['400 g Kabeljaufilet', '1 Ei', '4 EL Semmelbrösel', '600 g Kartoffeln', '100 ml Milch', '1 EL Butter', '300 g Erbsen (TK)', '2 EL Rapsöl'],
     steps: ['Kartoffeln weich kochen und mit Milch und Butter stampfen.', 'Fisch in Streifen schneiden, auf Gräten prüfen.', 'Erst in verquirltem Ei, dann in Bröseln wenden und in Öl rundum durchbraten.', 'Erbsen weich garen.'],
-    storage: FRESH, safety: 'Gräten sorgfältig entfernen; Fisch vollständig durchgaren.', baby: `${KIDS} Erbsen für Jüngere leicht zerdrücken.`,
+    storage: FRESH, safety: 'Gräten sorgfältig entfernen; Fisch vollständig durchgaren.', baby: 'Kinderportion vor dem Salzen und scharfen Würzen abnehmen. Erbsen für Jüngere leicht zerdrücken.',
   },
   {
     id: 'kk-hackbaellchen', name: 'Hackbällchen in Tomatensoße mit Reis', emoji: '🍅', category: 'kleinkind', kind: 'fleisch', slot: 'mittag',
@@ -108,7 +108,7 @@ export const TABLE_RECIPES: (BabyRecipe & { kind: 'fleisch' | 'fisch' | 'vegetar
     foods: ['rind', 'ei', 'brot', 'tomate', 'reis', 'olivenoel'],
     ingredients: ['400 g Rinderhack', '1 Ei', '2 EL Semmelbrösel', '1 Dose passierte Tomaten', '250 g Reis', '1 EL Olivenöl'],
     steps: ['Hack mit Ei und Bröseln verkneten, kleine Bällchen formen.', 'In Öl anbraten, Tomaten dazu und 15 Minuten köcheln, bis die Bällchen durch sind.', 'Reis nach Packung weich kochen.'],
-    storage: TABLE_STORAGE, safety: 'Hackfleisch vollständig durchgaren.', baby: `${KIDS} Bällchen halbieren.`,
+    storage: TABLE_STORAGE, safety: 'Hackfleisch vollständig durchgaren.', baby: 'Kinderportion vor dem Salzen und scharfen Würzen abnehmen. Bällchen halbieren.',
   },
   {
     id: 'kk-gemuese-pfannkuchen', name: 'Herzhafte Gemüse-Pfannkuchen', emoji: '🥞', category: 'kleinkind', kind: 'vegetarisch', slot: 'mittag',
@@ -132,7 +132,7 @@ export const TABLE_RECIPES: (BabyRecipe & { kind: 'fleisch' | 'fisch' | 'vegetar
     foods: ['huhn', 'brokkoli', 'karotte', 'joghurt', 'reis', 'rapsoel'],
     ingredients: ['300 g Hähnchenbrust', '1 kleiner Brokkoli', '2 Karotten', '150 g Naturjoghurt', '1 TL mildes Currypulver', '250 g Reis', '1 EL Rapsöl'],
     steps: ['Hähnchen klein würfeln und in Öl rundum durchbraten.', 'Gemüse klein schneiden, mit etwas Wasser weich dünsten.', 'Vom Herd nehmen, Joghurt und Curry unterrühren.', 'Mit Reis servieren.'],
-    storage: TABLE_STORAGE, safety: 'Geflügel vollständig durchgaren.', baby: `${KIDS} Curry für das Kind sehr mild halten.`,
+    storage: TABLE_STORAGE, safety: 'Geflügel vollständig durchgaren.', baby: 'Kinderportion vor dem Salzen und scharfen Würzen abnehmen. Curry für das Kind sehr mild halten.',
   },
   {
     id: 'kk-lachs-nudeln', name: 'Lachs-Nudeln mit Erbsen', emoji: '🐟', category: 'kleinkind', kind: 'fisch', slot: 'mittag',
@@ -164,7 +164,7 @@ export const TABLE_RECIPES: (BabyRecipe & { kind: 'fleisch' | 'fisch' | 'vegetar
     foods: ['pute', 'kartoffel', 'karotte', 'vollmilch', 'rapsoel'],
     ingredients: ['300 g Putenbrust', '600 g Kartoffeln', '3 Karotten', '150 ml Milch', '1 EL Rapsöl'],
     steps: ['Kartoffeln und Karotten weich kochen.', 'Pute in feine Streifen schneiden und in Öl durchbraten.', 'Mit Milch ablöschen und kurz einkochen lassen.'],
-    storage: TABLE_STORAGE, safety: 'Geflügel vollständig durchgaren.', baby: `${KIDS} Fleisch sehr klein schneiden.`,
+    storage: TABLE_STORAGE, safety: 'Geflügel vollständig durchgaren.', baby: 'Kinderportion vor dem Salzen und scharfen Würzen abnehmen. Fleisch sehr klein schneiden.',
   },
   {
     id: 'kk-gemuese-risotto', name: 'Kürbis-Risotto', emoji: '🎃', category: 'kleinkind', kind: 'vegetarisch', slot: 'mittag',
@@ -172,7 +172,7 @@ export const TABLE_RECIPES: (BabyRecipe & { kind: 'fleisch' | 'fisch' | 'vegetar
     foods: ['reis', 'kuerbis', 'butter'],
     ingredients: ['250 g Risottoreis', '500 g Hokkaido-Kürbis', '1 l ungesalzene Gemüsebrühe oder Wasser', '1 EL Butter', 'etwas Parmesan für die Großen'],
     steps: ['Kürbis klein würfeln.', 'Reis in Butter glasig dünsten, Kürbis dazu.', 'Nach und nach Brühe zugeben und unter Rühren etwa 25 Minuten weich garen.'],
-    storage: TABLE_STORAGE, baby: `${KIDS} Parmesan ist sehr salzig – für das Kind weglassen.`,
+    storage: TABLE_STORAGE, baby: 'Kinderportion vor dem Salzen und scharfen Würzen abnehmen. Parmesan ist sehr salzig – für das Kind weglassen.',
   },
 ];
 
