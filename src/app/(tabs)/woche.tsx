@@ -87,7 +87,15 @@ export default function Plan() {
                 {d.meals.map((m) => (
                   <View key={m.slot} style={{ marginBottom: space.md }}>
                     <Row style={{ justifyContent: 'space-between' }}>
-                      <Small style={{ flex: 1 }}>{SLOT_LABEL[m.slot]} · {m.title}</Small>
+                      <Pressable
+                        style={{ flex: 1 }}
+                        onPress={() => router.push({ pathname: '/mahlzeit', params: { date: d.date, slot: m.slot } })}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)}: Mengen und Zubereitung`}
+                        hitSlop={6}
+                      >
+                        <Text style={[type.smallBold, { color: color.ink }]}>{SLOT_LABEL[m.slot]} · {m.title} <Text style={{ color: color.sageDeep }}>›</Text></Text>
+                      </Pressable>
                       {!m.newFoodId && d.date >= today ? (
                         <Pressable onPress={() => setSwapping({ date: d.date, meal: m })} accessibilityRole="button" accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)} tauschen`} hitSlop={8}>
                           <Text style={[type.smallBold, { color: color.sageDeep }]}>🔄 Tauschen</Text>

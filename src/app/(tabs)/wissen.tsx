@@ -6,7 +6,7 @@ import {
   AVOID_FIRST_YEAR, EMERGENCY_SIGNS, GAG_VS_CHOKE, READINESS_SIGNS, SAFE_EATING, SOURCES, STATEMENTS, TOPIC_LABEL, type Topic,
 } from '@/data/guidelines';
 import { FULL_PORTIONS, PORTION_SOURCES } from '@/domain/portions';
-import { CUP_TIPS, DRINK_AVOID, DRINK_SOURCES, DRINK_STEPS, IRON_TEXT } from '@/data/drinks';
+import { CUP_TIPS, DRINK_AVOID, DRINK_SOURCES, DRINK_STEPS, IRON_TEXT, WATER_EXCEPTIONS, WATER_TIPS } from '@/data/drinks';
 import { ironWeek } from '@/domain/care';
 import { formatDay, todayIso } from '@/domain/dates';
 import { useApp } from '@/state/AppContext';
@@ -195,6 +195,16 @@ function Trinken() {
           </Row>
         </Card>
       ))}
+      <Title>Welches Wasser?</Title>
+      <Card>
+        {WATER_TIPS.map((t) => <P key={t} style={{ marginBottom: space.sm }}>💧 {t}</P>)}
+      </Card>
+      <Important title="Dann besser abgepacktes Babywasser">
+        {WATER_EXCEPTIONS.map((t) => <Text key={t} style={[type.body, { color: color.redDeep }]}>• {t}</Text>)}
+        <Text style={[type.body, { color: color.redDeep, marginTop: space.xs }]}>
+          Infos zu deinem Leitungswasser gibt dein Wasserversorger oder das Gesundheitsamt.
+        </Text>
+      </Important>
       <Title>Der richtige Becher</Title>
       <Card tone="sage">
         {CUP_TIPS.map((t) => <P key={t} style={{ marginBottom: space.xs }}>✓ {t}</P>)}
