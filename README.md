@@ -145,7 +145,7 @@ Prüfbericht, behobene Lücken und offene Launch-Aufgaben: [SICHERHEIT.md](SICHE
 ## Vor dem Launch offen
 
 - [ ] Lebensmitteltexte und Hinweise von einer Fachperson prüfen lassen
-- [ ] Datenschutzerklärung: Allergien/Reaktionen sind Gesundheitsdaten (Art. 9 DSGVO), ausdrückliche Einwilligung im Onboarding ergänzen
+- [x] Ausdrückliche Einwilligung für Gesundheitsdaten (Art. 9 DSGVO) im Onboarding, mit Datum gespeichert – Text anwaltlich prüfen lassen
 - [ ] Haftungs- und Medizinprodukte-Einordnung rechtlich prüfen lassen
 - [ ] App-Icon und Splash ersetzen (noch Expo-Standard)
 - [ ] Konto-Verknüpfung (E-Mail) für Geräte-Wechsel ergänzen

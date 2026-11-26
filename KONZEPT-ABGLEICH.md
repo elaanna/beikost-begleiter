@@ -45,7 +45,7 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 - MDR-Abgrenzung juristisch prüfen, ggf. Statusfeststellung beim BfArM.
 - EU AI Act: Rolle (Anbieter/Betreiber) und Dokumentation der KI-Funktion; Kennzeichnung ist umgesetzt („KI-Auswahl aus geprüften Rezepten“).
 - AVV mit Anthropic (KI) zusätzlich zu Supabase und RevenueCat; Drittlandtransfer prüfen.
-- Kühlschrank-/Zutatenlisten-Scanner (F10/F11) und KI-Wissensassistent (F13): nicht umgesetzt (Phase 3).
+- Kühlschrank-Scanner (F10) und KI-Wissensassistent (F13): nicht umgesetzt (Phase 3). Zutatenlisten-Scanner (F11) siehe Nachtrag.
 - Navigation laut Konzept (Heute · Wochenplan · Rezepte · Lebensmittel · Assistent) weicht ab; Rezepte liegen unter „Woche“.
 
 ## Nachtrag 26.11.2026 (Abend)
