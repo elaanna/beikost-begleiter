@@ -19,6 +19,10 @@ export interface OffProduct {
   image_front_small_url?: string;
   ingredients_text?: string;
   ingredients_text_de?: string;
+  ingredients_text_en?: string;
+  ingredients_text_fr?: string;
+  /** Sprachunabhängige Zutaten-Kennungen von Open Food Facts, z. B. „en:glucose-syrup“. */
+  ingredients_tags?: string[];
   allergens_tags?: string[];
   traces_tags?: string[];
   additives_tags?: string[];
@@ -44,8 +48,19 @@ export interface ProductCheck {
   points: CheckPoint[];
 }
 
+// Zuckerwörter in mehreren Sprachen: Viele Produkte haben die Zutatenliste bei Open Food Facts nur auf Englisch,
+// Französisch, Italienisch oder Niederländisch (Fehler 26.11.: Gummibärchen mit englischer Liste galten als „ohne Zuckerzusatz“).
 const SUGAR_WORDS: [RegExp, string][] = [
-  [/\bhonig\b/i, 'Honig'],
+  [/\bhonig\b|\bhoney\b|\bmiel\b|\bmiele\b|\bhoning\b/i, 'Honig'],
+  [/glucose[\s-]*(fructose[\s-]*)?syrup|corn syrup|sirop de glucose|sciroppo di glucosio|jarabe de glucosa|glucosestroop|glucose-fructosestroop/i, 'Glukosesirup'],
+  [/(?<!no added |without |sans |senza )\b(sugars?|sucre|zucchero|azúcar|azucar|suiker)\b(?![\s-]?free)/i, 'Zucker'],
+  [/\bsucrose\b|\bsaccharose\b|\bsacarosa\b/i, 'Zucker'],
+  [/\bdextrose\b|\bdextrosa\b/i, 'Traubenzucker'],
+  [/\binvert(ed)? sugar|sucre inverti|zucchero invertito|invertsuiker/i, 'Invertzucker'],
+  [/(rice|agave|maple|date|apple) syrup|sirop d'(érable|agave)|stroop/i, 'Sirup'],
+  [/malt extract|extrait de malt|estratto di malto|moutextract/i, 'Malzextrakt'],
+  [/(fruit )?juice concentrate|concentrated (fruit|apple|grape) juice|jus concentré|succo concentrato|vruchtensapconcentraat/i, 'Fruchtsaftkonzentrat'],
+  [/coconut (blossom )?sugar|sucre de coco/i, 'Kokosblütenzucker'],
   [/maltodextrin/i, 'Maltodextrin'],
   [/glu(c|k)ose(-|\s)?(fruktose|fructose)?-?sirup|glukosesirup|glucosesirup/i, 'Glukosesirup'],
   [/(?<!milch)zucker(?!frei)|saccharose|sucrose/i, 'Zucker'],
@@ -57,6 +72,25 @@ const SUGAR_WORDS: [RegExp, string][] = [
   [/fruchtsaftkonzentrat|saftkonzentrat/i, 'Fruchtsaftkonzentrat'],
   [/kokosblütenzucker/i, 'Kokosblütenzucker'],
 ];
+
+/** Zutaten-Kennungen (sprachunabhängig) für zugesetzte Zucker. */
+const SUGAR_TAGS: Record<string, string> = {
+  'en:sugar': 'Zucker', 'en:cane-sugar': 'Zucker', 'en:beet-sugar': 'Zucker', 'en:brown-sugar': 'Zucker', 'en:sucrose': 'Zucker',
+  'en:caramelised-sugar': 'Zucker', 'en:icing-sugar': 'Zucker', 'en:added-sugar': 'Zucker',
+  'en:glucose-syrup': 'Glukosesirup', 'en:glucose-fructose-syrup': 'Glukosesirup', 'en:fructose-glucose-syrup': 'Glukosesirup',
+  'en:corn-syrup': 'Glukosesirup', 'en:glucose': 'Traubenzucker', 'en:dextrose': 'Traubenzucker', 'en:fructose': 'Fruktose',
+  'en:invert-sugar': 'Invertzucker', 'en:invert-sugar-syrup': 'Invertzucker', 'en:maltodextrin': 'Maltodextrin',
+  'en:syrup': 'Sirup', 'en:rice-syrup': 'Sirup', 'en:agave-syrup': 'Sirup', 'en:maple-syrup': 'Sirup', 'en:date-syrup': 'Sirup',
+  'en:malt-extract': 'Malzextrakt', 'en:barley-malt-extract': 'Malzextrakt',
+  'en:concentrated-fruit-juice': 'Fruchtsaftkonzentrat', 'en:fruit-juice-concentrate': 'Fruchtsaftkonzentrat',
+  'en:coconut-sugar': 'Kokosblütenzucker', 'en:honey': 'Honig',
+};
+
+/** Süßigkeiten-Kategorien: für Babys grundsätzlich ungeeignet (Zucker, Verschluckgefahr). */
+const CANDY_CATEGORIES = /^en:(confectioneries|candies|gummies|gummy-candies|chewy-candies|jelly-candies|hard-candies|lollipops|marshmallows|chewing-gum|chocolates|chocolate-candies|bonbons|sweets|liquorice|licorice)$/;
+
+/** Ab diesem Zuckergehalt (g/100 g) gibt es einen Hinweis – auch wenn der Zucker natürlich enthalten ist. */
+export const SUGAR_HIGH_100G = 15;
 
 const SWEETENER_TAGS = /^en:e(95\d|96\d)/; // E950–E969 Süßungsmittel
 const ALLERGEN_TAGS: Record<string, Allergen> = {
@@ -90,7 +124,12 @@ function ingredientList(text: string): string[] {
 
 export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], ageMonths: number): ProductCheck {
   const name = p.product_name_de || p.product_name || p.generic_name_de || 'Unbekanntes Produkt';
-  const ingredients = p.ingredients_text_de || p.ingredients_text || '';
+  const ingredients = p.ingredients_text_de || p.ingredients_text || p.ingredients_text_en || p.ingredients_text_fr || '';
+  // Für die Zuckersuche alle Sprachfassungen zusammen prüfen
+  const allText = [p.ingredients_text_de, p.ingredients_text, p.ingredients_text_en, p.ingredients_text_fr].filter(Boolean).join(' , ');
+  const tags = p.ingredients_tags ?? [];
+  /** Nur wenn die Liste auf Deutsch/Englisch vorliegt oder Kennungen da sind, können wir „ohne“ sicher sagen. */
+  const reliable = Boolean(p.ingredients_text_de || p.ingredients_text_en || tags.length);
   const list = ingredientList(ingredients);
   const points: CheckPoint[] = [];
   const who = child.name;
@@ -101,24 +140,38 @@ export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], age
     points.push({ level: 'nein', title: `Laut Packung erst ab ${labelAge} Monaten`, text: `${who} ist ${ageMonths} Monate alt.` });
   }
 
-  // Zucker und Süßungsmittel
-  const sugars = SUGAR_WORDS.filter(([re]) => re.test(ingredients));
-  const honey = sugars.some(([, label]) => label === 'Honig');
+  // Süßigkeit?
+  if ((p.categories_tags ?? []).some((c) => CANDY_CATEGORIES.test(c))) {
+    points.push({ level: 'nein', title: 'Süßigkeit', text: 'Für Babys nicht geeignet: viel Zucker, und zähe oder harte Stücke sind eine Verschluckgefahr.' });
+  }
+
+  // Zucker und Süßungsmittel – Text (alle Sprachen) und Zutaten-Kennungen
+  const sugarLabels = new Set<string>();
+  for (const [re, label] of SUGAR_WORDS) if (re.test(allText)) sugarLabels.add(label);
+  for (const t of tags) if (SUGAR_TAGS[t]) sugarLabels.add(SUGAR_TAGS[t]);
+  const honey = sugarLabels.has('Honig');
   if (honey && ageMonths < 12) {
     points.push({ level: 'nein', title: 'Enthält Honig', text: 'Im ersten Lebensjahr nicht geben – auch nicht erhitzt.' });
   }
-  const added = sugars.filter(([, label]) => !(label === 'Honig' && ageMonths < 12));
-  if (added.length) {
-    const firstIdx = list.findIndex((ing) => added.some(([re]) => re.test(ing)));
+  // Honig im ersten Jahr steht schon oben als klares Nein
+  const addedLabels = [...sugarLabels].filter((l) => !(l === 'Honig' && ageMonths < 12));
+  if (addedLabels.length) {
+    const firstIdx = list.findIndex((ing) => SUGAR_WORDS.some(([re, l]) => addedLabels.includes(l) && re.test(ing)));
     points.push({
       level: 'achtung',
-      title: `Zugesetzter Zucker: ${added.map(([, l]) => l).join(', ')}`,
+      title: `Zugesetzter Zucker: ${addedLabels.join(', ')}`,
       text: firstIdx >= 0 && firstIdx < 3 ? 'Steht weit vorn in der Zutatenliste.' : 'Für Babys sind zugesetzte Zucker unnötig.',
     });
   }
   const sweeteners = (p.additives_tags ?? []).filter((t) => SWEETENER_TAGS.test(t));
   if (sweeteners.length || /sucralose|aspartam|steviol|acesulfam|sorbit|xylit|erythrit/i.test(ingredients)) {
     points.push({ level: 'achtung', title: 'Süßungsmittel', text: 'Für Babys und Kleinkinder nicht geeignet.' });
+  }
+
+  // Zuckergehalt (auch natürlicher Zucker, z. B. Trockenfrucht)
+  const sugar100 = p.nutriments?.sugars_100g;
+  if (sugar100 !== undefined && sugar100 >= SUGAR_HIGH_100G) {
+    points.push({ level: 'achtung', title: `Sehr zuckerreich (${String(Math.round(sugar100)).replace('.', ',')} g Zucker pro 100 g)`, text: 'Für Babys ist so viel Zucker ungünstig – auch wenn er aus Früchten stammt.' });
   }
 
   // Salz
@@ -151,7 +204,11 @@ export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], age
   }
 
   // Positives
-  if (ingredients && !added.length && !honey && !sweeteners.length) points.push({ level: 'gut', title: 'Ohne Zuckerzusatz', text: 'Laut Zutatenliste.' });
+  if (ingredients && reliable && !addedLabels.length && !honey && !sweeteners.length && (sugar100 === undefined || sugar100 < SUGAR_HIGH_100G)) {
+    points.push({ level: 'gut', title: 'Ohne Zuckerzusatz', text: 'Laut Zutatenliste.' });
+  } else if (ingredients && !reliable && !addedLabels.length) {
+    points.push({ level: 'achtung', title: 'Zutatenliste in anderer Sprache', text: 'Zucker konnte nicht sicher geprüft werden – bitte die Packung lesen.' });
+  }
   if (list.length > 0 && list.length <= 3) points.push({ level: 'gut', title: 'Kurze Zutatenliste', text: list.join(', ') });
   if (/vollkorn/i.test(ingredients)) points.push({ level: 'gut', title: 'Mit Vollkorn', text: 'Liefert Ballaststoffe und Eisen.' });
   if (ingredients && additives.length === 0 && (p.additives_tags ?? []).length === 0) points.push({ level: 'gut', title: 'Ohne Zusatzstoffe', text: 'Laut Angaben.' });
@@ -180,7 +237,7 @@ export const VERDICT_TEXT: Record<Verdict, (name: string) => string> = {
   unklar: () => 'Zu wenig Angaben',
 };
 
-export const OFF_FIELDS = 'code,product_name,product_name_de,generic_name_de,brands,quantity,image_front_small_url,ingredients_text,ingredients_text_de,allergens_tags,traces_tags,additives_tags,categories_tags,nutriments';
+export const OFF_FIELDS = 'code,product_name,product_name_de,generic_name_de,brands,quantity,image_front_small_url,ingredients_text,ingredients_text_de,ingredients_text_en,ingredients_text_fr,ingredients_tags,allergens_tags,traces_tags,additives_tags,categories_tags,nutriments';
 
 /** Produkt bei Open Food Facts abfragen. Es wird nur der Barcode gesendet. */
 export async function fetchProduct(ean: string): Promise<OffProduct | null> {

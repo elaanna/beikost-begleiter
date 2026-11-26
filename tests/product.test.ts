@@ -56,3 +56,63 @@ test('Milchzucker und zuckerfrei zählen nicht als Zuckerzusatz', () => {
   const p: OffProduct = { product_name: 'Joghurt', ingredients_text_de: 'Joghurt, Milchzucker, zuckerfrei', allergens_tags: [] };
   assert.ok(!analyzeProduct(p, { ...child, exclusions: [] }, logs, 9).points.some((x) => x.title.startsWith('Zugesetzter Zucker')));
 });
+
+// Fehler 26.11.2026: Gummibärchen wurden als „Sieht gut aus / Ohne Zuckerzusatz“ eingestuft
+const noExcl = { ...child, exclusions: [] };
+const sugarTitle = (r: ReturnType<typeof analyzeProduct>) => r.points.find((x) => x.title.startsWith('Zugesetzter Zucker'))?.title ?? '';
+
+test('Gummibärchen (deutsche Liste, Kategorie, Zuckergehalt): lieber nicht', () => {
+  const p: OffProduct = {
+    product_name: 'Goldbären', ingredients_text_de: 'Glukosesirup, Zucker, Gelatine, Dextrose, Säuerungsmittel: Citronensäure, Fruchtsaftkonzentrat',
+    categories_tags: ['en:snacks', 'en:sweet-snacks', 'en:confectioneries', 'en:gummies'], nutriments: { sugars_100g: 46 },
+  };
+  const r = analyzeProduct(p, noExcl, logs, 7);
+  assert.equal(r.verdict, 'lieber_nicht');
+  assert.ok(r.points.some((x) => x.title === 'Süßigkeit'));
+  assert.match(sugarTitle(r), /Glukosesirup/);
+  assert.match(sugarTitle(r), /Zucker/);
+  assert.ok(r.points.some((x) => x.title.startsWith('Sehr zuckerreich (46 g')));
+  assert.ok(!r.points.some((x) => x.title === 'Ohne Zuckerzusatz'));
+});
+
+test('Zutatenliste nur auf Englisch: Zucker wird trotzdem erkannt', () => {
+  const p: OffProduct = { product_name: 'Fruit gums', ingredients_text: 'Glucose syrup, sugar, gelatine, dextrose, citric acid' };
+  const r = analyzeProduct(p, noExcl, logs, 7);
+  assert.notEqual(r.verdict, 'gut');
+  assert.match(sugarTitle(r), /Glukosesirup/);
+  assert.match(sugarTitle(r), /Traubenzucker/);
+  assert.ok(!r.points.some((x) => x.title === 'Ohne Zuckerzusatz'));
+});
+
+test('Französisch, Italienisch, Niederländisch', () => {
+  for (const t of ['sirop de glucose, sucre, gélatine', 'sciroppo di glucosio, zucchero', 'glucosestroop, suiker, gelatine']) {
+    assert.match(sugarTitle(analyzeProduct({ product_name: 'X', ingredients_text: t }, noExcl, logs, 7)), /Zucker|Glukosesirup/, t);
+  }
+});
+
+test('Nur Zutaten-Kennungen (Liste in unbekannter Sprache): Zucker aus den Kennungen', () => {
+  const p: OffProduct = { product_name: 'Żelki', ingredients_text: 'syrop glukozowy, cukier, żelatyna', ingredients_tags: ['en:glucose-syrup', 'en:sugar', 'en:gelatin'] };
+  const r = analyzeProduct(p, noExcl, logs, 7);
+  assert.match(sugarTitle(r), /Glukosesirup, Zucker|Zucker, Glukosesirup/);
+  assert.ok(!r.points.some((x) => x.title === 'Ohne Zuckerzusatz'));
+});
+
+test('Unbekannte Sprache ohne Kennungen: kein „Ohne Zuckerzusatz“, sondern Hinweis', () => {
+  const r = analyzeProduct({ product_name: 'Żelki', ingredients_text: 'syrop glukozowy, cukier, żelatyna' }, noExcl, logs, 7);
+  assert.ok(!r.points.some((x) => x.title === 'Ohne Zuckerzusatz'));
+  assert.ok(r.points.some((x) => x.title === 'Zutatenliste in anderer Sprache'));
+  assert.notEqual(r.verdict, 'gut');
+});
+
+test('Viel natürlicher Zucker: Hinweis, aber kein „Ohne Zuckerzusatz“-Lob', () => {
+  const r = analyzeProduct({ product_name: 'Fruchtriegel', ingredients_text_de: 'Datteln 60 %, Äpfel 40 %', nutriments: { sugars_100g: 55 } }, noExcl, logs, 10);
+  assert.ok(r.points.some((x) => x.title.startsWith('Sehr zuckerreich')));
+  assert.ok(!r.points.some((x) => x.title === 'Ohne Zuckerzusatz'));
+  assert.equal(r.verdict, 'bedacht');
+});
+
+test('„no added sugar“ und „sugar-free“ zählen nicht als Zucker', () => {
+  const r = analyzeProduct({ product_name: 'Apple puree', ingredients_text_en: 'Apple 100%, no added sugar', nutriments: { sugars_100g: 11 } }, noExcl, logs, 7);
+  assert.equal(sugarTitle(r), '');
+  assert.ok(r.points.some((x) => x.title === 'Ohne Zuckerzusatz'));
+});
