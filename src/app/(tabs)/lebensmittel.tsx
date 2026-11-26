@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { CATEGORY_LABEL, FOODS } from '@/data/foods';
+import { CATEGORY_LABEL, FOOD_BY_ID, FOODS } from '@/data/foods';
 import { milestones } from '@/domain/pass';
+import { reofferList } from '@/domain/toddler';
+import { todayIso } from '@/domain/dates';
+import { RotateCcw } from 'lucide-react-native';
 import { blockReason } from '@/domain/planner';
 import type { FoodCategory } from '@/domain/types';
 import { useChild } from '@/state/AppContext';
@@ -21,6 +24,7 @@ export default function ProbierPass() {
   const liked = useMemo(() => new Set(logs.filter((l) => l.liking === 1).map((l) => l.foodId)), [logs]);
   const tried = useMemo(() => new Set(logs.map((l) => l.foodId)), [logs]);
   const ms = milestones(logs, child.id);
+  const reoffer = reofferList(child, logs, todayIso());
   const triedCount = FOODS.filter((f) => tried.has(f.id)).length;
 
   const list = FOODS.filter((f) => {
@@ -42,6 +46,18 @@ export default function ProbierPass() {
           ? `Eure Beikostreise beginnt gerade. Jedes Kind hat sein eigenes Tempo.`
           : `${triedCount} ${triedCount === 1 ? 'Lebensmittel' : 'Lebensmittel'} entdeckt – jedes Kind hat sein eigenes Tempo.`}
       </Small>
+
+      {reoffer.length ? (
+        <Card tone="peach" onPress={() => router.push('/wiederanbieten')} accessibilityLabel="Noch mal anbieten" style={{ paddingVertical: space.lg }}>
+          <Row>
+            <RotateCcw size={24} strokeWidth={1.75} color={brand.blue} />
+            <View style={{ flex: 1 }}>
+              <Text style={[type.bodyBold, { color: color.ink }]}>Noch mal anbieten</Text>
+              <Small soft={false}>{reoffer.slice(0, 3).map((r) => FOOD_BY_ID[r.foodId].name).join(', ')}{reoffer.length > 3 ? ' …' : ''} – ohne Druck, im eigenen Tempo</Small>
+            </View>
+          </Row>
+        </Card>
+      ) : null}
 
       {/* Erinnerungen statt Fortschrittsbalken: nur Erreichtes, ohne Zähler und Vorgaben (kein Leistungsdruck) */}
       {ms.some((m) => m.reached) ? (

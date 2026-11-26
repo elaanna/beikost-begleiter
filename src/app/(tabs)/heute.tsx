@@ -21,7 +21,7 @@ import { recipeFits } from '@/domain/recipes';
 import { planDayTasks, type ShiftEntry } from '@/domain/shifts';
 import type { Liking, PlannedMeal, Reaction } from '@/domain/types';
 import { getMeta, listShifts, setMeta } from '@/db/repo';
-import { isTablePhase, suggestTable } from '@/domain/toddler';
+import { isTablePhase, reofferList, suggestTable } from '@/domain/toddler';
 import { TableSwitchCard, TableToday } from '@/ui/TableToday';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, DayDots, FoodBadge, Glyph, Heading, Hero, IconLabel, type IconLike, Important, P, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
@@ -324,6 +324,7 @@ function Tiles() {
   const iron = ironWeek(child, logs, today);
   const frozenCount = stock.filter((x) => x.kind === 'gefroren').reduce((n, x) => n + x.portions, 0);
   const drink = drinkStage(child, today);
+  const reofferCount = reofferList(child, logs, today).length;
 
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
@@ -345,7 +346,14 @@ function Tiles() {
           <Tile emoji={Sandwich} title="Kita-Brotdose" sub="Ideen für die Woche" onPress={() => router.push('/brotdose')} />
           <Tile emoji={RotateCcw} title="Noch mal anbieten" sub="Ohne Druck, im eigenen Tempo" onPress={() => router.push('/wiederanbieten')} />
         </>
-      ) : recipe ? (
+      ) : null}
+      {!isTablePhase(child) && reofferCount ? (
+        <Tile emoji={RotateCcw} title="Noch mal anbieten" sub={`${reofferCount} Lebensmittel, ohne Druck`} onPress={() => router.push('/wiederanbieten')} />
+      ) : null}
+      {!isTablePhase(child) && age >= 10 ? (
+        <Tile emoji={Sandwich} title="Kita-Brotdose" sub="Ideen für die Woche" onPress={() => router.push('/brotdose')} />
+      ) : null}
+      {isTablePhase(child) ? null : recipe ? (
         <Tile emoji={recipe.recipe.emoji} title="Familienessen" sub={recipe.recipe.name} onPress={() => router.push(`/rezept/${recipe.recipe.id}`)} />
       ) : (
         <Tile emoji={Scale} title="Mengen" sub="Wie viel Brei?" onPress={() => openWissen('portionen', 'brei')} />

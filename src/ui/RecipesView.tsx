@@ -44,6 +44,15 @@ export function RecipesView() {
         </Card>
         </View>
       </Row>
+      <Card tone="lilac" onPress={() => router.push('/brotdose')} accessibilityLabel="Kita-Brotdose planen" style={{ padding: space.lg, marginBottom: space.md }}>
+        <Row>
+          <Text style={{ fontSize: 28 }}>🥪</Text>
+          <View style={{ flex: 1 }}>
+            <P bold>Kita-Brotdose</P>
+            <Small soft={false}>Ideen für Montag bis Freitag aus dem, was {child.name} schon kennt</Small>
+          </View>
+        </Row>
+      </Card>
 
       <Segmented<AgeFilter>
         options={[
