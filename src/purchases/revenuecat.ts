@@ -22,10 +22,23 @@ export const isPurchasesConfigured = Boolean(API_KEY);
 
 let configured = false;
 
-export function configurePurchases(appUserId?: string): void {
-  if (!API_KEY || configured) return;
-  Purchases.configure({ apiKey: API_KEY, appUserID: appUserId });
-  configured = true;
+/**
+ * Kauf gilt pro Familie: Die Familien-ID ist die App User ID bei RevenueCat.
+ * Wer einer Familie beitritt, wechselt auf deren ID und bekommt damit deren Zugang – ohne zweiten Kauf.
+ * Der Server prüft den Zugang zusätzlich selbst (Tabelle entitlements, Webhook).
+ */
+export async function identifyPurchaser(familyId: string): Promise<CustomerInfo | null> {
+  if (!API_KEY) return null;
+  if (!configured) {
+    Purchases.configure({ apiKey: API_KEY, appUserID: familyId });
+    configured = true;
+    return Purchases.getCustomerInfo();
+  }
+  if ((await Purchases.getAppUserID()) !== familyId) {
+    const { customerInfo } = await Purchases.logIn(familyId);
+    return customerInfo;
+  }
+  return Purchases.getCustomerInfo();
 }
 
 export function hasEntitlement(info: CustomerInfo | null): boolean {

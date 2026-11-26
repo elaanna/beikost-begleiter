@@ -26,17 +26,17 @@ const DATA_ITEMS = [
   {
     emoji: '📱',
     title: 'Auf deinem Gerät',
-    text: 'Kind (optionaler Spitzname, Geburtsmonat), Plan, Protokoll mit Reaktionen, Verdauung, Vorrat, Dienstplan und Einstellungen werden lokal gespeichert. Ohne Familienfreigabe verlässt nichts das Gerät.',
+    text: 'Kind (optionaler Spitzname, Geburtsmonat), Plan, Protokoll mit Reaktionen, Verdauung, Vorrat, Dienstplan und Einstellungen werden lokal gespeichert. Ohne Familienfreigabe oder Konto verlässt nichts das Gerät. Dein Vorname für die Begrüßung bleibt immer nur auf dem Gerät.',
   },
   {
     emoji: '👪',
-    title: 'Familienfreigabe (freiwillig)',
-    text: 'Erst wenn du einlädst oder beitrittst, werden diese Daten verschlüsselt übertragen und bei Supabase in der EU (Frankfurt) gespeichert. Die Anmeldung ist anonym, ohne E-Mail. Zugriff haben nur Personen, die du per Einmal-Code einlädst; Leser können nichts ändern.',
+    title: 'Familienfreigabe und Konto (freiwillig)',
+    text: 'Erst wenn du einlädst, beitrittst oder ein Konto verknüpfst, werden diese Daten verschlüsselt übertragen und bei Supabase in der EU (Frankfurt) gespeichert. Die Anmeldung ist anonym. Nur wenn du ein Konto verknüpfst, speichern wir deine E-Mail-Adresse – ausschließlich, um dir Anmeldecodes zu schicken. Zugriff haben nur Personen, die du per Einmal-Code einlädst; Leser können nichts ändern.',
   },
   {
     emoji: '⭐',
     title: 'Kauf des Beikost-Pakets',
-    text: 'Die Zahlung läuft über Apple bzw. Google. RevenueCat (USA) erhält eine zufällige Kennung und den Kaufstatus – keine Daten über dein Kind. Grundlage der Übermittlung: [EU-US Data Privacy Framework / Standardvertragsklauseln – vor Launch prüfen].',
+    text: 'Die Zahlung läuft über Apple bzw. Google. RevenueCat (USA) erhält eine zufällige Kennung eurer Familie und den Kaufstatus – keine Daten über dein Kind. Damit der Kauf für die ganze Familie gilt, speichert unser Server (Supabase, EU) zu dieser Kennung nur, bis wann das Paket gültig ist. Grundlage der Übermittlung: [EU-US Data Privacy Framework / Standardvertragsklauseln – vor Launch prüfen].',
   },
   {
     emoji: '✨',
@@ -51,7 +51,7 @@ const DATA_ITEMS = [
   {
     emoji: '🔔',
     title: 'Erinnerungen',
-    text: 'Werden nur auf deinem Gerät geplant, ohne Push-Server. Sie können den Namen des Lebensmittels auf dem Sperrbildschirm zeigen.',
+    text: 'Werden nur auf deinem Gerät geplant, ohne Push-Server. Sie können den Namen des Lebensmittels auf dem Sperrbildschirm zeigen – das lässt sich unter Familie → Erinnerungen ausblenden.',
   },
   {
     emoji: '🚫',
@@ -68,7 +68,7 @@ const LEGAL_BASES = [
 
 const RETENTION = [
   'Auf dem Gerät: bis du Einträge löschst, die App entfernst oder unten „Alle Daten löschen“ wählst.',
-  'In der Cloud: solange die Familienfreigabe besteht. Gelöschte Einträge werden nach spätestens 30 Tagen endgültig entfernt, abgelaufene Einladungen sofort.',
+  'In der Cloud: solange Familienfreigabe oder Konto bestehen. Gelöschte Einträge werden nach spätestens 30 Tagen endgültig entfernt, abgelaufene Einladungen sofort.',
 ];
 
 const RIGHTS = [

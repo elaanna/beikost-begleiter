@@ -15,10 +15,9 @@ import { listChecks, toggleCheck } from '@/db/repo';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, FoodBadge, Heading, Hero, LockedNotice, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
 import { shareHtmlAsPdf } from '@/ui/exportPdf';
-import { RecipesView } from '@/ui/RecipesView';
 import { color, radius, space, type } from '@/ui/theme';
 
-type View_ = 'woche' | 'einkauf' | 'rezepte';
+type View_ = 'woche' | 'einkauf';
 
 export default function Plan() {
   const db = useSQLiteContext();
@@ -33,7 +32,7 @@ export default function Plan() {
   const items = useMemo(() => shoppingList(days), [days]);
   const tasks = useMemo(() => prepTasks(days), [days]);
   const [checked, setChecked] = useState<Set<string>>(new Set());
-  const locked = !isPro && mode !== 'rezepte' && (offset !== 0 || mode === 'einkauf');
+  const locked = !isPro && (offset !== 0 || mode === 'einkauf');
 
   const load = useCallback(async () => setChecked(await listChecks(db, from)), [db, from]);
   useEffect(() => {
@@ -47,26 +46,24 @@ export default function Plan() {
         options={[
           { id: 'woche', label: '🗓️ Plan' },
           { id: 'einkauf', label: '🛒 Einkauf' },
-          { id: 'rezepte', label: '🍲 Rezepte' },
         ]}
         value={mode}
         onChange={setMode}
       />
 
-      {mode === 'rezepte' ? <RecipesView /> : null}
       <SwapSheet date={swapping?.date ?? today} meal={swapping?.meal ?? null} onClose={() => setSwapping(null)} />
 
       {/* Wochenwahl */}
-      {mode !== 'rezepte' ? <Row style={{ justifyContent: 'space-between', marginBottom: space.lg }}>
+      <Row style={{ justifyContent: 'space-between', marginBottom: space.lg }}>
         <WeekArrow label="‹" a11y="Vorherige Woche" onPress={() => setOffset((o) => o - 1)} />
         <View style={{ alignItems: 'center' }}>
           <Heading>{offset === 0 ? 'Diese Woche' : offset === 1 ? 'Nächste Woche' : offset === -1 ? 'Letzte Woche' : `${formatDay(from, false)}`}</Heading>
           <Small>{formatDay(from, false)} – {formatDay(addDays(from, 6), false)}</Small>
         </View>
         <WeekArrow label="›" a11y="Nächste Woche" onPress={() => setOffset((o) => o + 1)} />
-      </Row> : null}
+      </Row>
 
-      {mode === 'rezepte' ? null : locked ? (
+      {locked ? (
         <LockedNotice
           text={mode === 'einkauf'
             ? 'Mit dem Beikost-Paket entsteht aus dem Plan automatisch eine Einkaufs- und Vorkochliste.'
@@ -79,53 +76,68 @@ export default function Plan() {
             const isToday = d.date === today;
             return (
               <Card key={d.date} style={isToday ? { borderWidth: 2.5, borderColor: color.sage } : { paddingVertical: space.lg }}>
-                <Row style={{ justifyContent: 'space-between', marginBottom: d.meals.length ? space.md : 0 }}>
+                <Pressable
+                  disabled={d.meals.length === 0}
+                  onPress={() => router.push({ pathname: '/mahlzeit', params: { date: d.date } })}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${formatDay(d.date)}: alle Mahlzeiten mit Mengen und Zubereitung`}
+                  style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: d.meals.length ? space.md : 0 }}
+                >
                   <Heading>{formatDay(d.date)}</Heading>
                   {isToday ? <Small bold style={{ color: color.sageDeep }}>Heute</Small> : null}
-                </Row>
+                </Pressable>
                 {d.meals.length === 0 ? <Small>Noch keine Beikost</Small> : null}
-                {d.meals.map((m) => (
-                  <View key={m.slot} style={{ marginBottom: space.md }}>
-                    <Row style={{ justifyContent: 'space-between' }}>
-                      <Pressable
-                        style={{ flex: 1 }}
-                        onPress={() => router.push({ pathname: '/mahlzeit', params: { date: d.date, slot: m.slot } })}
-                        accessibilityRole="button"
-                        accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)}: Mengen und Zubereitung`}
-                        hitSlop={6}
-                      >
-                        <Text style={[type.smallBold, { color: color.ink }]}>{SLOT_LABEL[m.slot]} · {m.title} <Text style={{ color: color.sageDeep }}>›</Text></Text>
-                      </Pressable>
-                      {!m.newFoodId && d.date >= today ? (
-                        <Pressable onPress={() => setSwapping({ date: d.date, meal: m })} accessibilityRole="button" accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)} tauschen`} hitSlop={8}>
-                          <Text style={[type.smallBold, { color: color.sageDeep }]}>🔄 Tauschen</Text>
-                        </Pressable>
-                      ) : null}
-                    </Row>
-                    <Row style={{ flexWrap: 'wrap', gap: space.sm, marginTop: space.xs }}>
-                      {m.foodIds.map((id) => {
-                        const f = FOOD_BY_ID[id];
-                        const isNew = id === m.newFoodId;
-                        return (
-                          <Pressable
-                            key={id}
-                            onPress={() => router.push(`/food/${id}`)}
-                            accessibilityRole="link"
-                            style={{
-                              flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 6, paddingHorizontal: 10,
-                              borderRadius: radius.pill, backgroundColor: isNew ? color.peachSoft : color.creme,
-                            }}
-                          >
-                            <Text style={{ fontSize: 16 }}>{f.emoji}</Text>
-                            <Text style={[type.smallBold, { color: isNew ? color.peachDeep : color.ink }]}>
-                              {f.name}{isNew ? ` · neu (${m.newFoodDay})` : ''}
-                            </Text>
-                          </Pressable>
-                        );
+                {d.meals.map((m) => {
+                  const canSwap = !m.newFoodId && d.date >= today;
+                  return (
+                    <Pressable
+                      key={m.slot}
+                      onPress={() => router.push({ pathname: '/mahlzeit', params: { date: d.date, slot: m.slot } })}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)}: ${m.title}. Mengen und Zubereitung öffnen`}
+                      style={({ pressed }) => ({
+                        backgroundColor: m.newFoodId ? color.peachSoft : color.creme,
+                        borderRadius: radius.md,
+                        padding: space.md,
+                        marginBottom: space.sm,
+                        opacity: pressed ? 0.75 : 1,
                       })}
-                    </Row>
-                  </View>
-                ))}
+                    >
+                      <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[type.small, { color: color.inkSoft }]}>{SLOT_LABEL[m.slot]}</Text>
+                          <Text style={[type.bodyBold, { color: color.ink }]}>{m.title}</Text>
+                        </View>
+                        {canSwap ? (
+                          <Pressable
+                            onPress={() => setSwapping({ date: d.date, meal: m })}
+                            accessibilityRole="button"
+                            accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)} tauschen`}
+                            hitSlop={10}
+                            style={{ backgroundColor: color.surface, borderRadius: radius.pill, paddingHorizontal: 12, paddingVertical: 6 }}
+                          >
+                            <Text style={[type.smallBold, { color: color.sageDeep }]}>🔄 Tauschen</Text>
+                          </Pressable>
+                        ) : null}
+                      </Row>
+                      <Row style={{ flexWrap: 'wrap', gap: 6, marginTop: space.sm }}>
+                        {m.foodIds.map((id) => {
+                          const f = FOOD_BY_ID[id];
+                          const isNew = id === m.newFoodId;
+                          return (
+                            <View key={id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 10, borderRadius: radius.pill, backgroundColor: color.surface }}>
+                              <Text style={{ fontSize: 14 }}>{f.emoji}</Text>
+                              <Text style={[type.small, { color: isNew ? color.peachDeep : color.ink }]}>
+                                {f.name}{isNew ? ` · neu (${m.newFoodDay})` : ''}
+                              </Text>
+                            </View>
+                          );
+                        })}
+                      </Row>
+                      <Text style={[type.smallBold, { color: color.sageDeep, marginTop: space.sm }]}>⚖️ Mengen & Zubereitung ›</Text>
+                    </Pressable>
+                  );
+                })}
               </Card>
             );
           })}

@@ -136,6 +136,9 @@ export async function createInvite(db: SQLiteDatabase, role: 'member' | 'reader'
   await ensureSession();
   if ((await getMeta(db, 'family_registered')) !== '1') await registerFamily(db, '');
   const familyId = await getMeta(db, 'family_id');
+  // Kaufstatus serverseitig auffrischen (falls der RevenueCat-Webhook noch nicht da war). Fehler hier sind egal –
+  // die Datenbank entscheidet in create_invite selbst, ob die Familie Zugang hat.
+  await supabase.functions.invoke('kauf-abgleich', { body: { familyId } }).catch(() => undefined);
   const { data, error } = await supabase.rpc('create_invite', { fid: familyId, invite_role: role });
   if (error) throw new Error(friendlyError(error.message));
   await setMeta(db, 'sharing', '1');
@@ -157,6 +160,7 @@ export const INVITE_CODE_LENGTH = 10;
 
 /** Server-Fehler in verständliche Sätze übersetzen (keine technischen Details anzeigen). */
 export function friendlyError(message: string): string {
+  if (/no entitlement/.test(message)) return 'Die Familienfreigabe gehört zum Beikost-Paket. Wenn du es gerade gekauft hast, versuche es in einer Minute noch einmal.';
   if (/too many attempts/.test(message)) return 'Zu viele falsche Codes. Bitte in einer Stunde noch einmal versuchen.';
   if (/too many open invites/.test(message)) return 'Es gibt schon 10 offene Einladungen. Widerrufe alte Codes oder warte, bis sie ablaufen.';
   if (/not allowed/.test(message)) return 'Dafür fehlt dir die Berechtigung in dieser Familie.';
@@ -179,9 +183,20 @@ export async function joinFamily(db: SQLiteDatabase, code: string, displayName: 
   if (error) throw new Error(friendlyError(error.message));
   const row = (data as { family_id: string; role: FamilyRole }[] | null)?.[0];
   if (!row) throw new Error('Code ungültig oder abgelaufen. Bitte einen neuen Code anfordern.');
-  const familyId = row.family_id;
+  await adoptFamily(db, row.family_id, row.role);
+  await syncNow(db);
+  return row.role;
+}
+
+const SYNC_TABLES = TABLES;
+
+/**
+ * Gerät einer Familie zuordnen (Beitritt per Code oder Anmeldung mit Konto auf neuem Gerät).
+ * Schreibberechtigte übernehmen ihre lokalen Einträge in die Familie, Leser laden nichts hoch.
+ */
+export async function adoptFamily(db: SQLiteDatabase, familyId: string, role: FamilyRole): Promise<void> {
   await db.withTransactionAsync(async () => {
-    if (row.role === 'reader') {
+    if (role === 'reader') {
       for (const t of SYNC_TABLES) await db.runAsync(`UPDATE ${t} SET dirty = 0`);
     } else {
       await db.runAsync('UPDATE children SET family_id = ?, dirty = 1', familyId);
@@ -193,15 +208,11 @@ export async function joinFamily(db: SQLiteDatabase, code: string, displayName: 
     await db.runAsync('DELETE FROM family_settings');
     await setMeta(db, 'family_id', familyId);
     await setMeta(db, 'family_registered', '1');
-    await setMeta(db, 'family_role', row.role);
+    await setMeta(db, 'family_role', role);
     await setMeta(db, 'sharing', '1');
     await setMeta(db, 'last_pull', '1970-01-01T00:00:00Z');
   });
-  await syncNow(db);
-  return row.role;
 }
-
-const SYNC_TABLES = TABLES;
 
 export interface FamilyMember {
   userId: string;

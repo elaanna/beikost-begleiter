@@ -4,9 +4,9 @@ import { router } from 'expo-router';
 import { newId, setMeta } from '@/db/repo';
 import { useSQLiteContext } from 'expo-sqlite';
 
-const CONSENT_VERSION = '2026-11-26';
+const CONSENT_VERSION = '2026-11-26b';
 import { useApp } from '@/state/AppContext';
-import { Button, Card, Hero, Important, P, ProgressBar, Row, Screen, Small } from '@/ui/components';
+import { Button, Card, Field, Hero, Important, P, ProgressBar, Row, Screen, Small } from '@/ui/components';
 import { AllergyStep, ApproachStep, MilkStep, NameAndBirth, StartStep, useChildDraft } from '@/ui/ChildForm';
 import { color, space, type } from '@/ui/theme';
 
@@ -20,7 +20,8 @@ const STEPS = [
 
 /** Eine Frage pro Schritt, Auswahlkarten statt Formular. */
 export default function Onboarding() {
-  const { familyId, saveChild } = useApp();
+  const { familyId, saveChild, saveParentName } = useApp();
+  const [parentName, setParentName] = useState('');
   const db = useSQLiteContext();
   const d = useChildDraft();
   const [step, setStep] = useState(0);
@@ -46,6 +47,7 @@ export default function Onboarding() {
       {step === 0 ? (
         <>
           <NameAndBirth d={d} />
+          <Field label="Und wie heißt du? (freiwillig)" value={parentName} onChangeText={setParentName} placeholder="Dein Vorname" hint="Damit wir dich jeden Tag persönlich begrüßen können. Bleibt auf diesem Handy." autoCapitalize="words" autoComplete="name" maxLength={40} />
           <Pressable onPress={() => router.push('/rechtliches')} accessibilityRole="link">
             <Small>Diese App ersetzt keine kinderärztliche Beratung. <Text style={{ textDecorationLine: 'underline' }}>Datenschutz & Hinweise</Text></Small>
           </Pressable>
@@ -71,7 +73,7 @@ export default function Onboarding() {
               <View style={{ flex: 1 }}>
                 <P>
                   Ich willige ein, dass Gesundheitsangaben meines Kindes (Allergien, Reaktionen, Verdauung) in der App
-                  gespeichert werden. Sie bleiben auf diesem Gerät, bis du die Familienfreigabe startest. Widerruf jederzeit
+                  gespeichert werden. Sie bleiben auf diesem Gerät, bis du die Familienfreigabe startest oder ein Konto verknüpfst. Widerruf jederzeit
                   unter Familie → Datenschutz (löscht die Daten).
                 </P>
               </View>
@@ -90,8 +92,9 @@ export default function Onboarding() {
           if (!last) return setStep((s) => s + 1);
           // Einwilligung mit Datum und Textversion festhalten (Nachweispflicht, Art. 7 Abs. 1 DSGVO)
           await setMeta(db, 'consent_health', JSON.stringify({ version: CONSENT_VERSION, date: new Date().toISOString() }));
+          if (parentName.trim()) await saveParentName(parentName);
           await saveChild(d.build(familyId, newId()));
-          router.replace('/tutorial');
+          router.replace('/heute'); // dort startet die geführte Tour
         }}
       />
     </Screen>

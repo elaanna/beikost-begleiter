@@ -175,9 +175,10 @@ export function Segmented<T extends string>({ options, value, onChange }: {
   );
 }
 
-export function Field({ label, value, onChangeText, placeholder, hint, keyboardType, autoCapitalize, maxLength = 200 }: {
+export function Field({ label, value, onChangeText, placeholder, hint, keyboardType, autoCapitalize, maxLength = 200, autoComplete }: {
   label: string; value: string; onChangeText: (v: string) => void; placeholder?: string; hint?: string;
-  keyboardType?: 'default' | 'phone-pad'; autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'; maxLength?: number;
+  autoComplete?: 'email' | 'one-time-code' | 'name' | 'off';
+  keyboardType?: 'default' | 'phone-pad' | 'email-address' | 'number-pad'; autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'; maxLength?: number;
 }) {
   return (
     <View style={{ marginBottom: space.lg }}>
@@ -191,6 +192,8 @@ export function Field({ label, value, onChangeText, placeholder, hint, keyboardT
         autoCapitalize={autoCapitalize}
         maxLength={maxLength}
         keyboardType={keyboardType}
+        autoComplete={autoComplete}
+        textContentType={autoComplete === 'email' ? 'emailAddress' : autoComplete === 'one-time-code' ? 'oneTimeCode' : autoComplete === 'name' ? 'givenName' : undefined}
         style={s.input}
       />
       {hint ? <Small style={{ marginTop: space.xs }}>{hint}</Small> : null}

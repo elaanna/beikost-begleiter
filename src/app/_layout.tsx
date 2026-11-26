@@ -38,7 +38,15 @@ export default function RootLayout() {
 
 /** Der Schlüssel epoch baut die Navigation nach „Alle Daten löschen“ komplett neu auf. */
 function Navigation() {
-  const { epoch } = useApp();
+  const { epoch, ready } = useApp();
+  // Erst nach dem Laden der Daten anzeigen: sonst stürzen direkt geöffnete Seiten (Link, Erinnerung) ohne Kind ab
+  if (!ready) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: color.creme }}>
+        <ActivityIndicator color={color.sageDeep} />
+      </View>
+    );
+  }
   return (
     <Stack
       key={epoch}
@@ -53,7 +61,6 @@ function Navigation() {
           >
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-            <Stack.Screen name="tutorial" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false, title: 'Zurück' }} />
             <Stack.Screen name="food/[id]" options={{ title: '' }} />
             <Stack.Screen name="kind" options={{ title: "Kind bearbeiten" }} />
@@ -66,6 +73,9 @@ function Navigation() {
             <Stack.Screen name="uebersicht" options={{ title: 'Beikost-Übersicht' }} />
             <Stack.Screen name="scanner" options={{ title: 'Im Regal scannen' }} />
             <Stack.Screen name="mahlzeit" options={{ title: 'Mahlzeit' }} />
+            <Stack.Screen name="familie" options={{ title: 'Familie & Einstellungen' }} />
+            <Stack.Screen name="konto" options={{ title: 'Konto & Handywechsel' }} />
+            <Stack.Screen name="willkommen" options={{ headerShown: false }} />
             <Stack.Screen name="vorrat" options={{ title: 'Vorrat & Gefrierfach' }} />
             <Stack.Screen name="konverter" options={{ title: 'Familienessen umwandeln' }} />
             <Stack.Screen name="rezeptsuche" options={{ title: 'Was habe ich da?' }} />

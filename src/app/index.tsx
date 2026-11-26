@@ -4,7 +4,7 @@ import { useApp } from '@/state/AppContext';
 import { color } from '@/ui/theme';
 
 export default function Index() {
-  const { ready, activeChild, tutorialDone } = useApp();
+  const { ready, activeChild } = useApp();
   if (!ready) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: color.creme }}>
@@ -12,7 +12,6 @@ export default function Index() {
       </View>
     );
   }
-  if (!activeChild) return <Redirect href="/onboarding" />;
-  if (!tutorialDone) return <Redirect href="/tutorial" />;
+  if (!activeChild) return <Redirect href="/willkommen" />;
   return <Redirect href="/heute" />;
 }

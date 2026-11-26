@@ -36,7 +36,7 @@ export default function ProbierPass() {
 
   return (
     <Screen>
-      <Hero>Probier-Pass</Hero>
+      <Hero>Lebensmittel</Hero>
       <Small style={{ marginBottom: space.lg }}>{child.name} hat {triedCount} von {FOODS.length} Lebensmitteln probiert</Small>
 
       <Card tone="peach" style={{ paddingVertical: space.lg }}>

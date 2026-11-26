@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="#9CBF9B"/><g transform="translate(40.95999999999998 40.95999999999998) scale(0.92)"><!-- Schale mit Löffel und Blatt; Koordinaten im 1024er-Raster, Motiv innerhalb des mittleren Bereichs -->
+<g id="mark">
+  <!-- Blatt / Spross -->
+  <path d="M512 372 C 470 300, 470 240, 520 190 C 560 250, 556 316, 512 372 Z" fill="#5E8E68"/>
+  <path d="M512 380 C 560 330, 620 318, 676 336 C 650 392, 586 410, 512 380 Z" fill="#3F6B4B"/>
+  <!-- Löffel -->
+  <g transform="rotate(-32 512 512)">
+    <rect x="497" y="210" width="30" height="300" rx="15" fill="#F59E7A"/>
+    <ellipse cx="512" cy="200" rx="58" ry="78" fill="#F59E7A"/>
+  </g>
+  <!-- Schale -->
+  <path d="M262 470 H 762 C 762 640, 650 760, 512 760 C 374 760, 262 640, 262 470 Z" fill="#FFF6EC"/>
+  <rect x="236" y="448" width="552" height="44" rx="22" fill="#FFFFFF"/>
+  <path d="M432 800 H 592" stroke="#FFF6EC" stroke-width="34" stroke-linecap="round"/>
+</g>
+</g></svg>

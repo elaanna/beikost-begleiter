@@ -37,10 +37,10 @@ Beitritt mit eigenen Daten → Kind und Log landen korrekt in der neuen Familie.
 3. **Datenschutz-Folgenabschätzung (Art. 35)**: Gesundheitsdaten von Kindern → DSFA durchführen bzw. begründet dokumentieren, warum keine nötig ist.
 4. **Verzeichnis der Verarbeitungstätigkeiten (Art. 30)** und TOM-Dokumentation anlegen.
 5. **Impressum/Datenschutz**: Platzhalter in `src/app/rechtliches.tsx` ersetzen, anwaltlich prüfen lassen.
-6. **Kaufprüfung serverseitig**: Das Beikost-Paket wird nur in der App geprüft. Wer die App manipuliert, könnte die Familienfreigabe ohne Kauf nutzen. Abhilfe: RevenueCat-Webhook → Tabelle `entitlements` → Prüfung in `create_invite`.
+6. ~~Kaufprüfung serverseitig~~ – umgesetzt (Version 5). Offen: Webhook und Secrets im Dashboard einrichten (README), `require_entitlement` = `true` lassen.
 7. **Vorschau-Modus**: Ohne RevenueCat-Schlüssel ist alles freigeschaltet. Produktions-Build nur mit Schlüsseln bauen (EAS-Secrets).
 8. **Lokale Datenbank** ist nicht zusätzlich verschlüsselt; sie liegt in der App-Sandbox und ist durch die Geräteverschlüsselung (iOS Data Protection, Android FBE) geschützt. Für mehr Schutz: SQLCipher (`expo-sqlite` mit `useSQLCipher`, erfordert Development Build).
-9. **Erinnerungen** zeigen den Lebensmittelnamen auf dem Sperrbildschirm – ggf. Option „Details ausblenden“ ergänzen.
+9. ~~Erinnerungen auf dem Sperrbildschirm~~ – Option „Details ausblenden“ umgesetzt.
 10. **Abhängigkeiten**: `npm audit` meldet 3 mittlere Lücken in `minimatch` über `@expo/fingerprint` – nur Build-Werkzeug, nicht in der App enthalten. Bei nächstem Expo-Update erneut prüfen.
 11. **Penetrationstest** der Supabase-API vor dem Launch (z. B. mit zwei Testkonten alle Tabellen per REST durchprobieren).
 
@@ -54,3 +54,16 @@ Beitritt mit eigenen Daten → Kind und Log landen korrekt in der neuen Familie.
   zwischen geprüften Rezepten wählen.
 - Tests: `supabase/tests/run.sh` (V1–V4) und `tests/care.test.ts` (KI-Schutz).
 - Offen: AVV mit Anthropic, Drittlandtransfer USA prüfen, API-Schlüssel nur als Supabase-Secret.
+
+## Nachtrag: Version 5 (Kauf pro Familie, Konto, Tour)
+
+- **Kaufprüfung serverseitig**: Tabelle `entitlements` (nur lesbar für Mitglieder, schreiben nur Service-Rolle). Befüllt ausschließlich
+  aus der RevenueCat-API: Webhook (Geheimnis im Authorization-Header, Vergleich in konstanter Zeit, Ereignisinhalt wird nicht vertraut,
+  sondern pro betroffener Familie die API abgefragt) und `kauf-abgleich` (nur Familienmitglieder, App liefert keinen Kaufstatus).
+  `create_invite` verweigert ohne gültigen Zugang (`no entitlement`). Tests K1–K9 in `supabase/tests/30_kauf.sql`.
+- **Konto per E-Mail**: ohne Passwort, Einmal-Code per E-Mail (Supabase OTP). Verknüpfen wandelt die anonyme Sitzung um; Anmeldung auf
+  neuem Gerät legt kein neues Konto an (`shouldCreateUser: false`). `my_family()` liefert nur die eigene Mitgliedschaft.
+  Verknüpfen startet die Cloud-Sicherung mit eigenem Hinweistext; Datenschutzhinweis und Einwilligungstext angepasst (Version `2026-11-26b`).
+- **Vorname** für die Begrüßung bleibt nur lokal (wird nicht synchronisiert).
+- **Direkt geöffnete Seiten** (Link, Erinnerung) warten jetzt, bis die Daten geladen sind – vorher konnte die App dabei abstürzen.
+- Offen: OTP-Länge/Ablauf und SMTP im Dashboard; Rate Limits für E-Mail-Versand prüfen.

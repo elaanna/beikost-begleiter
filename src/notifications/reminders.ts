@@ -9,11 +9,14 @@ export interface ReminderSettings {
   enabled: boolean;
   /** Uhrzeit der Erinnerung je Mahlzeit, HH:MM. */
   times: Record<MealSlot, string>;
+  /** Auf dem Sperrbildschirm nur „Zeit für Mittag“ zeigen – ohne Namen des Kindes und Lebensmittel. */
+  discreet: boolean;
 }
 
 export const DEFAULT_REMINDERS: ReminderSettings = {
   enabled: false,
   times: { mittag: '11:30', nachmittag: '15:00', abend: '17:30' },
+  discreet: false,
 };
 
 const CHANNEL = 'mahlzeiten';
@@ -46,7 +49,8 @@ if (remindersSupported) {
 }
 
 /** Text einer Erinnerung – das neue Lebensmittel steht im Vordergrund. */
-export function reminderText(child: Child, slot: MealSlot, title: string, foodIds: string[], newFoodId?: string, newFoodDay?: number) {
+export function reminderText(child: Child, slot: MealSlot, title: string, foodIds: string[], newFoodId?: string, newFoodDay?: number, discreet = false) {
+  if (discreet) return { title: `Zeit für ${SLOT_LABEL[slot]} 🥄`, body: 'Tippe hier, um den Plan zu sehen.' };
   if (newFoodId) {
     const f = FOOD_BY_ID[newFoodId];
     return {
@@ -77,7 +81,7 @@ export async function rescheduleReminders(child: Child | null, logs: FoodLog[], 
       const [y, mo, d] = day.date.split('-').map(Number);
       const at = new Date(y, mo - 1, d, h, m, 0);
       if (at.getTime() <= now) continue;
-      const text = reminderText(child, meal.slot, meal.title, meal.foodIds, meal.newFoodId, meal.newFoodDay);
+      const text = reminderText(child, meal.slot, meal.title, meal.foodIds, meal.newFoodId, meal.newFoodDay, settings.discreet);
       await Notifications.scheduleNotificationAsync({
         content: { ...text, data: { url: '/heute' } },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: at, channelId: CHANNEL },

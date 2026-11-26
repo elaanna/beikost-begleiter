@@ -9,3 +9,4 @@ psql -q -c "drop database if exists beikost_test" -c "create database beikost_te
 psql -q -d beikost_test -v ON_ERROR_STOP=1 -f tests/00_supabase_stub.sql $(ls migrations/*.sql | sed 's/^/-f /')
 psql -q -t -d beikost_test -f tests/10_sicherheit.sql 2>&1 | grep -v '^ *$'
 psql -q -t -d beikost_test -f tests/20_beitritt.sql 2>&1 | grep -v '^ *$'
+psql -q -t -d beikost_test -f tests/30_kauf.sql 2>&1 | grep -v '^ *$'

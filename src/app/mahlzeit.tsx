@@ -10,7 +10,7 @@ import { matchingFrozen } from '@/domain/stock';
 import type { MealSlot } from '@/domain/types';
 import { useChild } from '@/state/AppContext';
 import { usePlanDays } from '@/state/usePlan';
-import { Button, Card, DayDots, Heading, Hero, Important, P, Row, Screen, Small, Title } from '@/ui/components';
+import { Button, Card, DayDots, Heading, Hero, Important, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { color, radius, space, type } from '@/ui/theme';
 
@@ -20,7 +20,9 @@ export default function Mahlzeit() {
   const date = params.date ?? todayIso();
   const { activeChild: child, stock } = useChild();
   const day = usePlanDays(date, 1)[0];
-  const meal = day?.meals.find((m) => m.slot === params.slot);
+  const [slot, setSlot] = useState<MealSlot | undefined>(params.slot);
+  // Ohne Angabe (Tipp auf den Tag) die erste Mahlzeit des Tages zeigen
+  const meal = day?.meals.find((m) => m.slot === slot) ?? day?.meals[0];
   const [swapOpen, setSwapOpen] = useState(false);
 
   if (!meal) {
@@ -45,6 +47,13 @@ export default function Mahlzeit() {
   return (
     <Screen edges={['left', 'right']}>
       <Stack.Screen options={{ title: SLOT_LABEL[meal.slot] }} />
+      {day.meals.length > 1 ? (
+        <Segmented<MealSlot>
+          options={day.meals.map((m) => ({ id: m.slot, label: SLOT_LABEL[m.slot] }))}
+          value={meal.slot}
+          onChange={setSlot}
+        />
+      ) : null}
       <Small>{formatDayLong(date)} · {SLOT_LABEL[meal.slot]}</Small>
       <Hero style={{ marginTop: space.xs, marginBottom: space.lg }}>{meal.title}</Hero>
 

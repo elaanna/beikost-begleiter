@@ -102,9 +102,16 @@ tests/                 node:test für die Planungslogik
 
 1. Projekt in Region **Frankfurt (eu-central-1)** anlegen.
 2. Authentication → Providers → **Anonymous sign-ins** aktivieren (Sync ohne Pflicht-Konto).
-3. Alle vier Dateien in `supabase/migrations/` der Reihe nach ausführen (SQL-Editor oder `supabase db push`). Die dritte härtet Rechte und Einladungen, die vierte bringt Vorrat, getauschte Mahlzeiten und das KI-Kontingent – siehe `SICHERHEIT.md`.
+3. Alle Dateien in `supabase/migrations/` der Reihe nach ausführen (SQL-Editor oder `supabase db push`). Die dritte härtet Rechte und Einladungen, die vierte bringt Vorrat, getauschte Mahlzeiten und das KI-Kontingent, die fünfte die serverseitige Kaufprüfung – siehe `SICHERHEIT.md`.
    Tests der Regeln gegen ein lokales PostgreSQL: `supabase/tests/run.sh`.
 4. URL und Publishable Key in `.env.local` eintragen (Vorlage: `.env.example`).
+5. **Konto per E-Mail** (Handywechsel): Authentication → Providers → Email aktiv, „Confirm email“ an.
+   Unter Email Templates in „Magic Link“ **und** „Change Email Address“ den Code einbauen: `{{ .Token }}`
+   (die App arbeitet mit Codes statt Links). Für den Versand eigenen SMTP-Server eintragen (der eingebaute ist stark begrenzt).
+6. **Kaufprüfung**: `supabase functions deploy revenuecat-webhook --no-verify-jwt` und `supabase functions deploy kauf-abgleich`,
+   dann `supabase secrets set REVENUECAT_WEBHOOK_SECRET=<mind. 24 Zeichen Zufall> REVENUECAT_SECRET_KEY=<sk_…>`.
+   In RevenueCat → Integrations → Webhooks die URL `…/functions/v1/revenuecat-webhook` mit Header `Authorization: Bearer <Geheimnis>` eintragen.
+   Zum Testen ohne RevenueCat: `update app_config set value = 'false' where key = 'require_entitlement';` (vor dem Launch wieder `true`).
 
 Familienmodell: Jede Installation erzeugt lokal eine Familien-ID. Daten gehen erst in die Cloud, wenn die Freigabe startet.
 „Einladungscode erstellen“ erzeugt einen 10-stelligen Einmal-Code (48 h gültig), mit Rolle „darf mit eintragen“ oder „nur lesen“ (z. B. Kita).
@@ -118,6 +125,8 @@ Konflikte löst der Server per Last-Write-Wins (`lww_guard`).
   optional `beikost_monat` als Auto-Renewable.
 - Google Play: Prepaid-Plan 12 Monate, optional Monatsabo.
 - Beide Produkte in das Current Offering, öffentliche SDK-Keys in `.env.local`.
+- Der Kauf gilt **pro Familie**: Die App meldet sich mit der Familien-ID als App User ID an. Wer per Code beitritt, wechselt auf die
+  Familien-ID und hat damit denselben Zugang. Der Server prüft beim Einladen selbst (Webhook → Tabelle `entitlements`).
 
 Kostenlos: Lebensmittel-Datenbank, Tracker inklusive Reaktionen, aktuelle Woche, Notfallblatt.
 Beikost-Paket: weitere Wochen, Einkauf/Vorkochen, Familienfreigabe, Geschwister, PDF-Wochenplan.
@@ -145,8 +154,8 @@ Prüfbericht, behobene Lücken und offene Launch-Aufgaben: [SICHERHEIT.md](SICHE
 ## Vor dem Launch offen
 
 - [ ] Lebensmitteltexte und Hinweise von einer Fachperson prüfen lassen
+- [x] Kaufprüfung serverseitig, Kauf pro Familie
+- [x] Konto per E-Mail für Geräte-Wechsel
+- [x] Eigenes App-Icon und Startbild (Quelle: `assets/icon-quelle.svg`)
 - [x] Ausdrückliche Einwilligung für Gesundheitsdaten (Art. 9 DSGVO) im Onboarding, mit Datum gespeichert – Text anwaltlich prüfen lassen
 - [ ] Haftungs- und Medizinprodukte-Einordnung rechtlich prüfen lassen
-- [ ] App-Icon und Splash ersetzen (noch Expo-Standard)
-- [ ] Konto-Verknüpfung (E-Mail) für Geräte-Wechsel ergänzen
-- [ ] Kauf-Restore beim Familienbeitritt: Entitlement pro Familie statt pro Gerät (RevenueCat App User ID = Familien-ID)

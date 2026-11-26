@@ -1,7 +1,8 @@
 import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 import { useApp } from '@/state/AppContext';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
+import { GuidedTour } from '@/ui/GuidedTour';
 import { color, font } from '@/ui/theme';
 
 function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
@@ -9,15 +10,16 @@ function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
 }
 
 /**
- * Fünf Bereiche nach dem, was Eltern wollen:
- * Was ist heute dran? · Was gibt es diese Woche? · Was hat mein Kind schon probiert? · Was muss ich wissen? · Wer hilft mit?
+ * Fünf Bereiche wie im Konzept: Heute · Wochenplan · Rezepte · Lebensmittel · Wissen.
+ * Familie & Einstellungen liegen oben rechts auf „Heute“ (👪).
  */
 export default function TabsLayout() {
   const { ready, activeChild } = useApp();
   // Ohne Kind (z. B. nach „Alle Daten löschen“) gibt es nichts anzuzeigen
-  if (ready && !activeChild) return <Redirect href="/onboarding" />;
+  if (ready && !activeChild) return <Redirect href="/willkommen" />;
   if (!activeChild) return null;
   return (
+    <View style={{ flex: 1 }}>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -29,9 +31,11 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="heute" options={{ title: 'Heute', tabBarIcon: ({ focused }) => <TabIcon emoji="☀️" focused={focused} /> }} />
       <Tabs.Screen name="woche" options={{ title: 'Woche', tabBarIcon: ({ focused }) => <TabIcon emoji="🗓️" focused={focused} /> }} />
-      <Tabs.Screen name="lebensmittel" options={{ title: 'Probiert', tabBarIcon: ({ focused }) => <TabIcon emoji="🥕" focused={focused} /> }} />
+      <Tabs.Screen name="rezepte" options={{ title: 'Rezepte', tabBarIcon: ({ focused }) => <TabIcon emoji="🍲" focused={focused} /> }} />
+      <Tabs.Screen name="lebensmittel" options={{ title: 'Lebensmittel', tabBarIcon: ({ focused }) => <TabIcon emoji="🥕" focused={focused} /> }} />
       <Tabs.Screen name="wissen" options={{ title: 'Wissen', tabBarIcon: ({ focused }) => <TabIcon emoji="📖" focused={focused} /> }} />
-      <Tabs.Screen name="familie" options={{ title: 'Familie', tabBarIcon: ({ focused }) => <TabIcon emoji="👪" focused={focused} /> }} />
     </Tabs>
+    <GuidedTour />
+    </View>
   );
 }

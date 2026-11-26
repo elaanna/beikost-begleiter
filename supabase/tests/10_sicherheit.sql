@@ -2,6 +2,8 @@
 -- T10 Fremdschlüssel, T11 true, T12 Längenprüfung, T15 0, T17 permission denied, T18 alles 0, T20 alles 0.
 \set ON_ERROR_STOP 0
 \set VERBOSITY terse
+-- Kaufprüfung wird in 30_kauf.sql getestet; hier ausgeschaltet
+update public.app_config set value = 'false' where key = 'require_entitlement';
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000001';
 select public.create_family('aaaaaaaa-0000-0000-0000-000000000000', 'Mama');

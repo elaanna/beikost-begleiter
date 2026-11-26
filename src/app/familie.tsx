@@ -5,7 +5,7 @@ import { ageInMonths, formatDayLong, formatMonth, todayIso } from '@/domain/date
 import { doctorReportHtml, emergencyHtml } from '@/domain/pdf';
 import { accessUntil } from '@/purchases/revenuecat';
 import { useChild } from '@/state/AppContext';
-import { Button, Card, Field, Hero, ListItem, P, Row, Screen, Small, Title } from '@/ui/components';
+import { Button, Card, Field, ListItem, P, Row, Screen, Small, Title } from '@/ui/components';
 import { shareHtmlAsPdf } from '@/ui/exportPdf';
 import { TimeStepper } from '@/ui/ShiftsView';
 import { FamilySharing } from '@/ui/FamilySharing';
@@ -24,8 +24,7 @@ export default function Familie() {
   const today = todayIso();
 
   return (
-    <Screen>
-      <Hero style={{ marginBottom: space.lg }}>Familie</Hero>
+    <Screen edges={['left', 'right']}>
 
       <Card style={{ paddingVertical: space.sm, paddingHorizontal: space.sm }}>
         {children.map((c) => (
@@ -49,6 +48,21 @@ export default function Familie() {
           </View>
           <Text style={{ fontSize: 22, color: color.inkSoft }}>›</Text>
         </Row>
+      </Card>
+
+      <Title>Du</Title>
+      <Card>
+        <Field
+          label="Dein Vorname"
+          value={app.parentName}
+          onChangeText={(v) => app.saveParentName(v)}
+          placeholder="z. B. Michaela"
+          hint="Nur für die Begrüßung auf diesem Handy."
+          autoCapitalize="words"
+          autoComplete="name"
+          maxLength={40}
+        />
+        <ListItem emoji="📧" title="Konto & Handywechsel" subtitle="Einträge mit E-Mail sichern" onPress={() => router.push('/konto')} />
       </Card>
 
       <Title>Gemeinsam planen</Title>
@@ -88,6 +102,18 @@ export default function Familie() {
               />
             ))}
             <Small>Erinnert nur an Mahlzeiten, die laut Plan schon dran sind.</Small>
+            <Row style={{ justifyContent: 'space-between', marginTop: space.lg }}>
+              <View style={{ flex: 1 }}>
+                <P bold>🔒 Details auf dem Sperrbildschirm ausblenden</P>
+                <Small>Zeigt nur „Zeit für Mittag“ – ohne Namen und Lebensmittel.</Small>
+              </View>
+              <Switch
+                value={app.reminders.discreet}
+                trackColor={{ true: color.sage, false: color.line }}
+                accessibilityLabel="Details auf dem Sperrbildschirm ausblenden"
+                onValueChange={(v) => app.saveReminders({ ...app.reminders, discreet: v })}
+              />
+            </Row>
           </View>
         ) : null}
       </Card>
@@ -122,7 +148,7 @@ export default function Familie() {
           subtitle={previewMode ? 'Testversion: alles freigeschaltet' : isPro ? `Aktiv${until ? ` bis ${formatDayLong(until.slice(0, 10))}` : ''}` : '12 Monate, einmal zahlen'}
           onPress={() => router.push('/paywall')}
         />
-        <ListItem emoji="🎓" title="Einführung noch einmal ansehen" onPress={() => router.push('/tutorial')} />
+        <ListItem emoji="🎓" title="Geführte Tour noch einmal starten" onPress={() => app.restartTutorial()} />
         <ListItem emoji="📖" title="Leitlinien & Quellen" onPress={() => openWissen('leitlinien')} />
         <ListItem emoji="🔒" title="Datenschutz, Impressum & Hinweis" onPress={() => router.push('/rechtliches')} />
       </Card>

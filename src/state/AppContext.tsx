@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useSQLiteContext } from 'expo-sqlite';
 import type { CustomerInfo } from 'react-native-purchases';
@@ -10,8 +11,7 @@ import * as repo from '@/db/repo';
 import { syncNow } from '@/sync/sync';
 import { isSyncConfigured } from '@/sync/supabase';
 import {
-  configurePurchases,
-  getCustomerInfo,
+  identifyPurchaser,
   hasEntitlement,
   isPurchasesConfigured,
 } from '@/purchases/revenuecat';
@@ -27,7 +27,12 @@ interface AppState {
   previewMode: boolean;
   customerInfo: CustomerInfo | null;
   tutorialDone: boolean;
+  /** Vorname der Person an diesem Gerät, nur lokal – für die Begrüßung. */
+  parentName: string;
+  saveParentName: (name: string) => Promise<void>;
   finishTutorial: () => Promise<void>;
+  /** Geführte Tour erneut zeigen (startet auf „Heute“). */
+  restartTutorial: () => Promise<void>;
   syncState: 'aus' | 'bereit' | 'läuft' | 'fehler';
   lastSyncError: string | null;
   selectChild: (id: string) => Promise<void>;
@@ -70,6 +75,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
   const db = useSQLiteContext();
   const [ready, setReady] = useState(false);
   const [epoch, setEpoch] = useState(0);
+  const [parentName, setParentName] = useState('');
   const [familyId, setFamilyId] = useState('');
   const [kids, setKids] = useState<Child[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -91,7 +97,8 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     const list = await repo.listChildren(db);
     const stored = await repo.getMeta(db, 'active_child');
     const active = list.find((c) => c.id === stored) ?? list[0] ?? null;
-    setTutorialDone((await repo.getMeta(db, 'tutorial_done')) === '1');
+    setTutorialDone((await repo.getMeta(db, 'tour_done')) === '1');
+    setParentName((await repo.getMeta(db, 'parent_name')) ?? '');
     setFamilyId(fid);
     setKids(list);
     setActiveId(active?.id ?? null);
@@ -124,17 +131,17 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     (async () => {
       await reload();
       setReady(true);
-      configurePurchases();
-      if (isPurchasesConfigured) {
-        try {
-          setCustomerInfo(await getCustomerInfo());
-        } catch {
-          // offline: Kaufstatus wird beim nächsten Start erneut geprüft
-        }
-      }
       void sync();
     })();
   }, [reload, sync]);
+
+  // Kaufstatus gehört zur Familie: bei Start und nach Familienwechsel (Beitritt, Freigabe beendet) neu zuordnen
+  useEffect(() => {
+    if (!ready || !familyId || !isPurchasesConfigured) return;
+    identifyPurchaser(familyId).then(setCustomerInfo).catch(() => {
+      // offline: Kaufstatus wird beim nächsten Start erneut geprüft
+    });
+  }, [ready, familyId]);
 
   const activeChild = kids.find((c) => c.id === activeId) ?? null;
 
@@ -158,9 +165,21 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
       previewMode: !isPurchasesConfigured,
       customerInfo,
       tutorialDone,
+      parentName,
+      saveParentName: async (name) => {
+        // Nicht trimmen: sonst ließe sich beim Tippen kein Leerzeichen eingeben (Begrüßung trimmt selbst)
+        const clean = name.slice(0, 40);
+        setParentName(clean);
+        await repo.setMeta(db, 'parent_name', clean);
+      },
       finishTutorial: async () => {
-        await repo.setMeta(db, 'tutorial_done', '1');
+        await repo.setMeta(db, 'tour_done', '1');
         setTutorialDone(true);
+      },
+      restartTutorial: async () => {
+        await repo.setMeta(db, 'tour_done', '0');
+        setTutorialDone(false);
+        router.navigate('/heute');
       },
       syncState,
       lastSyncError,
@@ -261,7 +280,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
         void sync();
       },
     }),
-    [stock, swaps, ready, epoch, familyId, kids, activeChild, logs, customerInfo, tutorialDone, syncState, lastSyncError, db, reload, sync,
+    [stock, swaps, ready, epoch, familyId, kids, activeChild, logs, customerInfo, tutorialDone, parentName, syncState, lastSyncError, db, reload, sync,
       digestion, caregivers, familySettings, shiftsVersion, reminders],
   );
 

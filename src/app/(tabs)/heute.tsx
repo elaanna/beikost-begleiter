@@ -7,6 +7,7 @@ import { FAMILY_FROM_MONTHS } from '@/data/recipes';
 import { addDays, ageInMonths, diffDays, formatDayLong, todayIso } from '@/domain/dates';
 import { drinkStage, ironWeek, revisitFoods } from '@/domain/care';
 import { genitive } from '@/domain/beikostOverview';
+import { dailyLine, greetingTitle } from '@/domain/greeting';
 import { effectiveStartDate, introDays, planDays, preparationFor, SLOT_LABEL } from '@/domain/planner';
 import { matchingFrozen } from '@/domain/stock';
 import { usePlanDays } from '@/state/usePlan';
@@ -24,15 +25,9 @@ import { useToast } from '@/ui/Toast';
 import { openWissen } from '@/ui/nav';
 import { color, radius, space, type } from '@/ui/theme';
 
-function greeting(): string {
-  const h = new Date().getHours();
-  if (h < 11) return 'Guten Morgen';
-  if (h < 17) return 'Hallo';
-  return 'Guten Abend';
-}
 
 export default function Heute() {
-  const { activeChild: child, children, logs, addLog, removeLog, selectChild } = useChild();
+  const { activeChild: child, children, logs, addLog, removeLog, selectChild, parentName } = useChild();
   const toast = useToast();
   const today = todayIso();
   const start = effectiveStartDate(child);
@@ -71,8 +66,17 @@ export default function Heute() {
         </PillRow>
       ) : null}
 
-      <Small>{child.name} · {ageInMonths(child.birthDate, today)} Monate</Small>
-      <Hero style={{ marginBottom: space.lg }}>{greeting()}!</Hero>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <View style={{ flex: 1 }}>
+          <Small>{child.name} · {ageInMonths(child.birthDate, today)} Monate · {formatDayLong(today)}</Small>
+          <Hero style={{ marginTop: 2 }}>{greetingTitle(new Date().getHours(), parentName)}</Hero>
+        </View>
+        <Pressable onPress={() => router.push('/familie')} accessibilityRole="button" accessibilityLabel="Familie und Einstellungen" hitSlop={10}
+          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: color.surface, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 22 }}>👪</Text>
+        </Pressable>
+      </Row>
+      <DailyGreeting child={child} logs={logs} today={today} startDate={start} meal={day.meals.find((m) => m.newFoodId)} />
 
       {/* Die häufigste Frage zuerst */}
       <Pressable
@@ -376,5 +380,21 @@ function Tile({ emoji, title, sub, alert, red, onPress }: {
         <Text style={[type.small, { color: red ? color.redDeep : color.inkSoft }]} numberOfLines={2}>{sub}</Text>
       )}
     </Pressable>
+  );
+}
+
+function DailyGreeting({ child, logs, today, startDate, meal }: {
+  child: Parameters<typeof dailyLine>[0]['child']; logs: Parameters<typeof dailyLine>[0]['logs']; today: string; startDate: string; meal?: PlannedMeal;
+}) {
+  const newFood = meal?.newFoodId ? FOOD_BY_ID[meal.newFoodId] : undefined;
+  const line = dailyLine({
+    child, logs, today, startDate,
+    newFoodId: meal?.newFoodId, newFoodDay: meal?.newFoodDay, newFoodTotal: newFood ? introDays(newFood) : undefined,
+  });
+  return (
+    <Row style={{ backgroundColor: color.sageSoft, borderRadius: radius.lg, padding: space.md, marginTop: space.md, marginBottom: space.lg, alignItems: 'center' }}>
+      <Text style={{ fontSize: 26 }}>{line.emoji}</Text>
+      <P style={{ flex: 1 }}>{line.text}</P>
+    </Row>
   );
 }

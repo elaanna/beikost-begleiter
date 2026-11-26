@@ -5,8 +5,8 @@ import { ALL_RECIPES } from '@/data/allRecipes';
 import { MONTH_NAMES, SEASON } from '@/data/season';
 import { ALLERGEN_LABEL, CATEGORY_LABEL, FOOD_BY_ID } from '@/data/foods';
 import { SOURCES, STATEMENTS } from '@/data/guidelines';
-import { formatDayLong, todayIso } from '@/domain/dates';
-import { blockReason, introDays, MAINTENANCE, planDays } from '@/domain/planner';
+import { addDays, formatDayLong, todayIso } from '@/domain/dates';
+import { blockReason, effectiveStartDate, introDays, MAINTENANCE, planDays } from '@/domain/planner';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, Hero, Important, P, Row, Screen, Small, SourceLink, Title } from '@/ui/components';
 import { QuickLog } from '@/ui/QuickLog';
@@ -49,6 +49,7 @@ export default function FoodDetail() {
     <Screen edges={['left', 'right']}>
       <Stack.Screen options={{ title: food.name }} />
       <FoodHero foodId={food.id} />
+      <WhenRow foodId={food.id} />
       {reason ? <Important title="Pausiert">{reason}</Important> : null}
       {food.hint ? <Important>{food.hint}</Important> : null}
 
@@ -173,6 +174,33 @@ function FoodHero({ foodId }: { foodId: string }) {
         </View>
       </View>
     </View>
+  );
+}
+
+/** „Ab wann?“ – allgemein und beim eigenen Kind (relativ zum Beikost-Start, nicht zu einem festen Monat). */
+function WhenRow({ foodId }: { foodId: string }) {
+  const { activeChild: child, logs } = useChild();
+  const food = FOOD_BY_ID[foodId];
+  const today = todayIso();
+  const general = food.fromWeek === 0
+    ? 'Ab dem Beikost-Start – also frühestens ab Beginn des 5. und spätestens ab Beginn des 7. Monats.'
+    : `Etwa ${food.fromWeek} ${food.fromWeek === 1 ? 'Woche' : 'Wochen'} nach dem Beikost-Start, wenn die ersten Breie gut klappen.`;
+  const first = logs.filter((l) => l.childId === child.id && l.foodId === food.id).map((l) => l.date).sort()[0];
+  const earliest = addDays(effectiveStartDate(child), food.fromWeek * 7);
+  const mine = first
+    ? `Seit ${formatDayLong(first)} dabei.`
+    : earliest <= today ? 'Jetzt schon möglich.' : `Frühestens ab ${formatDayLong(earliest)}.`;
+  return (
+    <Card>
+      <Row style={{ alignItems: 'flex-start' }}>
+        <Text style={{ fontSize: 26 }}>⏳</Text>
+        <View style={{ flex: 1 }}>
+          <P bold>Ab wann?</P>
+          <Small soft={false} style={{ marginTop: 2 }}>{general}</Small>
+          <Small bold soft={false} style={{ marginTop: space.sm, color: color.sageDeep }}>Bei {child.name}: {mine}</Small>
+        </View>
+      </Row>
+    </Card>
   );
 }
 
