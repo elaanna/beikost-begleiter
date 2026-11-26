@@ -10,6 +10,7 @@ import { DEFAULT_REMINDERS, rescheduleReminders, type ReminderSettings } from '@
 import * as repo from '@/db/repo';
 import { syncNow } from '@/sync/sync';
 import { isSyncConfigured } from '@/sync/supabase';
+import { getAccount } from '@/sync/account';
 import {
   identifyPurchaser,
   hasEntitlement,
@@ -29,6 +30,14 @@ interface AppState {
   tutorialDone: boolean;
   /** Vorname der Person an diesem Gerät, nur lokal – für die Begrüßung. */
   parentName: string;
+  /** E-Mail des Kontos (null = noch keins). */
+  accountEmail: string | null;
+  /** Nur Testversion ohne Server: ohne Konto weiter. */
+  accountSkipped: boolean;
+  /** Muss die Startseite mit Konto gezeigt werden? */
+  needsAccount: boolean;
+  refreshAccount: () => Promise<void>;
+  skipAccount: () => Promise<void>;
   saveParentName: (name: string) => Promise<void>;
   finishTutorial: () => Promise<void>;
   /** Geführte Tour erneut zeigen (startet auf „Heute“). */
@@ -76,6 +85,8 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [epoch, setEpoch] = useState(0);
   const [parentName, setParentName] = useState('');
+  const [accountEmail, setAccountEmail] = useState<string | null>(null);
+  const [accountSkipped, setAccountSkipped] = useState(false);
   const [familyId, setFamilyId] = useState('');
   const [kids, setKids] = useState<Child[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -99,6 +110,8 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     const active = list.find((c) => c.id === stored) ?? list[0] ?? null;
     setTutorialDone((await repo.getMeta(db, 'tour_done')) === '1');
     setParentName((await repo.getMeta(db, 'parent_name')) ?? '');
+    setAccountSkipped((await repo.getMeta(db, 'account_skipped')) === '1');
+    setAccountEmail((await getAccount().catch(() => ({ email: null }))).email);
     setFamilyId(fid);
     setKids(list);
     setActiveId(active?.id ?? null);
@@ -166,6 +179,14 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
       customerInfo,
       tutorialDone,
       parentName,
+      accountEmail,
+      accountSkipped,
+      needsAccount: !accountEmail && !accountSkipped,
+      refreshAccount: async () => setAccountEmail((await getAccount()).email),
+      skipAccount: async () => {
+        await repo.setMeta(db, 'account_skipped', '1');
+        setAccountSkipped(true);
+      },
       saveParentName: async (name) => {
         // Nicht trimmen: sonst ließe sich beim Tippen kein Leerzeichen eingeben (Begrüßung trimmt selbst)
         const clean = name.slice(0, 40);
@@ -280,7 +301,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
         void sync();
       },
     }),
-    [stock, swaps, ready, epoch, familyId, kids, activeChild, logs, customerInfo, tutorialDone, parentName, syncState, lastSyncError, db, reload, sync,
+    [stock, swaps, ready, epoch, familyId, kids, activeChild, logs, customerInfo, tutorialDone, parentName, accountEmail, accountSkipped, syncState, lastSyncError, db, reload, sync,
       digestion, caregivers, familySettings, shiftsVersion, reminders],
   );
 

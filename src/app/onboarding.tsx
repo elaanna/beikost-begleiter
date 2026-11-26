@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { newId, setMeta } from '@/db/repo';
 import { useSQLiteContext } from 'expo-sqlite';
 
-const CONSENT_VERSION = '2026-11-26b';
+const CONSENT_VERSION = '2026-11-26c';
 import { useApp } from '@/state/AppContext';
 import { Button, Card, Field, Hero, Important, P, ProgressBar, Row, Screen, Small } from '@/ui/components';
 import { AllergyStep, ApproachStep, MilkStep, NameAndBirth, StartStep, useChildDraft } from '@/ui/ChildForm';
@@ -73,7 +73,7 @@ export default function Onboarding() {
               <View style={{ flex: 1 }}>
                 <P>
                   Ich willige ein, dass Gesundheitsangaben meines Kindes (Allergien, Reaktionen, Verdauung) in der App
-                  gespeichert werden. Sie bleiben auf diesem Gerät, bis du die Familienfreigabe startest oder ein Konto verknüpfst. Widerruf jederzeit
+                  gespeichert werden. Sie bleiben auf diesem Gerät, bis du die Familienfreigabe startest oder die Cloud-Sicherung einschaltest. Widerruf jederzeit
                   unter Familie → Datenschutz (löscht die Daten).
                 </P>
               </View>

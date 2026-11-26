@@ -14,9 +14,10 @@ function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
  * Familie & Einstellungen liegen oben rechts auf „Heute“ (👪).
  */
 export default function TabsLayout() {
-  const { ready, activeChild } = useApp();
-  // Ohne Kind (z. B. nach „Alle Daten löschen“) gibt es nichts anzuzeigen
-  if (ready && !activeChild) return <Redirect href="/willkommen" />;
+  const { ready, activeChild, needsAccount } = useApp();
+  // Ohne Konto zuerst die Startseite; ohne Kind (z. B. nach „Alle Daten löschen“) das Einrichten
+  if (ready && needsAccount) return <Redirect href="/willkommen" />;
+  if (ready && !activeChild) return <Redirect href="/onboarding" />;
   if (!activeChild) return null;
   return (
     <View style={{ flex: 1 }}>

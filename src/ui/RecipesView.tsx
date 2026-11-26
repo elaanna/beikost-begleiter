@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { CATEGORY_INFO, type RecipeCategory } from '@/data/babyRecipes';
 import { FOOD_BY_ID } from '@/data/foods';
 import { ageInMonths, todayIso } from '@/domain/dates';
 import { recipeFits } from '@/domain/recipes';
 import { useChild } from '@/state/AppContext';
-import { Card, P, Pill, PillRow, Row, Segmented, Small } from './components';
+import { Card, P, Pill, Row, Segmented, Small } from './components';
 import { color, space, type } from './theme';
 
 type Filter = RecipeCategory | 'alle';
@@ -56,12 +56,14 @@ export function RecipesView() {
         onChange={setAge}
       />
       {age === 'jetzt' ? <Small style={{ marginBottom: space.sm }}>Rezepte, die allgemein zum Alter von {child.name} ({months} Monate) passen.</Small> : null}
-      <PillRow>
+      {/* Kategorien in einer wischbaren Zeile – nicht untereinander */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -space.xl, marginBottom: space.lg }}
+        contentContainerStyle={{ gap: space.sm, paddingHorizontal: space.xl }}>
         <Pill label="Alle" selected={filter === 'alle'} onPress={() => setFilter('alle')} />
         {(Object.keys(CATEGORY_INFO) as RecipeCategory[]).map((c) => (
           <Pill key={c} label={`${CATEGORY_INFO[c].emoji} ${CATEGORY_INFO[c].label}`} selected={filter === c} onPress={() => setFilter(c)} />
         ))}
-      </PillRow>
+      </ScrollView>
 
       {fits.length === 0 ? <Card><P>Für diese Auswahl gibt es noch keine Rezepte.</P></Card> : null}
       {fits.map(({ recipe, blocked, untried, tooEarly }) => (

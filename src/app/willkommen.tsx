@@ -1,5 +1,6 @@
 import { Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { useApp } from '@/state/AppContext';
 import { isSyncConfigured } from '@/sync/supabase';
 import { Button, P, Screen, Small } from '@/ui/components';
 import { color, font, radius, space, type } from '@/ui/theme';
@@ -12,6 +13,7 @@ const BENEFITS: [string, string][] = [
 
 /** Startseite beim ersten Öffnen: neu starten oder mit bestehendem Konto anmelden. */
 export default function Willkommen() {
+  const { skipAccount, activeChild } = useApp();
   return (
     <Screen>
       <View style={{ alignItems: 'center', marginTop: space.xl }}>
@@ -41,11 +43,22 @@ export default function Willkommen() {
         ))}
       </View>
 
-      <Button label="Los geht's" style={{ marginTop: space.xl }} onPress={() => router.push('/onboarding')} />
       {isSyncConfigured ? (
-        <Button label="Ich habe schon ein Konto" variant="ghost" onPress={() => router.push({ pathname: '/konto', params: { mode: 'anmelden' } })} />
-      ) : null}
-      <Small style={{ textAlign: 'center', marginTop: space.md }}>Kein Konto nötig. Deine Angaben bleiben auf deinem Handy.</Small>
+        <>
+          <Button label="Konto erstellen" style={{ marginTop: space.xl }} onPress={() => router.push({ pathname: '/konto', params: { mode: 'registrieren' } })} />
+          <Button label="Ich habe schon ein Konto" variant="ghost" onPress={() => router.push({ pathname: '/konto', params: { mode: 'anmelden' } })} />
+          <Small style={{ textAlign: 'center', marginTop: space.md }}>Nur mit E-Mail, ohne Passwort. Deine Einträge bleiben auf deinem Handy, bis du die Sicherung einschaltest.</Small>
+        </>
+      ) : (
+        <>
+          <View style={{ backgroundColor: color.butter, borderRadius: radius.lg, padding: space.lg, marginTop: space.xl }}>
+            <Text style={[type.body, { color: color.ink }]}>
+              Testversion: Konten werden aktiv, sobald der Server (Supabase) eingerichtet ist. Bis dahin geht es ohne Konto weiter.
+            </Text>
+          </View>
+          <Button label="Ohne Konto weiter" style={{ marginTop: space.lg }} onPress={async () => { await skipAccount(); router.replace(activeChild ? '/heute' : '/onboarding'); }} />
+        </>
+      )}
     </Screen>
   );
 }

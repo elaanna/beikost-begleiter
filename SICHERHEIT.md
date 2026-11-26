@@ -64,6 +64,8 @@ Beitritt mit eigenen Daten → Kind und Log landen korrekt in der neuen Familie.
 - **Konto per E-Mail**: ohne Passwort, Einmal-Code per E-Mail (Supabase OTP). Verknüpfen wandelt die anonyme Sitzung um; Anmeldung auf
   neuem Gerät legt kein neues Konto an (`shouldCreateUser: false`). `my_family()` liefert nur die eigene Mitgliedschaft.
   Verknüpfen startet die Cloud-Sicherung mit eigenem Hinweistext; Datenschutzhinweis und Einwilligungstext angepasst (Version `2026-11-26b`).
+- **Konto ist Pflicht, Cloud-Sicherung nicht**: Das Konto speichert nur die E-Mail. Gesundheitsdaten werden erst nach eigener,
+  freiwilliger Entscheidung übertragen (Kopplungsverbot Art. 7 Abs. 4 DSGVO). Einwilligungstext Version `2026-11-26c`.
 - **Vorname** für die Begrüßung bleibt nur lokal (wird nicht synchronisiert).
 - **Direkt geöffnete Seiten** (Link, Erinnerung) warten jetzt, bis die Daten geladen sind – vorher konnte die App dabei abstürzen.
 - Offen: OTP-Länge/Ablauf und SMTP im Dashboard; Rate Limits für E-Mail-Versand prüfen.

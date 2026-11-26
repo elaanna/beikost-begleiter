@@ -105,7 +105,7 @@ tests/                 node:test für die Planungslogik
 3. Alle Dateien in `supabase/migrations/` der Reihe nach ausführen (SQL-Editor oder `supabase db push`). Die dritte härtet Rechte und Einladungen, die vierte bringt Vorrat, getauschte Mahlzeiten und das KI-Kontingent, die fünfte die serverseitige Kaufprüfung – siehe `SICHERHEIT.md`.
    Tests der Regeln gegen ein lokales PostgreSQL: `supabase/tests/run.sh`.
 4. URL und Publishable Key in `.env.local` eintragen (Vorlage: `.env.example`).
-5. **Konto per E-Mail** (Handywechsel): Authentication → Providers → Email aktiv, „Confirm email“ an.
+5. **Konto per E-Mail** (Pflicht beim Start, ohne Passwort; die Cloud-Sicherung der Einträge ist ein eigener, freiwilliger Schritt. Ohne Supabase-Zugangsdaten zeigt die Startseite „Ohne Konto weiter“ für Tests): Authentication → Providers → Email aktiv, „Confirm email“ an.
    Unter Email Templates in „Magic Link“ **und** „Change Email Address“ den Code einbauen: `{{ .Token }}`
    (die App arbeitet mit Codes statt Links). Für den Versand eigenen SMTP-Server eintragen (der eingebaute ist stark begrenzt).
 6. **Kaufprüfung**: `supabase functions deploy revenuecat-webhook --no-verify-jwt` und `supabase functions deploy kauf-abgleich`,

@@ -6,7 +6,7 @@ import { milestones } from '@/domain/pass';
 import { blockReason } from '@/domain/planner';
 import type { FoodCategory } from '@/domain/types';
 import { useChild } from '@/state/AppContext';
-import { Card, Heading, Hero, Pill, PillRow, ProgressBar, Screen, Small } from '@/ui/components';
+import { Card, Heading, Hero, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
 import { color, radius, space, TOUCH, type } from '@/ui/theme';
 
 type Filter = 'alle' | 'probiert' | 'offen';
@@ -74,7 +74,8 @@ export default function ProbierPass() {
           <Pill key={f} label={{ alle: 'Alle', offen: 'Noch offen', probiert: 'Probiert' }[f]} selected={filter === f} onPress={() => setFilter(f)} />
         ))}
       </PillRow>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: space.lg }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: -space.sm, marginBottom: space.xl, marginHorizontal: -space.xl }}
+        contentContainerStyle={{ paddingHorizontal: space.xl }}>
         <View style={{ flexDirection: 'row', gap: space.sm }}>
           {(Object.keys(CATEGORY_LABEL) as FoodCategory[]).map((c) => (
             <Pill key={c} label={CATEGORY_LABEL[c]} selected={category === c} onPress={() => setCategory(category === c ? null : c)} />
@@ -83,9 +84,12 @@ export default function ProbierPass() {
       </ScrollView>
 
       {groups.length === 0 ? <Small>Nichts gefunden.</Small> : null}
-      {groups.map(([cat, items]) => (
-        <View key={cat} style={{ marginBottom: space.xl }}>
-          <Heading style={{ marginBottom: space.md }}>{CATEGORY_LABEL[cat]}</Heading>
+      {groups.map(([cat, items], gi) => (
+        <View key={cat} style={{ marginBottom: space.xxl, paddingTop: gi ? space.xl : 0, borderTopWidth: gi ? 1 : 0, borderTopColor: color.line }}>
+          <Row style={{ justifyContent: 'space-between', alignItems: 'baseline', marginBottom: space.md }}>
+            <Heading>{CATEGORY_LABEL[cat]}</Heading>
+            <Small>{items.filter((f) => tried.has(f.id)).length} von {items.length} probiert</Small>
+          </Row>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
             {items.map((f) => {
               const isTried = tried.has(f.id);

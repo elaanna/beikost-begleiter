@@ -62,7 +62,7 @@ export default function Familie() {
           autoComplete="name"
           maxLength={40}
         />
-        <ListItem emoji="📧" title="Konto & Handywechsel" subtitle="Einträge mit E-Mail sichern" onPress={() => router.push('/konto')} />
+        <ListItem emoji="📧" title="Konto & Handywechsel" subtitle={app.accountEmail ?? 'Noch kein Konto'} onPress={() => router.push('/konto')} />
       </Card>
 
       <Title>Gemeinsam planen</Title>

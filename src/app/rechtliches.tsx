@@ -26,12 +26,12 @@ const DATA_ITEMS = [
   {
     emoji: '📱',
     title: 'Auf deinem Gerät',
-    text: 'Kind (optionaler Spitzname, Geburtsmonat), Plan, Protokoll mit Reaktionen, Verdauung, Vorrat, Dienstplan und Einstellungen werden lokal gespeichert. Ohne Familienfreigabe oder Konto verlässt nichts das Gerät. Dein Vorname für die Begrüßung bleibt immer nur auf dem Gerät.',
+    text: 'Kind (optionaler Spitzname, Geburtsmonat), Plan, Protokoll mit Reaktionen, Verdauung, Vorrat, Dienstplan und Einstellungen werden lokal gespeichert. Ohne Familienfreigabe oder Cloud-Sicherung verlässt nichts davon das Gerät. Dein Vorname für die Begrüßung bleibt immer nur auf dem Gerät.',
   },
   {
     emoji: '👪',
-    title: 'Familienfreigabe und Konto (freiwillig)',
-    text: 'Erst wenn du einlädst, beitrittst oder ein Konto verknüpfst, werden diese Daten verschlüsselt übertragen und bei Supabase in der EU (Frankfurt) gespeichert. Die Anmeldung ist anonym. Nur wenn du ein Konto verknüpfst, speichern wir deine E-Mail-Adresse – ausschließlich, um dir Anmeldecodes zu schicken. Zugriff haben nur Personen, die du per Einmal-Code einlädst; Leser können nichts ändern.',
+    title: 'Konto, Cloud-Sicherung und Familienfreigabe',
+    text: 'Für das Konto speichern wir deine E-Mail-Adresse bei Supabase in der EU (Frankfurt) – ausschließlich, um dir Anmeldecodes zu schicken. Die Einträge zu deinem Kind werden erst übertragen und dort verschlüsselt gespeichert, wenn du die Cloud-Sicherung einschaltest, einlädst oder beitrittst (freiwillig, eigene Einwilligung). Zugriff haben nur Personen, die du per Einmal-Code einlädst; Leser können nichts ändern.',
   },
   {
     emoji: '⭐',
@@ -68,7 +68,7 @@ const LEGAL_BASES = [
 
 const RETENTION = [
   'Auf dem Gerät: bis du Einträge löschst, die App entfernst oder unten „Alle Daten löschen“ wählst.',
-  'In der Cloud: solange Familienfreigabe oder Konto bestehen. Gelöschte Einträge werden nach spätestens 30 Tagen endgültig entfernt, abgelaufene Einladungen sofort.',
+  'In der Cloud: E-Mail solange das Konto besteht, Einträge solange Sicherung oder Familienfreigabe bestehen. Gelöschte Einträge werden nach spätestens 30 Tagen endgültig entfernt, abgelaufene Einladungen sofort.',
 ];
 
 const RIGHTS = [
