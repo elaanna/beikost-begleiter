@@ -118,6 +118,8 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX IF NOT EXISTS idx_swaps_child ON plan_swaps (child_id, date);
   `,
+  // 4: Kleinkind-Phase („nimou table“)
+  `ALTER TABLE children ADD COLUMN table_since TEXT;`,
 ];
 
 export async function migrateDb(db: SQLiteDatabase): Promise<void> {

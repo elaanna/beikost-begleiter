@@ -11,7 +11,7 @@ const now = () => new Date().toISOString();
 interface ChildRow {
   id: string; family_id: string; name: string; birth_date: string; approach: string; milk: string;
   atopic_dermatitis: number; peanut_cleared: number; start_date: string | null;
-  exclusions: string; excluded_foods: string;
+  exclusions: string; excluded_foods: string; table_since?: string | null;
 }
 
 interface LogRow {
@@ -30,6 +30,7 @@ const toChild = (r: ChildRow): Child => ({
   startDate: r.start_date,
   exclusions: JSON.parse(r.exclusions),
   excludedFoods: JSON.parse(r.excluded_foods),
+  tableSince: r.table_since ?? null,
 });
 
 const toLog = (r: LogRow): FoodLog => ({
@@ -72,16 +73,16 @@ export async function listChildren(db: SQLiteDatabase): Promise<Child[]> {
 export async function saveChild(db: SQLiteDatabase, child: Child): Promise<void> {
   await db.runAsync(
     `INSERT INTO children (id, family_id, name, birth_date, approach, milk, atopic_dermatitis, peanut_cleared,
-       start_date, exclusions, excluded_foods, updated_at, deleted, dirty)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1)
+       start_date, exclusions, excluded_foods, table_since, updated_at, deleted, dirty)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1)
      ON CONFLICT(id) DO UPDATE SET
        name = excluded.name, birth_date = excluded.birth_date, approach = excluded.approach, milk = excluded.milk,
        atopic_dermatitis = excluded.atopic_dermatitis, peanut_cleared = excluded.peanut_cleared,
        start_date = excluded.start_date, exclusions = excluded.exclusions, excluded_foods = excluded.excluded_foods,
-       updated_at = excluded.updated_at, deleted = 0, dirty = 1`,
+       table_since = excluded.table_since, updated_at = excluded.updated_at, deleted = 0, dirty = 1`,
     child.id, child.familyId, child.name, child.birthDate, child.approach, child.milk,
     child.atopicDermatitis ? 1 : 0, child.peanutCleared ? 1 : 0, child.startDate,
-    JSON.stringify(child.exclusions), JSON.stringify(child.excludedFoods), now(),
+    JSON.stringify(child.exclusions), JSON.stringify(child.excludedFoods), child.tableSince ?? null, now(),
   );
 }
 

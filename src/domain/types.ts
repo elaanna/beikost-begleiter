@@ -71,6 +71,8 @@ export interface Child {
   startDate: string | null;
   exclusions: Allergen[];
   excludedFoods: string[];
+  /** Seit wann das Kind am Familientisch isst (Kleinkind-Phase „nimou table“, ISO); null/fehlt = Beikost-Phase. */
+  tableSince?: string | null;
 }
 
 export interface FoodLog {

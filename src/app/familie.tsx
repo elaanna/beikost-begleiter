@@ -102,7 +102,7 @@ export default function Familie() {
                 onChange={(v) => app.saveReminders({ ...app.reminders, times: { ...app.reminders.times, [slot]: v } })}
               />
             ))}
-            <Small>Erinnert nur an Mahlzeiten, die laut Plan schon dran sind.</Small>
+            <Small>Erinnert nur an Mahlzeiten, die laut Breiplan schon dran sind – am Familientisch pausieren die Erinnerungen.</Small>
             <Row style={{ justifyContent: 'space-between', marginTop: space.lg }}>
               <View style={{ flex: 1 }}>
                 <P bold>🔒 Details auf dem Sperrbildschirm ausblenden</P>

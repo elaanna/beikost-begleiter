@@ -3,6 +3,7 @@
  */
 import { BABY_RECIPES, type BabyRecipe, type Storage } from './babyRecipes';
 import { FAMILY_FROM_MONTHS, RECIPES } from './recipes';
+import { TABLE_RECIPES } from './toddler';
 
 export type { BabyRecipe as LibraryRecipe } from './babyRecipes';
 
@@ -28,5 +29,5 @@ const FAMILY_AS_LIBRARY: BabyRecipe[] = RECIPES.map((r) => ({
   baby: r.baby,
 }));
 
-export const ALL_RECIPES: BabyRecipe[] = [...BABY_RECIPES, ...FAMILY_AS_LIBRARY];
+export const ALL_RECIPES: BabyRecipe[] = [...BABY_RECIPES, ...FAMILY_AS_LIBRARY, ...TABLE_RECIPES];
 export const RECIPE_BY_ID: Record<string, BabyRecipe> = Object.fromEntries(ALL_RECIPES.map((r) => [r.id, r]));

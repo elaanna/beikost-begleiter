@@ -74,6 +74,8 @@ function Navigation() {
             <Stack.Screen name="scanner" options={{ title: 'Im Regal scannen' }} />
             <Stack.Screen name="mahlzeit" options={{ title: 'Mahlzeit' }} />
             <Stack.Screen name="familie" options={{ title: 'Familie & Einstellungen' }} />
+            <Stack.Screen name="brotdose" options={{ title: 'Kita-Brotdose' }} />
+            <Stack.Screen name="wiederanbieten" options={{ title: 'Noch mal anbieten' }} />
             <Stack.Screen name="konto" options={{ title: 'Konto & Handywechsel' }} />
             <Stack.Screen name="willkommen" options={{ headerShown: false }} />
             <Stack.Screen name="vorrat" options={{ title: 'Vorrat & Gefrierfach' }} />

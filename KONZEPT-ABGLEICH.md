@@ -56,3 +56,13 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 | Nährwertübersichten (erhöhter Prüfungsbedarf) | „Mias Beikost“: Plan-Bausteine heute, Lebensmittelgruppen der Woche, aufklappbar grob geschätzte Nährwerte | Nur Beikost, ohne Milch; keine Zielwerte, keine Bewertung, Hinweis auf Kinderarztpraxis – juristisch mitprüfen lassen |
 | F12 Wissensbibliothek | Lebensmittel-Steckbrief (Kategorie, „ab Beikost-Woche“, Saison, Status beim Kind, nummerierte Zubereitung, passende Rezepte); Tipp des Tages; Saison-Karte | – |
 | F03 Rezepte | Filter nach Alter („Für Mia“, 5–6, 7–9, ab 10 Monaten) | Allgemeine Orientierung, keine individuelle Empfehlung |
+
+## Nachtrag 26.11.2026 – Kleinkind-Phase „nimou table“ (1–3 Jahre)
+
+| Baustein | Umsetzung | Abgrenzung |
+|---|---|---|
+| Übergang | Ab 12 Monaten Vorschlag auf „Heute“ („Ja, umstellen“ / „Noch Beikost“, erneut nach 30 Tagen); Schalter unter Kind bearbeiten; Feld `table_since` (lokal, Sync, Supabase-Migration 6) | Eltern entscheiden; Beikost-Daten bleiben |
+| Familien-Tagesplan | 5 Mahlzeiten (Frühstück, Vormittag, Mittag, Nachmittag, Abend), Mittag aus 12 Familienrezepten im Wochenrhythmus (Fisch 1–2×, Fleisch nicht täglich), Handmaß statt Grammangaben, „Hat geschmeckt / Lieber nicht“ je Mahlzeit; Woche + Einkauf aus dem Familienplan | Orientierung nach Gesund ins Leben (Koletzko 2013) und KKH; keine Bewertung der Menge; Brei-Erinnerungen pausieren |
+| Kleinkind-Rezepte | Kategorie „Kleinkind ab 1 Jahr“ mit Kinderportion („vor dem Würzen abnehmen“), Sicherheitshinweisen (Gräten, Kichererbsen, Hack/Geflügel durchgaren) | Rezepte eigene, einfache Grundrezepte – fachlich prüfen lassen |
+| Kita-Brotdose | Mo–Fr aus Bekanntem (sonst Hinweis „erst zu Hause probieren“), neu mischen, Einkaufsliste, Tipps nach Verbraucherzentrale | Ausschlüsse/Allergene werden nie vorgeschlagen |
+| Wählerische Esser | „Noch mal anbieten“: zuletzt Abgelehntes mit Anzahl der Angebote, ohne Zielzahl; Tipps (Eltern was/wann, Kind wie viel; kein Druck, keine Belohnung) | Hinweis auf Kinderarztpraxis bei Warnzeichen; keine Diagnose |

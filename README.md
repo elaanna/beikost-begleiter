@@ -104,7 +104,7 @@ tests/                 node:test für die Planungslogik
 
 1. Projekt in Region **Frankfurt (eu-central-1)** anlegen.
 2. Authentication → Providers → **Anonymous sign-ins** aktivieren (Sync ohne Pflicht-Konto).
-3. Alle Dateien in `supabase/migrations/` der Reihe nach ausführen (SQL-Editor oder `supabase db push`). Die dritte härtet Rechte und Einladungen, die vierte bringt Vorrat, getauschte Mahlzeiten und das KI-Kontingent, die fünfte die serverseitige Kaufprüfung – siehe `SICHERHEIT.md`.
+3. Alle Dateien in `supabase/migrations/` der Reihe nach ausführen (SQL-Editor oder `supabase db push`). Die dritte härtet Rechte und Einladungen, die vierte bringt Vorrat, getauschte Mahlzeiten und das KI-Kontingent, die fünfte die serverseitige Kaufprüfung, die sechste die Kleinkind-Phase – siehe `SICHERHEIT.md`.
    Tests der Regeln gegen ein lokales PostgreSQL: `supabase/tests/run.sh`.
 4. URL und Publishable Key in `.env.local` eintragen (Vorlage: `.env.example`).
 5. **Konto per E-Mail** (Pflicht beim Start, ohne Passwort; die Cloud-Sicherung der Einträge ist ein eigener, freiwilliger Schritt. Ohne Supabase-Zugangsdaten zeigt die Startseite „Ohne Konto weiter“ für Tests): Authentication → Providers → Email aktiv, „Confirm email“ an.

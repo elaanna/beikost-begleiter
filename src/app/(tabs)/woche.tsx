@@ -14,7 +14,9 @@ import { pantryFoodIds } from '@/domain/stock';
 import { listChecks, toggleCheck } from '@/db/repo';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, FoodBadge, Heading, Hero, IconLabel, LockedNotice, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
-import { ChevronLeft, ChevronRight, FileText, RefreshCw, Scale, ScanBarcode, ShoppingBasket } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, FileText, RefreshCw, Sandwich, Scale, ScanBarcode, ShoppingBasket } from 'lucide-react-native';
+import { isTablePhase, tableDays, type TableDay } from '@/domain/toddler';
+import { TABLE_SLOT_INFO } from '@/data/toddler';
 import { shareHtmlAsPdf } from '@/ui/exportPdf';
 import { brand, color, ICON, radius, space, type } from '@/ui/theme';
 
@@ -22,7 +24,8 @@ type View_ = 'woche' | 'einkauf';
 
 export default function Plan() {
   const db = useSQLiteContext();
-  const { activeChild: child, isPro, stock } = useChild();
+  const { activeChild: child, isPro, stock, logs } = useChild();
+  const table = isTablePhase(child);
   const inPantry = useMemo(() => pantryFoodIds(stock), [stock]);
   const today = todayIso();
   const [mode, setMode] = useState<View_>('woche');
@@ -30,8 +33,13 @@ export default function Plan() {
   const from = addDays(weekStart(today), offset * 7);
   const days = usePlanDays(from, 7);
   const [swapping, setSwapping] = useState<{ date: string; meal: PlannedMeal } | null>(null);
-  const items = useMemo(() => shoppingList(days), [days]);
-  const tasks = useMemo(() => prepTasks(days), [days]);
+  const tDays = useMemo(() => (table ? tableDays(child, logs, from, 7) : []), [table, child, logs, from]);
+  // Einkauf: im Familientisch-Modus aus dem Familien-Wochenplan
+  const items = useMemo(
+    () => (table ? shoppingList(tDays.map((d) => ({ date: d.date, meals: d.meals.map((m) => ({ slot: 'mittag' as const, title: m.title, foodIds: m.foods })) }))) : shoppingList(days)),
+    [table, tDays, days],
+  );
+  const tasks = useMemo(() => (table ? [] : prepTasks(days)), [table, days]);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const locked = !isPro && (offset !== 0 || mode === 'einkauf');
 
@@ -71,6 +79,8 @@ export default function Plan() {
             : 'Die kostenlose Version zeigt die aktuelle Woche. Mit dem Beikost-Paket planst du beliebig weit voraus.'}
           onUnlock={() => router.push('/paywall')}
         />
+      ) : mode === 'woche' && table ? (
+        <TableWeek days={tDays} today={today} />
       ) : mode === 'woche' ? (
         <>
           {days.map((d) => {
@@ -149,6 +159,9 @@ export default function Plan() {
       ) : (
         <>
           {items.length === 0 ? <P soft>In dieser Woche ist noch keine Beikost geplant.</P> : null}
+          {table ? (
+            <Button label="Kita-Brotdose planen" icon={Sandwich} variant="soft" style={{ marginBottom: space.md }} onPress={() => router.push('/brotdose')} />
+          ) : null}
           <Row style={{ gap: space.sm, marginBottom: space.md }}>
             <Button label="Vorrat" icon={ShoppingBasket} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/vorrat')} />
             <Button label="Scannen" icon={ScanBarcode} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/scanner')} />
@@ -219,4 +232,34 @@ function groupByCategory<T extends { food: { category: string } }>(items: T[]): 
   const map = new Map<string, T[]>();
   for (const i of items) map.set(i.food.category, [...(map.get(i.food.category) ?? []), i]);
   return Array.from(map.entries());
+}
+
+/** Familien-Wochenplan (Kleinkind-Phase): pro Tag 5 Mahlzeiten, Mittagessen mit Rezept. */
+function TableWeek({ days, today }: { days: TableDay[]; today: string }) {
+  return (
+    <>
+      {days.map((d) => (
+        <Card key={d.date} style={d.date === today ? { borderWidth: 2.5, borderColor: color.sage } : { paddingVertical: space.lg }}>
+          <Row style={{ justifyContent: 'space-between', marginBottom: space.sm }}>
+            <Heading>{formatDay(d.date)}</Heading>
+            {d.date === today ? <Small bold style={{ color: color.sageDeep }}>Heute</Small> : null}
+          </Row>
+          {d.meals.map((m) => (
+            <Pressable key={m.slot} disabled={!m.recipeId} onPress={() => m.recipeId && router.push(`/rezept/${m.recipeId}`)}
+              accessibilityRole={m.recipeId ? 'link' : undefined}
+              style={({ pressed }) => ({
+                flexDirection: 'row', gap: space.md, paddingVertical: 6, paddingHorizontal: m.recipeId ? space.sm : 0,
+                borderRadius: radius.md, backgroundColor: m.recipeId ? brand.yellowSoft : 'transparent', marginVertical: m.recipeId ? 4 : 0,
+                opacity: pressed ? 0.75 : 1,
+              })}>
+              <Small style={{ width: 104 }}>{TABLE_SLOT_INFO[m.slot].label}</Small>
+              <Text style={[m.recipeId ? type.smallBold : type.small, { flex: 1, color: color.ink }]}>{m.title}</Text>
+              {m.recipeId ? <ChevronRight size={16} color={brand.blue} /> : null}
+            </Pressable>
+          ))}
+        </Card>
+      ))}
+      <Small style={{ marginBottom: space.lg }}>Orientierung nach Gesund ins Leben: Fisch 1–2× pro Woche, Fleisch nicht jeden Tag. Tauscht gern nach Lust und Saison.</Small>
+    </>
+  );
 }

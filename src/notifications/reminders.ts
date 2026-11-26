@@ -71,7 +71,8 @@ export function reminderText(child: Child, slot: MealSlot, title: string, foodId
 export async function rescheduleReminders(child: Child | null, logs: FoodLog[], settings: ReminderSettings): Promise<number> {
   if (!remindersSupported) return 0;
   await Notifications.cancelAllScheduledNotificationsAsync();
-  if (!settings.enabled || !child) return 0;
+  // In der Kleinkind-Phase gibt es keinen Breiplan mehr – Brei-Erinnerungen wären falsch
+  if (!settings.enabled || !child || child.tableSince) return 0;
 
   const now = Date.now();
   let count = 0;

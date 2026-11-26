@@ -8,7 +8,7 @@ import type { MealSlot } from '@/domain/types';
 
 export type RecipeCategory =
   | 'gemuesebrei' | 'gemuese_kartoffel' | 'gemuese_fleisch' | 'vegetarisch'
-  | 'milch_getreide' | 'getreide_obst' | 'fingerfood' | 'fruehstueck' | 'familie';
+  | 'milch_getreide' | 'getreide_obst' | 'fingerfood' | 'fruehstueck' | 'familie' | 'kleinkind';
 
 export const CATEGORY_INFO: Record<RecipeCategory, { label: string; emoji: string }> = {
   gemuesebrei: { label: 'Gemüsebrei', emoji: '🥕' },
@@ -20,6 +20,7 @@ export const CATEGORY_INFO: Record<RecipeCategory, { label: string; emoji: strin
   fingerfood: { label: 'Fingerfood & BLW', emoji: '✋' },
   fruehstueck: { label: 'Frühstück & Snacks', emoji: '🥣' },
   familie: { label: 'Familienessen', emoji: '🍽️' },
+  kleinkind: { label: 'Kleinkind ab 1 Jahr', emoji: '🧒' },
 };
 
 export interface Storage {

@@ -14,13 +14,15 @@ import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { MainMenu } from '@/ui/MainMenu';
 import { Wordmark } from '@/ui/Wordmark';
-import { Ban, Baby, CalendarDays, ChartColumn, ChefHat, GlassWater, Lightbulb, Milk, RefreshCw, Scale, ScanBarcode, Search, Snowflake, Users, type LucideIcon } from 'lucide-react-native';
+import { RotateCcw, Sandwich, Ban, Baby, CalendarDays, ChartColumn, ChefHat, GlassWater, Lightbulb, Milk, RefreshCw, Scale, ScanBarcode, Search, Snowflake, Users, type LucideIcon } from 'lucide-react-native';
 import { SeasonCard, TipOfDayCard } from '@/ui/DailyCards';
 import { portionFor } from '@/domain/portions';
 import { recipeFits } from '@/domain/recipes';
 import { planDayTasks, type ShiftEntry } from '@/domain/shifts';
 import type { Liking, PlannedMeal, Reaction } from '@/domain/types';
-import { listShifts } from '@/db/repo';
+import { getMeta, listShifts, setMeta } from '@/db/repo';
+import { isTablePhase, suggestTable } from '@/domain/toddler';
+import { TableSwitchCard, TableToday } from '@/ui/TableToday';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, DayDots, FoodBadge, Glyph, Heading, Hero, IconLabel, type IconLike, Important, P, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
 import { QuickLog } from '@/ui/QuickLog';
@@ -30,7 +32,10 @@ import { brand, color, ICON, radius, space, type } from '@/ui/theme';
 
 
 export default function Heute() {
-  const { activeChild: child, children, logs, addLog, removeLog, selectChild, parentName } = useChild();
+  const { activeChild: child, children, logs, addLog, removeLog, selectChild, parentName, saveChild } = useChild();
+  const db = useSQLiteContext();
+  const [tableLater, setTableLater] = useState<string | null>(null);
+  useEffect(() => { getMeta(db, `table_later:${child.id}`).then(setTableLater); }, [db, child.id]);
   const toast = useToast();
   const today = todayIso();
   const start = effectiveStartDate(child);
@@ -76,7 +81,7 @@ export default function Heute() {
 
       <Small>{child.name} · {ageInMonths(child.birthDate, today)} Monate · {formatDayLong(today)}</Small>
       <Hero style={{ marginTop: 2 }}>{greetingTitle(new Date().getHours(), parentName)}</Hero>
-      <DailyGreeting child={child} logs={logs} today={today} startDate={start} meal={day.meals.find((m) => m.newFoodId)} />
+      <DailyGreeting child={child} logs={logs} today={today} startDate={start} meal={isTablePhase(child) ? undefined : day.meals.find((m) => m.newFoodId)} />
 
       {/* Die häufigste Frage zuerst */}
       <Pressable
@@ -93,9 +98,18 @@ export default function Heute() {
         <Text style={[type.body, { color: color.inkSoft }]}>Darf {child.name} schon …?</Text>
       </Pressable>
 
-      {daysToStart > 0 ? <ReadinessCard /> : null}
+      {suggestTable(child, today) && (!tableLater || diffDays(tableLater, today) >= 30) ? (
+        <TableSwitchCard
+          onYes={() => saveChild({ ...child, tableSince: today })}
+          onLater={async () => { await setMeta(db, `table_later:${child.id}`, today); setTableLater(today); }}
+        />
+      ) : null}
 
-      {daysToStart > 0 ? (
+      {isTablePhase(child) ? <TableToday /> : null}
+
+      {!isTablePhase(child) && daysToStart > 0 ? <ReadinessCard /> : null}
+
+      {isTablePhase(child) ? null : daysToStart > 0 ? (
         <Card tone="peach">
           <Text style={{ fontSize: 44 }}>🥄</Text>
           <Heading style={{ marginTop: space.sm }}>Noch {daysToStart} {daysToStart === 1 ? 'Tag' : 'Tage'} bis zum ersten Löffel</Heading>
@@ -326,7 +340,12 @@ function Tiles() {
         alert={gaps ? `${gaps} ${gaps === 1 ? 'Lücke' : 'Lücken'}` : undefined}
         onPress={() => router.push('/dienste')}
       />
-      {recipe ? (
+      {isTablePhase(child) ? (
+        <>
+          <Tile emoji={Sandwich} title="Kita-Brotdose" sub="Ideen für die Woche" onPress={() => router.push('/brotdose')} />
+          <Tile emoji={RotateCcw} title="Noch mal anbieten" sub="Ohne Druck, im eigenen Tempo" onPress={() => router.push('/wiederanbieten')} />
+        </>
+      ) : recipe ? (
         <Tile emoji={recipe.recipe.emoji} title="Familienessen" sub={recipe.recipe.name} onPress={() => router.push(`/rezept/${recipe.recipe.id}`)} />
       ) : (
         <Tile emoji={Scale} title="Mengen" sub="Wie viel Brei?" onPress={() => openWissen('portionen', 'brei')} />

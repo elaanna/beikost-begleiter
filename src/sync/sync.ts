@@ -17,7 +17,7 @@ const TABLES: Table[] = ['children', 'food_logs', 'digestion_logs', 'caregivers'
 const COLUMNS: Record<Table, string[]> = {
   children: [
     'id', 'family_id', 'name', 'birth_date', 'approach', 'milk', 'atopic_dermatitis', 'peanut_cleared',
-    'start_date', 'exclusions', 'excluded_foods', 'updated_at', 'deleted',
+    'start_date', 'exclusions', 'excluded_foods', 'table_since', 'updated_at', 'deleted',
   ],
   food_logs: ['id', 'family_id', 'child_id', 'food_id', 'date', 'liking', 'reaction', 'note', 'updated_at', 'deleted'],
   digestion_logs: ['id', 'family_id', 'child_id', 'date', 'kind', 'note', 'updated_at', 'deleted'],
