@@ -57,8 +57,8 @@ export function RecipesView() {
       />
       {age === 'jetzt' ? <Small style={{ marginBottom: space.sm }}>Rezepte, die allgemein zum Alter von {child.name} ({months} Monate) passen.</Small> : null}
       {/* Kategorien in einer wischbaren Zeile – nicht untereinander */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -space.xl, marginBottom: space.lg }}
-        contentContainerStyle={{ gap: space.sm, paddingHorizontal: space.xl }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -space.screenX, marginBottom: space.lg }}
+        contentContainerStyle={{ gap: space.sm, paddingHorizontal: space.screenX }}>
         <Pill label="Alle" selected={filter === 'alle'} onPress={() => setFilter('alle')} />
         {(Object.keys(CATEGORY_INFO) as RecipeCategory[]).map((c) => (
           <Pill key={c} label={`${CATEGORY_INFO[c].emoji} ${CATEGORY_INFO[c].label}`} selected={filter === c} onPress={() => setFilter(c)} />

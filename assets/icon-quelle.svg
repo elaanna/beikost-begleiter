@@ -1,16 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="#9CBF9B"/><g transform="translate(40.95999999999998 40.95999999999998) scale(0.92)"><!-- Schale mit Löffel und Blatt; Koordinaten im 1024er-Raster, Motiv innerhalb des mittleren Bereichs -->
-<g id="mark">
-  <!-- Blatt / Spross -->
-  <path d="M512 372 C 470 300, 470 240, 520 190 C 560 250, 556 316, 512 372 Z" fill="#5E8E68"/>
-  <path d="M512 380 C 560 330, 620 318, 676 336 C 650 392, 586 410, 512 380 Z" fill="#3F6B4B"/>
-  <!-- Löffel -->
-  <g transform="rotate(-32 512 512)">
-    <rect x="497" y="210" width="30" height="300" rx="15" fill="#F59E7A"/>
-    <ellipse cx="512" cy="200" rx="58" ry="78" fill="#F59E7A"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="#F8F6EE"/><g transform="translate(51.19999999999999 51.19999999999999) scale(0.9)"><g>
+  <g stroke="#FFDE7A" stroke-width="44" stroke-linecap="round">
+    <line x1="330" y1="330" x2="282" y2="250"/><line x1="440" y1="290" x2="424" y2="196"/>
+    <line x1="584" y1="290" x2="600" y2="196"/><line x1="694" y1="330" x2="742" y2="250"/>
   </g>
-  <!-- Schale -->
-  <path d="M262 470 H 762 C 762 640, 650 760, 512 760 C 374 760, 262 640, 262 470 Z" fill="#FFF6EC"/>
-  <rect x="236" y="448" width="552" height="44" rx="22" fill="#FFFFFF"/>
-  <path d="M432 800 H 592" stroke="#FFF6EC" stroke-width="34" stroke-linecap="round"/>
-</g>
-</g></svg>
+  <path d="M232 450 H 792 C 792 640, 670 780, 512 780 C 354 780, 232 640, 232 450 Z" fill="#313D8E"/>
+  <rect x="206" y="424" width="612" height="50" rx="25" fill="#263174"/>
+  <path d="M432 822 H 592" stroke="#313D8E" stroke-width="36" stroke-linecap="round"/>
+  <ellipse cx="512" cy="600" rx="150" ry="36" fill="#F8A78C" opacity="0.0"/>
+</g></g></svg>

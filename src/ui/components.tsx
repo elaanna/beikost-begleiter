@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { color, font, radius, space, TOUCH, type } from './theme';
+import { brand, color, font, radius, space, TOUCH, type } from './theme';
 
 export function Screen({ children, scroll = true, edges = ['top', 'left', 'right'] }: {
   children: ReactNode;
@@ -20,15 +20,15 @@ export function Screen({ children, scroll = true, edges = ['top', 'left', 'right
 }
 
 export function Hero({ children, style }: { children: ReactNode; style?: object }) {
-  return <Text style={[type.hero, { color: color.ink }, style]} accessibilityRole="header">{children}</Text>;
+  return <Text style={[type.hero, { color: brand.blue }, style]} accessibilityRole="header">{children}</Text>;
 }
 
 export function Title({ children, style }: { children: ReactNode; style?: object }) {
-  return <Text style={[type.title, { color: color.ink, marginTop: space.xl, marginBottom: space.md }, style]} accessibilityRole="header">{children}</Text>;
+  return <Text style={[type.title, { color: brand.blue, marginTop: space.xl, marginBottom: space.md }, style]} accessibilityRole="header">{children}</Text>;
 }
 
 export function Heading({ children, style }: { children: ReactNode; style?: object }) {
-  return <Text style={[type.heading, { color: color.ink }, style]}>{children}</Text>;
+  return <Text style={[type.cardTitle, { color: color.ink }, style]}>{children}</Text>;
 }
 
 export function P({ children, soft, bold, style }: { children: ReactNode; soft?: boolean; bold?: boolean; style?: object }) {
@@ -39,15 +39,18 @@ export function Small({ children, soft = true, bold, style }: { children: ReactN
   return <Text style={[bold ? type.smallBold : type.small, { color: soft ? color.inkSoft : color.ink }, style]}>{children}</Text>;
 }
 
-export function Card({ children, style, tone, onPress, accessibilityLabel }: {
+export function Card({ children, style, tone, onPress, accessibilityLabel, hero }: {
   children: ReactNode;
   style?: ViewStyle;
-  tone?: 'peach' | 'sage' | 'butter';
+  tone?: 'peach' | 'sage' | 'butter' | 'yellow' | 'lilac';
   onPress?: () => void;
   accessibilityLabel?: string;
+  /** Hero-Karte: größerer Radius (28) laut Guidelines. */
+  hero?: boolean;
 }) {
-  const bg = tone === 'peach' ? color.peachSoft : tone === 'sage' ? color.sageSoft : tone === 'butter' ? color.butter : color.surface;
-  const body = <View style={[s.card, { backgroundColor: bg }, style]}>{children}</View>;
+  const tones = { peach: color.peachSoft, sage: color.sageSoft, butter: color.butter, yellow: brand.yellow, lilac: brand.lilacSoft };
+  const bg = tone ? tones[tone] : color.surface;
+  const body = <View style={[s.card, { backgroundColor: bg }, hero && { borderRadius: radius.hero }, style]}>{children}</View>;
   if (!onPress) return body;
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={accessibilityLabel} style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}>
@@ -96,7 +99,7 @@ export function Button({ label, onPress, variant = 'primary', disabled, style, i
         style,
       ]}
     >
-      <Text style={[type.bodyBold, { color: fg, textAlign: 'center', fontSize: 17 }]}>
+      <Text style={[type.bodyBold, { color: fg, textAlign: 'center' }]}>
         {icon ? `${icon}  ` : ''}{label}
       </Text>
     </Pressable>
@@ -276,13 +279,13 @@ export function LockedNotice({ text, onUnlock }: { text: string; onUnlock: () =>
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: color.creme },
-  scroll: { padding: space.xl, paddingBottom: 96, maxWidth: 640, width: '100%', alignSelf: 'center' },
+  scroll: { paddingHorizontal: space.screenX, paddingTop: space.xl, paddingBottom: 96, maxWidth: 640, width: '100%', alignSelf: 'center' },
   card: {
     borderRadius: radius.lg,
     padding: space.xl,
     marginBottom: space.lg,
-    shadowColor: '#B88A6A',
-    shadowOpacity: 0.12,
+    shadowColor: '#313D8E',
+    shadowOpacity: 0.07,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 6 },
     elevation: 2,
@@ -322,12 +325,12 @@ const s = StyleSheet.create({
   segmentItem: { flex: 1, minHeight: 44, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
   input: {
     minHeight: TOUCH,
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: color.line,
-    borderRadius: radius.md,
+    borderRadius: radius.sm,
     backgroundColor: color.surface,
     paddingHorizontal: space.lg,
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: font.body,
     color: color.ink,
   },

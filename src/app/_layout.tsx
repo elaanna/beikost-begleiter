@@ -4,15 +4,15 @@ import { SQLiteProvider } from 'expo-sqlite';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import { Fredoka_500Medium, Fredoka_600SemiBold } from '@expo-google-fonts/fredoka';
-import { Nunito_400Regular, Nunito_700Bold, Nunito_800ExtraBold } from '@expo-google-fonts/nunito';
+import { Baloo2_600SemiBold, Baloo2_700Bold, Baloo2_800ExtraBold } from '@expo-google-fonts/baloo-2';
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { migrateDb } from '@/db/schema';
 import { AppProvider, useApp } from '@/state/AppContext';
 import { ToastProvider } from '@/ui/Toast';
 import { color, font } from '@/ui/theme';
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold, Nunito_400Regular, Nunito_700Bold, Nunito_800ExtraBold });
+  const [fontsLoaded] = useFonts({ Baloo2_600SemiBold, Baloo2_700Bold, Baloo2_800ExtraBold, Inter_400Regular, Inter_500Medium, Inter_600SemiBold });
 
   if (!fontsLoaded) {
     return (

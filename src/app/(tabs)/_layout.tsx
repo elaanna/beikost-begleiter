@@ -1,13 +1,14 @@
 import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 import { useApp } from '@/state/AppContext';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Apple, BookOpen, CalendarDays, ChefHat, Home, type LucideIcon } from 'lucide-react-native';
 import { GuidedTour } from '@/ui/GuidedTour';
-import { color, font } from '@/ui/theme';
+import { color, font, ICON } from '@/ui/theme';
 
-function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
-  return <Text style={{ fontSize: focused ? 26 : 22, opacity: focused ? 1 : 0.55 }}>{emoji}</Text>;
-}
+const TabIcon = (Icon: LucideIcon) => function TabIconRender({ focused }: { focused: boolean }) {
+  return <Icon size={ICON.size} strokeWidth={ICON.stroke} color={focused ? color.sageDeep : color.inkSoft} />;
+};
 
 /**
  * Fünf Bereiche wie im Konzept: Heute · Wochenplan · Rezepte · Lebensmittel · Wissen.
@@ -27,14 +28,14 @@ export default function TabsLayout() {
         tabBarActiveTintColor: color.sageDeep,
         tabBarInactiveTintColor: color.inkSoft,
         tabBarStyle: { backgroundColor: color.surface, borderTopColor: color.line, height: 72, paddingTop: 6 },
-        tabBarLabelStyle: { fontSize: 12, fontFamily: font.bodyBold },
+        tabBarLabelStyle: { fontSize: 12, fontFamily: font.bodyMedium },
       }}
     >
-      <Tabs.Screen name="heute" options={{ title: 'Heute', tabBarIcon: ({ focused }) => <TabIcon emoji="☀️" focused={focused} /> }} />
-      <Tabs.Screen name="woche" options={{ title: 'Woche', tabBarIcon: ({ focused }) => <TabIcon emoji="🗓️" focused={focused} /> }} />
-      <Tabs.Screen name="rezepte" options={{ title: 'Rezepte', tabBarIcon: ({ focused }) => <TabIcon emoji="🍲" focused={focused} /> }} />
-      <Tabs.Screen name="lebensmittel" options={{ title: 'Lebensmittel', tabBarIcon: ({ focused }) => <TabIcon emoji="🥕" focused={focused} /> }} />
-      <Tabs.Screen name="wissen" options={{ title: 'Wissen', tabBarIcon: ({ focused }) => <TabIcon emoji="📖" focused={focused} /> }} />
+      <Tabs.Screen name="heute" options={{ title: 'Heute', tabBarIcon: TabIcon(Home) }} />
+      <Tabs.Screen name="woche" options={{ title: 'Woche', tabBarIcon: TabIcon(CalendarDays) }} />
+      <Tabs.Screen name="rezepte" options={{ title: 'Rezepte', tabBarIcon: TabIcon(ChefHat) }} />
+      <Tabs.Screen name="lebensmittel" options={{ title: 'Lebensmittel', tabBarIcon: TabIcon(Apple) }} />
+      <Tabs.Screen name="wissen" options={{ title: 'Wissen', tabBarIcon: TabIcon(BookOpen) }} />
     </Tabs>
     <GuidedTour />
     </View>

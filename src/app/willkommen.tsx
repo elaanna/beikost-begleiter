@@ -3,7 +3,8 @@ import { router } from 'expo-router';
 import { useApp } from '@/state/AppContext';
 import { isSyncConfigured } from '@/sync/supabase';
 import { Button, P, Screen, Small } from '@/ui/components';
-import { color, font, radius, space, type } from '@/ui/theme';
+import { Wordmark } from '@/ui/Wordmark';
+import { color, radius, space, type } from '@/ui/theme';
 
 const BENEFITS: [string, string][] = [
   ['🗓️', 'Ein Plan, der mitwächst – Tag für Tag, nach Gesund ins Leben'],
@@ -16,21 +17,10 @@ export default function Willkommen() {
   const { skipAccount, activeChild } = useApp();
   return (
     <Screen>
-      <View style={{ alignItems: 'center', marginTop: space.xl }}>
-        <View style={{ width: 168, height: 168, borderRadius: 84, backgroundColor: color.sageSoft, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 76 }}>🥄</Text>
-          <View style={{ position: 'absolute', top: 14, right: 6, width: 54, height: 54, borderRadius: 27, backgroundColor: color.peachSoft, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 30 }}>🥕</Text>
-          </View>
-          <View style={{ position: 'absolute', bottom: 10, left: 4, width: 48, height: 48, borderRadius: 24, backgroundColor: color.butter, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 26 }}>🍐</Text>
-          </View>
-        </View>
-        <Text style={{ fontFamily: font.display, fontSize: 38, lineHeight: 44, color: color.ink, textAlign: 'center', marginTop: space.xl }}>
-          Beikost-Begleiter
-        </Text>
-        <P soft style={{ textAlign: 'center', marginTop: space.sm, maxWidth: 320 }}>
-          Vom ersten Löffel bis zum Familientisch – entspannt und gut begleitet.
+      <View style={{ alignItems: 'center', marginTop: space.xxl * 2 }}>
+        <Wordmark size={64} claim />
+        <P soft style={{ textAlign: 'center', marginTop: space.xl, maxWidth: 320 }}>
+          Eure Beikostreise – vom ersten Löffel bis zum Familientisch. Jedes Kind hat sein eigenes Tempo.
         </P>
       </View>
 

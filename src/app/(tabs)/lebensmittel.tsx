@@ -74,8 +74,8 @@ export default function ProbierPass() {
           <Pill key={f} label={{ alle: 'Alle', offen: 'Noch offen', probiert: 'Probiert' }[f]} selected={filter === f} onPress={() => setFilter(f)} />
         ))}
       </PillRow>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: -space.sm, marginBottom: space.xl, marginHorizontal: -space.xl }}
-        contentContainerStyle={{ paddingHorizontal: space.xl }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: -space.sm, marginBottom: space.xl, marginHorizontal: -space.screenX }}
+        contentContainerStyle={{ paddingHorizontal: space.screenX }}>
         <View style={{ flexDirection: 'row', gap: space.sm }}>
           {(Object.keys(CATEGORY_LABEL) as FoodCategory[]).map((c) => (
             <Pill key={c} label={CATEGORY_LABEL[c]} selected={category === c} onPress={() => setCategory(category === c ? null : c)} />

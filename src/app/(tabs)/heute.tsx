@@ -13,6 +13,8 @@ import { matchingFrozen } from '@/domain/stock';
 import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { MainMenu } from '@/ui/MainMenu';
+import { Wordmark } from '@/ui/Wordmark';
+import { CalendarDays, ChefHat, Lightbulb, Search, type LucideIcon } from 'lucide-react-native';
 import { SeasonCard, TipOfDayCard } from '@/ui/DailyCards';
 import { portionFor } from '@/domain/portions';
 import { recipeFits } from '@/domain/recipes';
@@ -24,7 +26,7 @@ import { Button, Card, DayDots, FoodBadge, Heading, Hero, Important, P, Pill, Pi
 import { QuickLog } from '@/ui/QuickLog';
 import { useToast } from '@/ui/Toast';
 import { openWissen } from '@/ui/nav';
-import { color, radius, space, type } from '@/ui/theme';
+import { brand, color, ICON, radius, space, type } from '@/ui/theme';
 
 
 export default function Heute() {
@@ -61,19 +63,19 @@ export default function Heute() {
 
   return (
     <Screen>
+      {/* Header: Wortmarke + Menü (Referenzscreen nach NIMOU Brand Guidelines) */}
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: space.lg }}>
+        <Wordmark size={30} />
+        <MainMenu />
+      </Row>
       {children.length > 1 ? (
         <PillRow>
           {children.map((c) => <Pill key={c.id} label={c.name} selected={c.id === child.id} onPress={() => selectChild(c.id)} />)}
         </PillRow>
       ) : null}
 
-      <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <View style={{ flex: 1 }}>
-          <Small>{child.name} · {ageInMonths(child.birthDate, today)} Monate · {formatDayLong(today)}</Small>
-          <Hero style={{ marginTop: 2 }}>{greetingTitle(new Date().getHours(), parentName)}</Hero>
-        </View>
-        <MainMenu />
-      </Row>
+      <Small>{child.name} · {ageInMonths(child.birthDate, today)} Monate · {formatDayLong(today)}</Small>
+      <Hero style={{ marginTop: 2 }}>{greetingTitle(new Date().getHours(), parentName)}</Hero>
       <DailyGreeting child={child} logs={logs} today={today} startDate={start} meal={day.meals.find((m) => m.newFoodId)} />
 
       {/* Die häufigste Frage zuerst */}
@@ -84,11 +86,11 @@ export default function Heute() {
         style={({ pressed }) => ({
           flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 56, borderRadius: radius.pill,
           backgroundColor: color.surface, paddingHorizontal: space.xl, marginBottom: space.xl,
-          borderWidth: 2, borderColor: pressed ? color.sage : color.line,
+          borderWidth: 1.5, borderColor: pressed ? color.sage : color.line,
         })}
       >
-        <Text style={{ fontSize: 20 }}>🔍</Text>
-        <Text style={[type.body, { color: color.inkSoft, fontSize: 17 }]}>Darf {child.name} schon …?</Text>
+        <Search size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} />
+        <Text style={[type.body, { color: color.inkSoft }]}>Darf {child.name} schon …?</Text>
       </Pressable>
 
       {daysToStart > 0 ? <ReadinessCard /> : null}
@@ -122,6 +124,8 @@ export default function Heute() {
           ) : null}
         </>
       ) : null}
+
+      <BrandTiles />
 
       {daysToStart <= 0 ? <Revisit /> : null}
       <TipOfDayCard />
@@ -163,7 +167,7 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
   const portion = portionFor(meal.slot, dayIndex, meal.foodIds);
 
   return (
-    <Card tone={newFood ? 'peach' : undefined}>
+    <Card tone="yellow" hero>
       <Small bold soft={false}>Jetzt dran · {SLOT_LABEL[meal.slot]}</Small>
       {newFood ? (
         <>
@@ -393,6 +397,26 @@ function DailyGreeting({ child, logs, today, startDate, meal }: {
     <Row style={{ backgroundColor: color.sageSoft, borderRadius: radius.lg, padding: space.md, marginTop: space.md, marginBottom: space.lg, alignItems: 'center' }}>
       <Text style={{ fontSize: 26 }}>{line.emoji}</Text>
       <P style={{ flex: 1 }}>{line.text}</P>
+    </Row>
+  );
+}
+
+/** Drei Einstiege wie im Mockup – Farben nach Rolle: Gelb = Planung, Peach = Rezepte, Lilac = Wissen. */
+function BrandTiles() {
+  const tiles: { label: string; Icon: LucideIcon; bg: string; href: '/woche' | '/rezepte' | '/wissen' }[] = [
+    { label: 'Wochenplan', Icon: CalendarDays, bg: brand.yellowSoft, href: '/woche' },
+    { label: 'Rezepte', Icon: ChefHat, bg: brand.peachSoft, href: '/rezepte' },
+    { label: 'Wissen', Icon: Lightbulb, bg: brand.lilacSoft, href: '/wissen' },
+  ];
+  return (
+    <Row style={{ gap: space.md, marginBottom: space.xl }}>
+      {tiles.map(({ label, Icon, bg, href }) => (
+        <Pressable key={label} onPress={() => router.navigate(href)} accessibilityRole="button" accessibilityLabel={label}
+          style={({ pressed }) => ({ flex: 1, backgroundColor: bg, borderRadius: radius.lg, paddingVertical: space.lg, alignItems: 'center', gap: space.sm, opacity: pressed ? 0.8 : 1 })}>
+          <Icon size={ICON.size + 4} strokeWidth={ICON.stroke} color={brand.blue} />
+          <Text style={[type.smallBold, { color: brand.text }]}>{label}</Text>
+        </Pressable>
+      ))}
     </Row>
   );
 }

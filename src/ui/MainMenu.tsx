@@ -4,16 +4,9 @@ import { router, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/state/AppContext';
 import { openWissen } from './nav';
-import { color, font, radius, space, type } from './theme';
+import { Menu, X } from 'lucide-react-native';
+import { brand, color, font, ICON, radius, space, type } from './theme';
 
-/** Drei Striche, gezeichnet statt Emoji – sieht auf allen Geräten gleich aus. */
-function BurgerIcon() {
-  return (
-    <View style={{ gap: 4 }}>
-      {[0, 1, 2].map((k) => <View key={k} style={{ width: 20, height: 2.5, borderRadius: 2, backgroundColor: color.ink }} />)}
-    </View>
-  );
-}
 
 /** Hamburger-Knopf oben rechts auf „Heute“ mit Menü für Familie, Konto und Einstellungen. */
 export function MainMenu() {
@@ -36,7 +29,7 @@ export function MainMenu() {
     <>
       <Pressable onPress={() => setOpen(true)} accessibilityRole="button" accessibilityLabel="Menü öffnen" hitSlop={10}
         style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: color.surface, alignItems: 'center', justifyContent: 'center' }}>
-        <BurgerIcon />
+        <Menu size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} />
       </Pressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
@@ -44,10 +37,10 @@ export function MainMenu() {
           <Pressable style={{ flex: 1, backgroundColor: 'rgba(61,46,42,0.4)' }} onPress={() => setOpen(false)} accessibilityLabel="Menü schließen" />
           <View style={{ width: '82%', maxWidth: 360, backgroundColor: color.creme, paddingTop: insets.top + space.lg, paddingBottom: insets.bottom + space.lg, paddingHorizontal: space.lg }} accessibilityViewIsModal>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: space.lg }}>
-              <Text style={{ fontFamily: font.display, fontSize: 26, color: color.ink }}>Menü</Text>
+              <Text style={[type.title, { color: brand.blue }]}>Menü</Text>
               <Pressable onPress={() => setOpen(false)} accessibilityRole="button" accessibilityLabel="Menü schließen" hitSlop={10}
                 style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: color.surface, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={[type.bodyBold, { color: color.ink, fontSize: 20 }]}>✕</Text>
+                <X size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} />
               </Pressable>
             </View>
             {app.parentName.trim() ? <Text style={[type.small, { color: color.inkSoft, marginBottom: space.md }]}>Hallo {app.parentName.trim()} 👋</Text> : null}
