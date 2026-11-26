@@ -10,6 +10,7 @@ import { effectiveStartDate, introDays, planDays, preparationFor, SLOT_LABEL } f
 import { matchingFrozen } from '@/domain/stock';
 import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
+import { SeasonCard, TipOfDayCard } from '@/ui/DailyCards';
 import { portionFor } from '@/domain/portions';
 import { recipeFits } from '@/domain/recipes';
 import { planDayTasks, type ShiftEntry } from '@/domain/shifts';
@@ -120,6 +121,8 @@ export default function Heute() {
       ) : null}
 
       {daysToStart <= 0 ? <Revisit /> : null}
+      <TipOfDayCard />
+      <SeasonCard />
 
       <Heading style={{ marginBottom: space.md }}>Heute auch</Heading>
       <Tiles />
