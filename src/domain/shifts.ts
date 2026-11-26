@@ -4,6 +4,7 @@
  */
 import { parseDay } from './dates';
 import type { MealSlot } from './types';
+import { t, tr } from '@/i18n';
 
 export type ShiftKind = 'frei' | 'frueh' | 'spaet' | 'nacht' | 'buero';
 
@@ -48,13 +49,13 @@ export const DEFAULT_SETTINGS: FamilySettings = {
 
 export const SHIFT_ORDER: ShiftKind[] = ['frei', 'frueh', 'spaet', 'nacht', 'buero'];
 
-export const SHIFT_STYLE: Record<ShiftKind, { short: string; emoji: string }> = {
+export const SHIFT_STYLE: Record<ShiftKind, { short: string; emoji: string }> = tr({
   frei: { short: 'Frei', emoji: '🏡' },
   frueh: { short: 'Früh', emoji: '🌅' },
   spaet: { short: 'Spät', emoji: '🌇' },
   nacht: { short: 'Nacht', emoji: '🌙' },
   buero: { short: 'Büro', emoji: '💼' },
-};
+});
 
 const toMin = (hhmm: string) => {
   const [h, m] = hhmm.split(':').map(Number);
@@ -99,13 +100,13 @@ export interface DayTask {
   available: string[];
 }
 
-const TASK_LABEL: Record<TaskKind, string> = {
+const TASK_LABEL: Record<TaskKind, string> = tr({
   kita_bringen: 'Kita bringen',
   kita_abholen: 'Kita abholen',
   mittag: 'Mittagessen',
   nachmittag: 'Nachmittag',
   abend: 'Abendessen',
-};
+});
 
 /**
  * Plant die Aufgaben eines Tages. An Kita-Tagen isst das Kind mittags in der Kita.

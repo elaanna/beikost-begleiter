@@ -4,14 +4,16 @@
 import { BABY_RECIPES, type BabyRecipe, type Storage } from './babyRecipes';
 import { FAMILY_FROM_MONTHS, RECIPES } from './recipes';
 import { TABLE_RECIPES } from './toddler';
+import { tr } from '@/i18n';
+
 
 export type { BabyRecipe as LibraryRecipe } from './babyRecipes';
 
-const FAMILY_STORAGE: Storage = {
+const FAMILY_STORAGE: Storage = tr({
   fridge: 'Abgedeckt im Kühlschrank bis zum nächsten Tag, nur einmal aufwärmen.',
   freeze: 'Babyportion vor dem Würzen abnehmen und einfrieren; bei −18 °C bis zu 2 Monate.',
   thaw: 'Im Kühlschrank auftauen und gut durcherhitzen. Nicht wieder einfrieren.',
-};
+});
 
 const FAMILY_AS_LIBRARY: BabyRecipe[] = RECIPES.map((r) => ({
   id: r.id,

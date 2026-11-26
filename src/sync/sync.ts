@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { getMeta, setMeta } from '@/db/repo';
 import { ensureSession, supabase } from './supabase';
+import { t } from '@/i18n';
 
 /**
  * Offline-first-Sync:
@@ -161,13 +162,13 @@ export const INVITE_CODE_LENGTH = 10;
 
 /** Server-Fehler in verständliche Sätze übersetzen (keine technischen Details anzeigen). */
 export function friendlyError(message: string): string {
-  if (/no entitlement/.test(message)) return 'Die Familienfreigabe gehört zum Beikost-Paket. Wenn du es gerade gekauft hast, versuche es in einer Minute noch einmal.';
-  if (/too many attempts/.test(message)) return 'Zu viele falsche Codes. Bitte in einer Stunde noch einmal versuchen.';
-  if (/too many open invites/.test(message)) return 'Es gibt schon 10 offene Einladungen. Widerrufe alte Codes oder warte, bis sie ablaufen.';
-  if (/not allowed/.test(message)) return 'Dafür fehlt dir die Berechtigung in dieser Familie.';
-  if (/family exists/.test(message)) return 'Diese Familie gibt es schon. Bitte lass dich mit einem Code einladen.';
-  if (/network|fetch/i.test(message)) return 'Keine Verbindung. Bitte später noch einmal versuchen.';
-  return 'Das hat nicht geklappt. Bitte später noch einmal versuchen.';
+  if (/no entitlement/.test(message)) return t('Die Familienfreigabe gehört zum Beikost-Paket. Wenn du es gerade gekauft hast, versuche es in einer Minute noch einmal.');
+  if (/too many attempts/.test(message)) return t('Zu viele falsche Codes. Bitte in einer Stunde noch einmal versuchen.');
+  if (/too many open invites/.test(message)) return t('Es gibt schon 10 offene Einladungen. Widerrufe alte Codes oder warte, bis sie ablaufen.');
+  if (/not allowed/.test(message)) return t('Dafür fehlt dir die Berechtigung in dieser Familie.');
+  if (/family exists/.test(message)) return t('Diese Familie gibt es schon. Bitte lass dich mit einem Code einladen.');
+  if (/network|fetch/i.test(message)) return t('Keine Verbindung. Bitte später noch einmal versuchen.');
+  return t('Das hat nicht geklappt. Bitte später noch einmal versuchen.');
 }
 
 export type FamilyRole = 'owner' | 'member' | 'reader';
@@ -183,7 +184,7 @@ export async function joinFamily(db: SQLiteDatabase, code: string, displayName: 
   const { data, error } = await supabase.rpc('join_family', { invite_code: normalizeInviteCode(code), name: displayName });
   if (error) throw new Error(friendlyError(error.message));
   const row = (data as { family_id: string; role: FamilyRole }[] | null)?.[0];
-  if (!row) throw new Error('Code ungültig oder abgelaufen. Bitte einen neuen Code anfordern.');
+  if (!row) throw new Error(t('Code ungültig oder abgelaufen. Bitte einen neuen Code anfordern.'));
   await adoptFamily(db, row.family_id, row.role);
   await syncNow(db);
   return row.role;

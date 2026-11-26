@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Animated, Pressable, Text, View } from 'react-native';
 import { color, font, radius, space, type } from './theme';
+import { t } from '@/i18n';
 
 interface ToastOptions {
   text: string;
@@ -9,7 +10,7 @@ interface ToastOptions {
   undo?: () => void | Promise<void>;
 }
 
-const Ctx = createContext<(t: ToastOptions) => void>(() => undefined);
+const Ctx = createContext<(tx: ToastOptions) => void>(() => undefined);
 
 /**
  * Kurze Rückmeldung nach jeder Aktion: was gespeichert wurde, mit „Rückgängig“.
@@ -24,9 +25,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: true }).start(() => setToast(null));
   }, [opacity]);
 
-  const show = useCallback((t: ToastOptions) => {
+  const show = useCallback((tx: ToastOptions) => {
     if (timer.current) clearTimeout(timer.current);
-    setToast(t);
+    setToast(tx);
     Animated.timing(opacity, { toValue: 1, duration: 180, useNativeDriver: true }).start();
     timer.current = setTimeout(hide, 5000);
   }, [opacity, hide]);
@@ -53,7 +54,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             }}
           >
             <Text style={{ fontSize: 20 }}>{toast.emoji ?? '✓'}</Text>
-            <Text style={[type.bodyBold, { color: '#fff', flex: 1 }]}>{toast.text}</Text>
+            <Text style={[type.bodyBold, { color: '#fff', flex: 1 }]}>{t(toast.text)}</Text>
             {toast.undo ? (
               <Pressable
                 accessibilityRole="button"
@@ -64,7 +65,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   await u();
                 }}
               >
-                <Text style={{ fontFamily: font.bodyHeavy, fontSize: 16, color: color.peach }}>Rückgängig</Text>
+                <Text style={{ fontFamily: font.bodyHeavy, fontSize: 16, color: color.peach }}>{t('Rückgängig')}</Text>
               </Pressable>
             ) : null}
           </View>

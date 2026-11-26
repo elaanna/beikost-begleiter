@@ -5,6 +5,7 @@
  * (Öl erst nach dem Auftauen zugeben).
  */
 import type { BabyRecipe } from '@/data/babyRecipes';
+import { t } from '@/i18n';
 
 export interface PrepStep {
   phase: 'vorbereiten' | 'kochen' | 'abschluss';
@@ -31,14 +32,14 @@ export function prepSession(recipes: BabyRecipe[]): PrepStep[] {
   for (const r of recipes) {
     for (const s of r.steps.slice(1)) {
       // Öl erst nach dem Auftauen – beim Vorkochen also weglassen
-      const text = OIL.test(s) ? 'Öl jetzt noch nicht zugeben – erst nach dem Auftauen, direkt vor dem Füttern.' : s;
+      const text = OIL.test(s) ? t('Öl jetzt noch nicht zugeben – erst nach dem Auftauen, direkt vor dem Füttern.') : s;
       steps.push({ phase: 'kochen', recipeId: r.id, recipeName: r.name, text, minutes: OIL.test(s) ? undefined : stepMinutes(s) });
     }
   }
   steps.push(
-    { phase: 'abschluss', text: 'Alles möglichst schnell abkühlen lassen, zum Beispiel im kalten Wasserbad – erst abgekühlt einfrieren.' },
-    { phase: 'abschluss', text: 'In kleine Portionen füllen (Eiswürfelform oder Gläschen) und mit Inhalt und Datum beschriften.' },
-    { phase: 'abschluss', text: 'Bei −18 °C einfrieren. Zum Füttern im Kühlschrank oder Wasserbad auftauen, gut durcherhitzen, nicht wieder einfrieren.' },
+    { phase: 'abschluss', text: t('Alles möglichst schnell abkühlen lassen, zum Beispiel im kalten Wasserbad – erst abgekühlt einfrieren.') },
+    { phase: 'abschluss', text: t('In kleine Portionen füllen (Eiswürfelform oder Gläschen) und mit Inhalt und Datum beschriften.') },
+    { phase: 'abschluss', text: t('Bei −18 °C einfrieren. Zum Füttern im Kühlschrank oder Wasserbad auftauen, gut durcherhitzen, nicht wieder einfrieren.') },
   );
   return steps;
 }

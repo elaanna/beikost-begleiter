@@ -11,6 +11,7 @@ import { getMeta, setMeta } from '@/db/repo';
 import { ensureSession, supabase } from './supabase';
 import { adoptFamily, isSharingEnabled, registerFamily, syncNow, type FamilyRole } from './sync';
 import { accountError, cleanOtp, isValidEmail } from './accountRules';
+import { t } from '@/i18n';
 
 export { accountError, cleanOtp, isValidEmail };
 
@@ -26,14 +27,14 @@ export async function getAccount(): Promise<AccountInfo> {
 }
 
 function client() {
-  if (!supabase) throw new Error('Die Cloud ist in dieser Version nicht eingerichtet.');
+  if (!supabase) throw new Error(t('Die Cloud ist in dieser Version nicht eingerichtet.'));
   return supabase;
 }
 
 /** Schritt 1 (Verknüpfen): Code an die E-Mail senden. */
 export async function requestLinkCode(email: string): Promise<void> {
   const sb = client();
-  if (!isValidEmail(email)) throw new Error('Bitte gib eine gültige E-Mail-Adresse ein.');
+  if (!isValidEmail(email)) throw new Error(t('Bitte gib eine gültige E-Mail-Adresse ein.'));
   await ensureSession();
   const { error } = await sb.auth.updateUser({ email: email.trim().toLowerCase() });
   if (error) throw new Error(accountError(error.message));
@@ -65,7 +66,7 @@ export async function isBackupEnabled(db: SQLiteDatabase): Promise<boolean> {
 /** Neues Gerät, Schritt 1: Anmeldecode senden (legt kein neues Konto an). */
 export async function requestSignInCode(email: string): Promise<void> {
   const sb = client();
-  if (!isValidEmail(email)) throw new Error('Bitte gib eine gültige E-Mail-Adresse ein.');
+  if (!isValidEmail(email)) throw new Error(t('Bitte gib eine gültige E-Mail-Adresse ein.'));
   const { error } = await sb.auth.signInWithOtp({ email: email.trim().toLowerCase(), options: { shouldCreateUser: false } });
   if (error) throw new Error(accountError(error.message));
 }

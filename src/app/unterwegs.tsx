@@ -6,6 +6,7 @@ import { COOLING_TIPS, PACK_GROUP_LABEL, PACK_ITEMS, RESTAURANT_TIPS, TRAVEL_SOU
 import { getMeta, setMeta } from '@/db/repo';
 import { Button, Card, Hero, P, Row, Screen, Segmented, Small, SourceLink } from '@/ui/components';
 import { brand, color, ICON, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 type Tab = 'packen' | 'restaurant' | 'kuehlung';
 
@@ -28,8 +29,8 @@ export default function Unterwegs() {
 
   return (
     <Screen edges={['left', 'right']}>
-      <Hero style={{ marginBottom: space.lg }}>Unterwegs</Hero>
-      <Segmented<Tab> options={[{ id: 'packen', label: 'Packliste' }, { id: 'restaurant', label: 'Restaurant' }, { id: 'kuehlung', label: 'Kühlung' }]} value={tab} onChange={setTab} />
+      <Hero style={{ marginBottom: space.lg }}>{t('Unterwegs')}</Hero>
+      <Segmented<Tab> options={[{ id: 'packen', label: t('Packliste') }, { id: 'restaurant', label: t('Restaurant') }, { id: 'kuehlung', label: t('Kühlung') }]} value={tab} onChange={setTab} />
 
       {tab === 'packen' ? (
         <>
@@ -44,20 +45,20 @@ export default function Unterwegs() {
                     <View style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 2, borderColor: brand.blue, backgroundColor: on ? brand.blue : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
                       {on ? <Check size={16} strokeWidth={2.4} color="#fff" /> : null}
                     </View>
-                    <P style={[{ flex: 1 }, on ? { color: color.inkSoft, textDecorationLine: 'line-through' } : {}]}>{i.text}</P>
+                    <P style={[{ flex: 1 }, on ? { color: color.inkSoft, textDecorationLine: 'line-through' } : {}]}>{t(i.text)}</P>
                   </Pressable>
                 );
               })}
             </Card>
           ))}
-          <Button label="Liste zurücksetzen" variant="ghost" onPress={reset} />
+          <Button label={t('Liste zurücksetzen')} variant="ghost" onPress={reset} />
         </>
       ) : null}
 
       {tab === 'restaurant' ? (
         <Card tone="yellow" style={{ borderRadius: radius.lg }}>
           <View style={{ gap: space.sm }}>
-            {RESTAURANT_TIPS.map((t) => <Text key={t} style={[type.body, { color: color.ink }]}>• {t}</Text>)}
+            {RESTAURANT_TIPS.map((tx) => <Text key={tx} style={[type.body, { color: color.ink }]}>• {t(tx)}</Text>)}
           </View>
         </Card>
       ) : null}
@@ -70,8 +71,8 @@ export default function Unterwegs() {
                 {c.ok ? <Sun size={18} strokeWidth={ICON.stroke} color={brand.warning} /> : <Snowflake size={18} strokeWidth={ICON.stroke} color={brand.blue} />}
               </View>
               <View style={{ flex: 1 }}>
-                <Small bold soft={false}>{c.ok ? 'Geht ohne Kühlung' : 'Kühl halten & sicher aufwärmen'}</Small>
-                <P>{c.text}</P>
+                <Small bold soft={false}>{c.ok ? t('Geht ohne Kühlung') : t('Kühl halten & sicher aufwärmen')}</Small>
+                <P>{t(c.text)}</P>
               </View>
             </Row>
           ))}
@@ -79,7 +80,7 @@ export default function Unterwegs() {
       ) : null}
 
       <View style={{ marginTop: space.lg, gap: space.xs }}>
-        <Small>Allgemeine Hinweise, keine Garantie für Lebensmittelsicherheit im Einzelfall.</Small>
+        <Small>{t('Allgemeine Hinweise, keine Garantie für Lebensmittelsicherheit im Einzelfall.')}</Small>
         {TRAVEL_SOURCES.map((s) => <SourceLink key={s.url} label={s.label} url={s.url} />)}
       </View>
     </Screen>

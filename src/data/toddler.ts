@@ -10,6 +10,7 @@
  * - Verbraucherzentrale Niedersachsen: Brotdose mit Obst, Gemüse, (Vollkorn-)Getreide und Milchprodukt; Wasser oder ungesüßter Tee.
  */
 import type { BabyRecipe, Storage } from './babyRecipes';
+import { tr } from '@/i18n';
 
 export const TABLE_FROM_MONTHS = 12;
 
@@ -17,13 +18,13 @@ export type TableSlot = 'fruehstueck' | 'vormittag' | 'mittag' | 'nachmittag' | 
 
 export const TABLE_SLOTS: TableSlot[] = ['fruehstueck', 'vormittag', 'mittag', 'nachmittag', 'abend'];
 
-export const TABLE_SLOT_INFO: Record<TableSlot, { label: string; time: string; main: boolean }> = {
+export const TABLE_SLOT_INFO: Record<TableSlot, { label: string; time: string; main: boolean }> = tr({
   fruehstueck: { label: 'Frühstück', time: '07:30', main: true },
   vormittag: { label: 'Vormittag', time: '10:00', main: false },
   mittag: { label: 'Mittag', time: '12:00', main: true },
   nachmittag: { label: 'Nachmittag', time: '15:00', main: false },
   abend: { label: 'Abend', time: '18:00', main: true },
-};
+});
 
 export interface TableOption {
   id: string;
@@ -33,7 +34,7 @@ export interface TableOption {
 }
 
 /** Bausteine für Frühstück, Zwischenmahlzeiten und Abendbrot (Mittag kommt aus den Rezepten). */
-export const TABLE_OPTIONS: Record<Exclude<TableSlot, 'mittag'>, TableOption[]> = {
+export const TABLE_OPTIONS: Record<Exclude<TableSlot, 'mittag'>, TableOption[]> = tr({
   fruehstueck: [
     { id: 'f-hafer', title: 'Haferflocken mit Milch und Apfel', foods: ['hafer', 'vollmilch', 'apfel'], hint: 'Apfel fein reiben.' },
     { id: 'f-brot-frischkaese', title: 'Vollkornbrot mit Frischkäse und Gurke', foods: ['brot', 'frischkaese', 'gurke'], hint: 'Gurke in dünnen Scheiben.' },
@@ -64,14 +65,14 @@ export const TABLE_OPTIONS: Record<Exclude<TableSlot, 'mittag'>, TableOption[]> 
     { id: 'a-suppe', title: 'Gemüsesuppe mit Brot', foods: ['kartoffel', 'karotte', 'lauch', 'brot'] },
     { id: 'a-pfannkuchen', title: 'Vollkorn-Pfannkuchen mit Apfelmus', foods: ['dinkel', 'ei', 'vollmilch', 'apfel'] },
   ],
-};
+});
 
-const TABLE_STORAGE: Storage = {
+const TABLE_STORAGE: Storage = tr({
   fridge: 'Abgedeckt im Kühlschrank bis zum nächsten Tag, nur einmal aufwärmen.',
   freeze: 'Gut geeignet: portionsweise einfrieren, bei −18 °C bis zu 2 Monate.',
   thaw: 'Im Kühlschrank auftauen und gut durcherhitzen. Nicht wieder einfrieren.',
-};
-const FRESH: Storage = { fridge: 'Am besten frisch essen; Reste bis zum nächsten Tag im Kühlschrank.', freeze: null };
+});
+const FRESH: Storage = tr({ fridge: 'Am besten frisch essen; Reste bis zum nächsten Tag im Kühlschrank.', freeze: null });
 
 const KIDS = 'Kinderportion vor dem Salzen und scharfen Würzen abnehmen.';
 
@@ -181,9 +182,9 @@ export const LUNCH_RHYTHM: ('fleisch' | 'fisch' | 'vegetarisch')[] = ['vegetaris
 /** Brotdose: Bausteine nach Verbraucherzentrale – Getreide, Milchprodukt/Belag, Gemüse, Obst; dazu Wasser oder ungesüßter Tee. */
 export type LunchboxPart = 'brot' | 'belag' | 'gemuese' | 'obst';
 export const LUNCHBOX_PARTS: LunchboxPart[] = ['brot', 'belag', 'gemuese', 'obst'];
-export const LUNCHBOX_LABEL: Record<LunchboxPart, string> = { brot: 'Brot & Getreide', belag: 'Belag', gemuese: 'Gemüse', obst: 'Obst' };
+export const LUNCHBOX_LABEL: Record<LunchboxPart, string> = tr({ brot: 'Brot & Getreide', belag: 'Belag', gemuese: 'Gemüse', obst: 'Obst' });
 
-export const LUNCHBOX_ITEMS: Record<LunchboxPart, { id: string; text: string; food: string }[]> = {
+export const LUNCHBOX_ITEMS: Record<LunchboxPart, { id: string; text: string; food: string }[]> = tr({
   brot: [
     { id: 'vollkornbrot', text: 'Vollkornbrot', food: 'brot' },
     { id: 'dinkelbroetchen', text: 'Dinkelbrötchen', food: 'dinkel' },
@@ -213,33 +214,33 @@ export const LUNCHBOX_ITEMS: Record<LunchboxPart, { id: string; text: string; fo
     { id: 'heidelbeeren', text: 'Heidelbeeren zerdrückt', food: 'heidelbeere' },
     { id: 'mandarine', text: 'Mandarinenstücke', food: 'mandarine' },
   ],
-};
+});
 
-export const LUNCHBOX_TIPS = [
+export const LUNCHBOX_TIPS = tr([
   'Bunt und abwechslungsreich: Getreide, Gemüse, Obst und ein Milchprodukt oder ein Aufstrich.',
   'Zum Trinken Wasser oder ungesüßter Tee – keine gesüßten Getränke.',
   'Spezielle Kinderlebensmittel und angereicherte Produkte sind nicht nötig, oft teuer und süßer als gedacht.',
   'Runde Sachen vierteln (Trauben, Cocktailtomaten), hartes Gemüse weich dünsten; keine ganzen Nüsse.',
   'In die Kita nur Lebensmittel, die euer Kind schon kennt und gut verträgt.',
-];
+]);
 
-export const PICKY_TIPS = [
+export const PICKY_TIPS = tr([
   'Ihr bestimmt, was und wann es etwas gibt – euer Kind bestimmt, wie viel es isst.',
   'Neues immer wieder anbieten, ohne Druck. Ablehnung ist oft nur vorübergehend; Neues neben Bekanntem auf den Teller legen.',
   'Höchstens ein- bis zweimal ermuntern, keine Ersatzspeise kochen, nicht überreden oder belohnen.',
   'Essen nicht als Belohnung, Strafe oder Trost einsetzen.',
   'Gemeinsam am Tisch essen, ohne Fernseher – Kinder machen nach, was ihr esst.',
   'Mahlzeiten dürfen enden: nach etwa 30 Minuten abräumen, ohne Kommentar.',
-];
+]);
 
 export const PICKY_DOCTOR = 'Sprecht mit eurer Kinderarztpraxis, wenn euer Kind sehr wenig isst, feste Nahrung verweigert, oft erbricht oder ihr euch um das Gewicht sorgt.';
 
-export const TABLE_BASICS = [
+export const TABLE_BASICS = tr([
   '3 Haupt- und 2 Zwischenmahlzeiten, dazwischen 2–3 Stunden Pause mit Wasser.',
   'Zu jeder Mahlzeit Wasser oder ungesüßter Tee, insgesamt etwa 600–700 ml am Tag.',
   'Eine Portion ist ungefähr so groß wie die Hand eures Kindes – sie wächst mit.',
   'Fisch 1–2× pro Woche, Fleisch nicht jeden Tag, Süßes und Salz sparsam.',
-];
+]);
 
 export const TABLE_SOURCES = [
   { label: 'Gesund ins Leben: Ernährung und Bewegung im Kleinkindalter (Koletzko et al. 2013)', url: 'https://doi.org/10.1007/s00112-013-3031-3' },

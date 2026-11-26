@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 /**
  * Saisonkalender für regionales Obst und Gemüse in Deutschland (Orientierung, je nach Region und Wetter abweichend).
  * Nach den Saisonkalendern der Verbraucherzentrale und des BZfE; Monate 1–12.
@@ -66,4 +67,4 @@ export const SEASON_SOURCE = {
   url: 'https://www.verbraucherzentrale.de/saisonkalender',
 };
 
-export const MONTH_NAMES = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+export const MONTH_NAMES = tr(['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']);

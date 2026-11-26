@@ -6,6 +6,7 @@ import { FOODS } from '@/data/foods';
 import { addDays, ageInMonths, diffDays } from './dates';
 import { blockReason, buildSchedule, effectiveStartDate } from './planner';
 import type { Child, Food, FoodLog } from './types';
+import { t, tr } from '@/i18n';
 
 export type AnswerTone = 'ja' | 'bald' | 'nein' | 'pausiert';
 
@@ -50,7 +51,7 @@ const SYNONYMS: Record<string, string> = {
 };
 
 /** Häufige Fragen zu Dingen, die im ersten Jahr gemieden werden. */
-const AVOID_TERMS: { terms: string[]; name: string; emoji: string; detail: string }[] = [
+const AVOID_TERMS: { terms: string[]; name: string; emoji: string; detail: string }[] = tr([
   { terms: ['honig', 'ahornsirup', 'agavendicksaft'], name: 'Honig', emoji: '🍯', detail: 'Im ersten Lebensjahr gar nicht – auch nicht verbacken oder im Tee. Honig kann Sporen enthalten, die Säuglingsbotulismus auslösen.' },
   { terms: ['salz', 'brühe', 'brühwürfel', 'sojasoße', 'sojasauce', 'maggi'], name: 'Salz und Brühe', emoji: '🧂', detail: 'Babyessen nicht salzen. Die Babyportion vor dem Würzen abnehmen.' },
   { terms: ['zucker', 'süßigkeiten', 'schokolade', 'kekse', 'saft', 'säfte'], name: 'Zucker und Süßes', emoji: '🍬', detail: 'Im ersten Jahr meiden. Kleine Mengen Saft nur als Zutat im Brei (Vitamin C).' },
@@ -61,9 +62,9 @@ const AVOID_TERMS: { terms: string[]; name: string; emoji: string; detail: strin
   { terms: ['reiswaffel', 'reiswaffeln', 'reisdrink', 'reismilch'], name: 'Reiswaffeln und Reisdrinks', emoji: '🍘', detail: 'Können Arsen enthalten: Reisdrinks gar nicht, Reiswaffeln nicht als Dauersnack.' },
   { terms: ['kaffee', 'cola', 'tee', 'schwarztee', 'grüntee', 'energydrink'], name: 'Koffein und Tee mit Teein', emoji: '☕', detail: 'Nicht für Säuglinge. Zu trinken gibt es Muttermilch, Säuglingsmilch und Wasser.' },
   { terms: ['wurst', 'schinken', 'salami', 'würstchen'], name: 'Wurst und Schinken', emoji: '🌭', detail: 'Sehr salzig und oft gepökelt – im ersten Jahr meiden. Besser frisches, durchgegartes Fleisch.' },
-];
+]);
 
-const norm = (s: string) => s.toLowerCase().trim().replace(/\s+/g, ' ').replace(/^darf (mein|unser) baby (schon )?/, '').replace(/[?!.]/g, '').trim();
+const norm = (s: string) => s.toLowerCase().trim().replace(/\s+/g, ' ').replace(/^darf (mein|unser) baby (schon )?/, '').replace(/^(can|may) (my|our) baby (have|eat) /, '').replace(/[?!.]/g, '').trim();
 
 /** Findet Lebensmittel und Tabu-Einträge zu einer Anfrage. */
 export function searchFoods(query: string): { foods: Food[]; avoid: (typeof AVOID_TERMS)[number][] } {
@@ -86,19 +87,19 @@ export function searchFoods(query: string): { foods: Food[]; avoid: (typeof AVOI
 export function answerFor(food: Food, child: Child, logs: FoodLog[], today: string): FoodAnswer {
   const reason = blockReason(food, child, logs);
   if (reason) {
-    return { kind: 'food', food, tone: 'pausiert', headline: 'Gerade nicht', detail: reason };
+    return { kind: 'food', food, tone: 'pausiert', headline: t('Gerade nicht'), detail: reason };
   }
   const tried = logs.some((l) => l.childId === child.id && l.foodId === food.id);
   if (tried) {
-    return { kind: 'food', food, tone: 'ja', headline: 'Ja – schon probiert', detail: 'Darf weiter regelmäßig auf den Teller.' };
+    return { kind: 'food', food, tone: 'ja', headline: t('Ja – schon probiert'), detail: t('Darf weiter regelmäßig auf den Teller.') };
   }
   const start = effectiveStartDate(child);
   const daysSinceStart = diffDays(start, today);
   if (daysSinceStart < 0) {
     return {
       kind: 'food', food, tone: 'bald',
-      headline: 'Noch nicht – erst nach dem Beikoststart',
-      detail: `${child.name} ist ${ageInMonths(child.birthDate, today)} Monate alt. Bis zum Start gibt es nur Milch.`,
+      headline: t('Noch nicht – erst nach dem Beikoststart'),
+      detail: t('{0} ist {1} Monate alt. Bis zum Start gibt es nur Milch.', { 0: child.name, 1: ageInMonths(child.birthDate, today) }),
     };
   }
   const intro = buildSchedule(child, logs, 400).introductions.find((x) => x.food.id === food.id);
@@ -106,14 +107,14 @@ export function answerFor(food: Food, child: Child, logs: FoodLog[], today: stri
     const inDays = intro.fromDay - daysSinceStart;
     return {
       kind: 'food', food, tone: 'bald',
-      headline: inDays <= 7 ? 'Bald – kommt in den nächsten Tagen' : `Etwas später – in etwa ${Math.round(inDays / 7)} Wochen`,
-      detail: `Im Plan ab ${addDays(today, inDays).split('-').reverse().join('.')}. ${food.allergens.length ? 'Früher geht auch – dann aber nur ein neues Allergen zur Zeit und drei Tage hintereinander.' : 'Wenn ihr möchtet, könnt ihr es auch früher anbieten.'}`,
+      headline: inDays <= 7 ? t('Bald – kommt in den nächsten Tagen') : t('Etwas später – in etwa {0} Wochen', { 0: Math.round(inDays / 7) }),
+      detail: t('Im Plan ab {0}. {1}', { 0: addDays(today, inDays).split('-').reverse().join('.'), 1: food.allergens.length ? 'Früher geht auch – dann aber nur ein neues Allergen zur Zeit und drei Tage hintereinander.' : 'Wenn ihr möchtet, könnt ihr es auch früher anbieten.' }),
     };
   }
   return {
     kind: 'food', food, tone: 'ja',
-    headline: food.allergens.length ? 'Ja – als neues Allergen einzeln einführen' : 'Ja',
-    detail: food.allergens.length ? 'Drei Tage hintereinander anbieten, ohne ein anderes neues Allergen.' : 'Darf jetzt angeboten werden.',
+    headline: food.allergens.length ? t('Ja – als neues Allergen einzeln einführen') : 'Ja',
+    detail: food.allergens.length ? t('Drei Tage hintereinander anbieten, ohne ein anderes neues Allergen.') : t('Darf jetzt angeboten werden.'),
   };
 }
 
@@ -121,7 +122,7 @@ export function answerFor(food: Food, child: Child, logs: FoodLog[], today: stri
 export function ask(query: string, child: Child, logs: FoodLog[], today: string): Answer[] {
   const { foods, avoid } = searchFoods(query);
   return [
-    ...avoid.map<AvoidAnswer>((a) => ({ kind: 'avoid', name: a.name, emoji: a.emoji, headline: 'Nein – im ersten Jahr nicht', detail: a.detail })),
+    ...avoid.map<AvoidAnswer>((a) => ({ kind: 'avoid', name: a.name, emoji: a.emoji, headline: t('Nein – im ersten Jahr nicht'), detail: a.detail })),
     ...foods.map((f) => answerFor(f, child, logs, today)),
   ];
 }

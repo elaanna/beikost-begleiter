@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { TriangleAlert } from 'lucide-react-native';
 import type { ViewStyle } from 'react-native';
 import { Button, type IconLike } from './components';
+import { t } from '@/i18n';
 
 /**
  * Zweistufige Bestätigung ohne System-Dialog: Der erste Tipp fragt nach,
@@ -19,12 +20,12 @@ export function ConfirmButton({ label, confirmLabel, onConfirm, variant = 'soft'
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (!armed) return;
-    const t = setTimeout(() => setArmed(false), 5000);
-    return () => clearTimeout(t);
+    const tx = setTimeout(() => setArmed(false), 5000);
+    return () => clearTimeout(tx);
   }, [armed]);
   return (
     <Button
-      label={busy ? 'Einen Moment …' : armed ? confirmLabel : label}
+      label={busy ? t('Einen Moment …') : armed ? confirmLabel : label}
       icon={armed ? TriangleAlert : icon}
       variant={armed ? 'danger' : variant}
       disabled={busy}

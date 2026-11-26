@@ -1,5 +1,6 @@
 import { addMonths } from './dates';
 import type { MilkFeeding } from './types';
+import { t } from '@/i18n';
 
 export interface StartWindow {
   /** Beginn des 5. Lebensmonats (= 4 Monate vollendet). */
@@ -28,10 +29,10 @@ export function computeStartWindow(birthDate: string, milk: MilkFeeding): StartW
       latest,
       suggested: latest,
       note:
-        'Für gestillte Kinder empfiehlt die S3-Leitlinie Stilldauer (2026), bis zum vollendeten 6. Monat ' +
-        'ausschließlich oder überwiegend zu stillen. Die S3-Leitlinie Allergieprävention nennt ein ' +
-        'Fenster ab Beginn des 5. Monats. Achte auf die Reifezeichen und sprich den Start bei der ' +
-        'U-Untersuchung an. Stillen neben der Beikost bis mindestens zum 1. Geburtstag.',
+        t('Für gestillte Kinder empfiehlt die S3-Leitlinie Stilldauer (2026), bis zum vollendeten 6. Monat ') +
+        t('ausschließlich oder überwiegend zu stillen. Die S3-Leitlinie Allergieprävention nennt ein ') +
+        t('Fenster ab Beginn des 5. Monats. Achte auf die Reifezeichen und sprich den Start bei der ') +
+        t('U-Untersuchung an. Stillen neben der Beikost bis mindestens zum 1. Geburtstag.'),
     };
   }
 
@@ -40,8 +41,8 @@ export function computeStartWindow(birthDate: string, milk: MilkFeeding): StartW
     latest,
     suggested: addMonths(birthDate, 5),
     note:
-      'Die S3-Leitlinie Allergieprävention empfiehlt den Beikoststart frühestens ab Beginn des 5. und ' +
-      'spätestens ab Beginn des 7. Lebensmonats – abhängig von den Reifezeichen. ' +
-      'Achte auf die Reifezeichen.',
+      t('Die S3-Leitlinie Allergieprävention empfiehlt den Beikoststart frühestens ab Beginn des 5. und ') +
+      t('spätestens ab Beginn des 7. Lebensmonats – abhängig von den Reifezeichen. ') +
+      t('Achte auf die Reifezeichen.'),
   };
 }

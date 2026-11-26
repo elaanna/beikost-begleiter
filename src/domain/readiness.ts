@@ -1,3 +1,4 @@
+import { t, tr } from '@/i18n';
 /**
  * Reifezeichen-Checkliste: Eltern halten fest, was sie beobachten.
  *
@@ -17,7 +18,7 @@ export interface ReadinessSign {
   help: string;
 }
 
-export const READINESS_SIGNS_LIST: ReadinessSign[] = [
+export const READINESS_SIGNS_LIST: ReadinessSign[] = tr([
   {
     id: 'sitzen', emoji: '🪑', title: 'Aufrecht sitzen',
     question: 'Hast du beobachtet, dass dein Kind mit wenig Hilfe aufrecht sitzt und den Kopf sicher hält?',
@@ -38,10 +39,10 @@ export const READINESS_SIGNS_LIST: ReadinessSign[] = [
     question: 'Hast du beobachtet, dass es sich für euer Essen interessiert?',
     help: 'Schaut beim Essen zu, greift nach dem Teller, öffnet den Mund, wenn ein Löffel kommt.',
   },
-];
+]);
 
 /** Diese Verhaltensweisen gelten laut NHS nicht als Reifezeichen. */
-export const NOT_READINESS_SIGNS = ['Auf den Fäusten kauen', 'Nachts öfter aufwachen', 'Mehr Milch trinken wollen'];
+export const NOT_READINESS_SIGNS = tr(['Auf den Fäusten kauen', 'Nachts öfter aufwachen', 'Mehr Milch trinken wollen']);
 
 /** Allgemeine Information, keine Bewertung des einzelnen Kindes. */
 export const READINESS_GENERAL =

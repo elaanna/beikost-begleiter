@@ -5,14 +5,15 @@
  * und die Liste „Im ersten Jahr nicht geben“ der App. Vor dem Launch fachlich prüfen lassen.
  */
 import type { FeedingApproach } from '@/domain/types';
+import { tr } from '@/i18n';
 
 export type Stage = 'brei' | 'stueckig' | 'finger';
 
-export const STAGE_INFO: Record<Stage, { label: string; emoji: string; text: string }> = {
+export const STAGE_INFO: Record<Stage, { label: string; emoji: string; text: string }> = tr({
   brei: { label: 'Fein püriert', emoji: '🥣', text: 'Glatt pürieren, bei Bedarf mit etwas Kochwasser verdünnen.' },
   stueckig: { label: 'Zerdrückt & stückig', emoji: '🍴', text: 'Mit der Gabel zerdrücken; kleine, sehr weiche Stückchen dürfen bleiben.' },
   finger: { label: 'Weiche Stücke', emoji: '✋', text: 'Greifbare, fingerlange Stücke, die sich zwischen zwei Fingern zerdrücken lassen.' },
-};
+});
 
 /** Allgemeine Orientierung nach Alter und gewählter Methode – Eltern können jederzeit umstellen. */
 export function suggestedStage(ageMonths: number, approach: FeedingApproach): Stage {
@@ -31,7 +32,7 @@ export interface DishType {
   steps: Record<Stage, string[]>;
 }
 
-export const DISH_TYPES: DishType[] = [
+export const DISH_TYPES: DishType[] = tr([
   {
     id: 'nudeln', emoji: '🍝', name: 'Nudeln mit Soße', examples: 'Tomatensoße, Bolognese, Gemüsesoße',
     steps: {
@@ -96,7 +97,7 @@ export const DISH_TYPES: DishType[] = [
       finger: ['Fein vermahlenes Brot ohne Körner in Streifen, dünn mit Mus oder Frischkäse.', 'Pfannkuchen ohne Zucker in Streifen, Ei vollständig durchgebacken.'],
     },
   },
-];
+]);
 
 export type RuleLevel = 'nie' | 'anpassen' | 'hinweis';
 
@@ -109,7 +110,7 @@ export interface IngredientRule {
 }
 
 /** Zutaten, die im Familiengericht stecken können, und was für das Baby gilt. */
-export const INGREDIENT_RULES: IngredientRule[] = [
+export const INGREDIENT_RULES: IngredientRule[] = tr([
   { id: 'salz', emoji: '🧂', name: 'Salz, Brühe, Würzsoßen', level: 'anpassen', action: 'Babyportion vorher abnehmen. Keine Brühwürfel, Sojasoße oder Fertigwürzmischungen in die Babyportion.' },
   { id: 'scharf', emoji: '🌶️', name: 'Scharfe Gewürze', level: 'anpassen', action: 'Erst nach dem Abnehmen der Babyportion zugeben. Milde Kräuter sind in Ordnung.' },
   { id: 'honig', emoji: '🍯', name: 'Honig oder Ahornsirup', level: 'nie', action: 'Im ersten Jahr nie – auch nicht erhitzt. Babyportion ohne.' },
@@ -125,7 +126,7 @@ export const INGREDIENT_RULES: IngredientRule[] = [
   { id: 'alkohol', emoji: '🍷', name: 'Wein oder Alkohol in der Soße', level: 'nie', action: 'Babyportion vor dem Ablöschen abnehmen.' },
   { id: 'reis', emoji: '🍚', name: 'Reis, Reiswaffeln', level: 'hinweis', action: 'Reis als Beilage ist in Ordnung; Reiswaffeln und Reisdrinks nicht als Dauersnack (Arsen).' },
   { id: 'huelsen', emoji: '🫘', name: 'Bohnen, Kichererbsen, Erbsen', level: 'anpassen', action: 'Immer weich kochen und zerdrücken.' },
-];
+]);
 
 /** Diese Grundregel gilt immer und steht als erster Schritt in jeder Variante. */
 export const FIRST_STEP = 'Babyportion abnehmen, bevor gesalzen, scharf gewürzt oder gesüßt wird.';

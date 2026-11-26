@@ -8,6 +8,7 @@ import type { Allergen, Child, FeedingApproach, MilkFeeding } from '@/domain/typ
 import { Button, Card, Choice, Field, Heading, P, Row, Small } from './components';
 import { DateField } from './DateField';
 import { color, space, type } from './theme';
+import { t } from '@/i18n';
 
 export const ALLERGENS: { id: Allergen; emoji: string }[] = [
   { id: 'milch', emoji: '🥛' }, { id: 'ei', emoji: '🥚' }, { id: 'erdnuss', emoji: '🥜' }, { id: 'baumnuss', emoji: '🌰' },
@@ -58,14 +59,14 @@ export function NameAndBirth({ d }: { d: ChildDraft }) {
   return (
     <>
       <Field
-        label="Spitzname (optional)"
+        label={t('Spitzname (optional)')}
         value={d.name === 'Baby' ? '' : d.name}
         onChangeText={d.setName}
-        placeholder="z. B. Maus – leer lassen geht auch"
+        placeholder={t('z. B. Maus – leer lassen geht auch')}
         maxLength={30}
       />
-      <Text style={[type.bodyBold, { color: color.ink, marginBottom: space.xs }]}>Geburtsmonat</Text>
-      <Small style={{ marginBottom: space.sm }}>Den genauen Tag brauchen wir nicht.</Small>
+      <Text style={[type.bodyBold, { color: color.ink, marginBottom: space.xs }]}>{t('Geburtsmonat')}</Text>
+      <Small style={{ marginBottom: space.sm }}>{t('Den genauen Tag brauchen wir nicht.')}</Small>
       <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginBottom: space.lg }}>
         {months.map((m) => {
           const on = selected === m.iso.slice(0, 7);
@@ -93,9 +94,9 @@ export function NameAndBirth({ d }: { d: ChildDraft }) {
 export function MilkStep({ d }: { d: ChildDraft }) {
   return (
     <>
-      <Choice emoji="🤱" label="Gestillt" selected={d.milk === 'stillen'} onPress={() => d.setMilk('stillen')} />
-      <Choice emoji="🍼" label="Flasche" hint="Säuglingsnahrung" selected={d.milk === 'flasche'} onPress={() => d.setMilk('flasche')} />
-      <Choice emoji="💞" label="Beides" selected={d.milk === 'beides'} onPress={() => d.setMilk('beides')} />
+      <Choice emoji="🤱" label={t('Gestillt')} selected={d.milk === 'stillen'} onPress={() => d.setMilk('stillen')} />
+      <Choice emoji="🍼" label={t('Flasche')} hint={t('Säuglingsnahrung')} selected={d.milk === 'flasche'} onPress={() => d.setMilk('flasche')} />
+      <Choice emoji="💞" label={t('Beides')} selected={d.milk === 'beides'} onPress={() => d.setMilk('beides')} />
     </>
   );
 }
@@ -103,9 +104,9 @@ export function MilkStep({ d }: { d: ChildDraft }) {
 export function ApproachStep({ d }: { d: ChildDraft }) {
   return (
     <>
-      <Choice emoji="🥣" label="Brei vom Löffel" hint="Klassischer Breiplan, empfohlen von Gesund ins Leben" selected={d.approach === 'brei'} onPress={() => d.setApproach('brei')} />
-      <Choice emoji="🥦" label="Gemischt" hint="Brei und weiche Stücke zum Selberessen" selected={d.approach === 'gemischt'} onPress={() => d.setApproach('gemischt')} />
-      <Choice emoji="✋" label="Fingerfood (BLW)" hint="Baby isst selbst weiche Stücke" selected={d.approach === 'blw'} onPress={() => d.setApproach('blw')} />
+      <Choice emoji="🥣" label={t('Brei vom Löffel')} hint={t('Klassischer Breiplan, empfohlen von Gesund ins Leben')} selected={d.approach === 'brei'} onPress={() => d.setApproach('brei')} />
+      <Choice emoji="🥦" label={t('Gemischt')} hint={t('Brei und weiche Stücke zum Selberessen')} selected={d.approach === 'gemischt'} onPress={() => d.setApproach('gemischt')} />
+      <Choice emoji="✋" label={t('Fingerfood (BLW)')} hint={t('Baby isst selbst weiche Stücke')} selected={d.approach === 'blw'} onPress={() => d.setApproach('blw')} />
     </>
   );
 }
@@ -114,8 +115,7 @@ export function AllergyStep({ d }: { d: ChildDraft }) {
   return (
     <>
       <Small style={{ marginBottom: space.md }}>
-        Nur auswählen, was ärztlich festgestellt wurde. Vorbeugendes Weglassen schützt laut S3-Leitlinie nicht vor Allergien.
-      </Small>
+        {t('Nur auswählen, was ärztlich festgestellt wurde. Vorbeugendes Weglassen schützt laut S3-Leitlinie nicht vor Allergien.')}</Small>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginBottom: space.lg }}>
         {ALLERGENS.map((a) => (
           <View key={a.id} style={{ width: '48%' }}>
@@ -126,15 +126,15 @@ export function AllergyStep({ d }: { d: ChildDraft }) {
       <Card style={{ paddingVertical: space.lg }}>
         <Row>
           <View style={{ flex: 1 }}>
-            <P bold>Mittelschwere bis schwere Neurodermitis</P>
-            <Small>Dann wird Erdnuss erst nach ärztlicher Abklärung eingeplant.</Small>
+            <P bold>{t('Mittelschwere bis schwere Neurodermitis')}</P>
+            <Small>{t('Dann wird Erdnuss erst nach ärztlicher Abklärung eingeplant.')}</Small>
           </View>
-          <Switch value={d.ad} onValueChange={d.setAd} trackColor={{ true: color.sage, false: color.line }} accessibilityLabel="Neurodermitis" />
+          <Switch value={d.ad} onValueChange={d.setAd} trackColor={{ true: color.sage, false: color.line }} accessibilityLabel={t('Neurodermitis')} />
         </Row>
         {d.ad ? (
           <Row style={{ marginTop: space.lg }}>
-            <View style={{ flex: 1 }}><P bold>Erdnuss ist ärztlich abgeklärt</P></View>
-            <Switch value={d.peanutCleared} onValueChange={d.setPeanutCleared} trackColor={{ true: color.sage, false: color.line }} accessibilityLabel="Erdnuss abgeklärt" />
+            <View style={{ flex: 1 }}><P bold>{t('Erdnuss ist ärztlich abgeklärt')}</P></View>
+            <Switch value={d.peanutCleared} onValueChange={d.setPeanutCleared} trackColor={{ true: color.sage, false: color.line }} accessibilityLabel={t('Erdnuss abgeklärt')} />
           </Row>
         ) : null}
       </Card>
@@ -149,19 +149,18 @@ export function StartStep({ d }: { d: ChildDraft }) {
   return (
     <>
       <Card tone="peach">
-        <Small bold soft={false}>Unser Vorschlag</Small>
+        <Small bold soft={false}>{t('Unser Vorschlag')}</Small>
         <Text style={[type.title, { color: color.ink }]}>{formatDayLong(w.suggested)}</Text>
         <Small soft={false} style={{ marginTop: space.xs }}>
-          Empfohlenes Fenster: {formatDayLong(w.earliest)} bis {formatDayLong(w.latest)}
-        </Small>
+          {t('Empfohlenes Fenster: {0} bis {1}', { 0: formatDayLong(w.earliest), 1: formatDayLong(w.latest) })}</Small>
         <P style={{ marginTop: space.md }}>{w.note}</P>
       </Card>
       <Card tone="sage">
-        <Heading>🌱 Achte auf die Reifezeichen</Heading>
+        <Heading>{t('🌱 Achte auf die Reifezeichen')}</Heading>
         {READINESS_SIGNS.map((r) => <P key={r} style={{ marginTop: space.xs }}>• {r}</P>)}
       </Card>
       <DateField
-        label="Startdatum (änderbar)"
+        label={t('Startdatum (änderbar)')}
         value={chosen}
         onChange={d.setStartDate}
         minimum={addMonths(d.birthDate, 3)}
@@ -180,14 +179,14 @@ export function ChildForm({ initial, familyId, newId, onSave }: {
   return (
     <View>
       <NameAndBirth d={d} />
-      <Heading style={{ marginVertical: space.md }}>Milch</Heading>
+      <Heading style={{ marginVertical: space.md }}>{t('Milch')}</Heading>
       <MilkStep d={d} />
-      <Heading style={{ marginVertical: space.md }}>Wie esst ihr?</Heading>
+      <Heading style={{ marginVertical: space.md }}>{t('Wie esst ihr?')}</Heading>
       <ApproachStep d={d} />
-      <Heading style={{ marginVertical: space.md }}>Bekannte Allergien</Heading>
+      <Heading style={{ marginVertical: space.md }}>{t('Bekannte Allergien')}</Heading>
       <AllergyStep d={d} />
-      {d.birthDate ? <><Heading style={{ marginVertical: space.md }}>Beikoststart</Heading><StartStep d={d} /></> : null}
-      <Button label="Speichern" disabled={!valid} style={{ marginTop: space.lg }} onPress={() => onSave(d.build(familyId, newId()))} />
+      {d.birthDate ? <><Heading style={{ marginVertical: space.md }}>{t('Beikoststart')}</Heading><StartStep d={d} /></> : null}
+      <Button label={t('Speichern')} disabled={!valid} style={{ marginTop: space.lg }} onPress={() => onSave(d.build(familyId, newId()))} />
     </View>
   );
 }

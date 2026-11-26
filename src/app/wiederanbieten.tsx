@@ -8,6 +8,7 @@ import { reofferList } from '@/domain/toddler';
 import { useChild } from '@/state/AppContext';
 import { Card, Hero, P, Row, Screen, Small, SourceLink, Title } from '@/ui/components';
 import { brand, color, ICON, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 /** Wählerische Esser: Abgelehntes entspannt wieder anbieten – ohne Zielzahl und ohne Druck. */
 export default function WiederAnbieten() {
@@ -16,13 +17,12 @@ export default function WiederAnbieten() {
 
   return (
     <Screen edges={['left', 'right']}>
-      <Hero style={{ marginBottom: space.xs }}>Noch mal anbieten</Hero>
+      <Hero style={{ marginBottom: space.xs }}>{t('Noch mal anbieten')}</Hero>
       <P soft style={{ marginBottom: space.lg }}>
-        Viele Kinder mögen Neues erst nach mehreren Versuchen. Ablehnung ist oft nur vorübergehend – jedes Kind hat sein eigenes Tempo.
-      </P>
+        {t('Viele Kinder mögen Neues erst nach mehreren Versuchen. Ablehnung ist oft nur vorübergehend – jedes Kind hat sein eigenes Tempo.')}</P>
 
       {list.length === 0 ? (
-        <Card tone="lilac"><P>Gerade gibt es nichts, das {child.name} zuletzt nicht mochte. Wenn ihr „Lieber nicht“ notiert, erscheint es hier.</P></Card>
+        <Card tone="lilac"><P>{t('Gerade gibt es nichts, das {0} zuletzt nicht mochte. Wenn ihr „Lieber nicht“ notiert, erscheint es hier.', { 0: child.name })}</P></Card>
       ) : (
         <Card style={{ paddingVertical: space.sm, paddingHorizontal: space.md }}>
           {list.map((r, i) => {
@@ -36,7 +36,7 @@ export default function WiederAnbieten() {
                 <View style={{ flex: 1 }}>
                   <P bold>{f.name}</P>
                   <Small>
-                    {r.offered}× angeboten · zuletzt {r.daysAgo === 0 ? 'heute' : r.daysAgo === 1 ? 'gestern' : `vor ${r.daysAgo} Tagen`}
+                    {t('{0}× angeboten · zuletzt', { 0: r.offered })}{' '}{r.daysAgo === 0 ? t('heute') : r.daysAgo === 1 ? t('gestern') : t('vor {0} Tagen', { 0: r.daysAgo })}
                   </Small>
                 </View>
                 <ChevronRight size={20} strokeWidth={ICON.stroke} color={color.inkSoft} />
@@ -45,16 +45,16 @@ export default function WiederAnbieten() {
           })}
         </Card>
       )}
-      {list.length ? <Small style={{ marginBottom: space.lg }}>Tipp: neben etwas Bekanntes legen, mal roh, mal gegart, mal klein geschnitten anbieten.</Small> : null}
+      {list.length ? <Small style={{ marginBottom: space.lg }}>{t('Tipp: neben etwas Bekanntes legen, mal roh, mal gegart, mal klein geschnitten anbieten.')}</Small> : null}
 
-      <Title>Entspannt am Tisch</Title>
+      <Title>{t('Entspannt am Tisch')}</Title>
       <Card tone="yellow" style={{ borderRadius: radius.lg }}>
         <View style={{ gap: space.sm }}>
-          {PICKY_TIPS.map((t) => <Text key={t} style={[type.small, { color: color.ink }]}>• {t}</Text>)}
+          {PICKY_TIPS.map((tx) => <Text key={tx} style={[type.small, { color: color.ink }]}>• {t(tx)}</Text>)}
         </View>
       </Card>
       <Row style={{ alignItems: 'flex-start', marginBottom: space.lg }}>
-        <Small soft={false}>{PICKY_DOCTOR}</Small>
+        <Small soft={false}>{t(PICKY_DOCTOR)}</Small>
       </Row>
       {PICKY_SOURCES.map((s) => <SourceLink key={s.url} label={s.label} url={s.url} />)}
     </Screen>

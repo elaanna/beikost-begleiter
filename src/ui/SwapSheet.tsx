@@ -8,6 +8,7 @@ import { useChild } from '@/state/AppContext';
 import { Button, Heading, P, Small } from './components';
 import { useToast } from './Toast';
 import { color, radius, space, type } from './theme';
+import { t } from '@/i18n';
 
 /**
  * Mahlzeit tauschen: zeigt nur Rezepte für dieselbe Mahlzeit mit schon probierten,
@@ -28,16 +29,16 @@ export function SwapSheet({ date, meal, onClose }: { date: string; meal: Planned
 
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={{ flex: 1, backgroundColor: 'rgba(60,40,30,0.35)' }} onPress={onClose} accessibilityLabel="Schließen" />
+      <Pressable style={{ flex: 1, backgroundColor: 'rgba(60,40,30,0.35)' }} onPress={onClose} accessibilityLabel={t('Schließen')} />
       <View style={{ maxHeight: '80%', backgroundColor: color.creme, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.xl }}>
-        <Heading>{SLOT_LABEL[meal.slot]} tauschen</Heading>
-        <Small style={{ marginBottom: space.md }}>Nur Rezepte, deren Zutaten schon probiert sind – so kommt nichts Neues dazu.</Small>
+        <Heading>{t('{0} tauschen', { 0: SLOT_LABEL[meal.slot] })}</Heading>
+        <Small style={{ marginBottom: space.md }}>{t('Nur Rezepte, deren Zutaten schon probiert sind – so kommt nichts Neues dazu.')}</Small>
         <ScrollView>
           {meal.recipeId ? (
-            <Button label="Zurück zum Vorschlag aus dem Plan" variant="soft" style={{ marginBottom: space.md }} onPress={() => choose(null, 'Vorschlag aus dem Plan wiederhergestellt')} />
+            <Button label={t('Zurück zum Vorschlag aus dem Plan')} variant="soft" style={{ marginBottom: space.md }} onPress={() => choose(null, t('Vorschlag aus dem Plan wiederhergestellt'))} />
           ) : null}
           {options.length === 0 ? (
-            <P>Noch keine passenden Rezepte – sobald mehr Lebensmittel probiert sind, gibt es hier Auswahl.</P>
+            <P>{t('Noch keine passenden Rezepte – sobald mehr Lebensmittel probiert sind, gibt es hier Auswahl.')}</P>
           ) : options.map((r) => (
             <Pressable
               key={r.id}
@@ -51,12 +52,12 @@ export function SwapSheet({ date, meal, onClose }: { date: string; meal: Planned
               <Text style={{ fontSize: 30 }}>{r.emoji}</Text>
               <View style={{ flex: 1 }}>
                 <P bold>{r.name}</P>
-                <Text style={[type.small, { color: color.inkSoft }]}>{CATEGORY_INFO[r.category].label} · {r.minutes} Min.</Text>
+                <Text style={[type.small, { color: color.inkSoft }]}>{t('{0} · {1} Min.', { 0: t(CATEGORY_INFO[r.category].label), 1: r.minutes })}</Text>
               </View>
             </Pressable>
           ))}
         </ScrollView>
-        <Button label="Abbrechen" variant="ghost" onPress={onClose} />
+        <Button label={t('Abbrechen')} variant="ghost" onPress={onClose} />
       </View>
     </Modal>
   );

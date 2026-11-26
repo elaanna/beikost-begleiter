@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { Apple, BookOpen, CalendarDays, ChefHat, Home, type LucideIcon } from 'lucide-react-native';
 import { GuidedTour } from '@/ui/GuidedTour';
 import { color, font, ICON } from '@/ui/theme';
+import { t } from '@/i18n';
 
 const TabIcon = (Icon: LucideIcon) => function TabIconRender({ focused }: { focused: boolean }) {
   return <Icon size={ICON.size} strokeWidth={ICON.stroke} color={focused ? color.sageDeep : color.inkSoft} />;
@@ -31,11 +32,11 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontSize: 12, fontFamily: font.bodyMedium },
       }}
     >
-      <Tabs.Screen name="heute" options={{ title: 'Heute', tabBarIcon: TabIcon(Home) }} />
-      <Tabs.Screen name="woche" options={{ title: 'Woche', tabBarIcon: TabIcon(CalendarDays) }} />
-      <Tabs.Screen name="rezepte" options={{ title: 'Rezepte', tabBarIcon: TabIcon(ChefHat) }} />
-      <Tabs.Screen name="lebensmittel" options={{ title: 'Entdecken', tabBarAccessibilityLabel: 'Lebensmittel entdecken', tabBarIcon: TabIcon(Apple) }} />
-      <Tabs.Screen name="wissen" options={{ title: 'Wissen', tabBarIcon: TabIcon(BookOpen) }} />
+      <Tabs.Screen name="heute" options={{ title: t('Heute'), tabBarIcon: TabIcon(Home) }} />
+      <Tabs.Screen name="woche" options={{ title: t('Woche'), tabBarIcon: TabIcon(CalendarDays) }} />
+      <Tabs.Screen name="rezepte" options={{ title: t('Rezepte'), tabBarIcon: TabIcon(ChefHat) }} />
+      <Tabs.Screen name="lebensmittel" options={{ title: t('Entdecken'), tabBarAccessibilityLabel: t('Lebensmittel entdecken'), tabBarIcon: TabIcon(Apple) }} />
+      <Tabs.Screen name="wissen" options={{ title: t('Wissen'), tabBarIcon: TabIcon(BookOpen) }} />
     </Tabs>
     <GuidedTour />
     </View>

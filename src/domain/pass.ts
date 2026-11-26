@@ -1,6 +1,7 @@
 /** Probier-Pass: Meilensteine aus den bereits probierten Lebensmitteln. */
 import { FOODS } from '@/data/foods';
 import type { FoodLog } from './types';
+import { t } from '@/i18n';
 
 export interface Milestone {
   id: string;
@@ -24,13 +25,13 @@ export function milestones(logs: FoodLog[], childId: string): Milestone[] {
     id, emoji, title, reached: value >= goal, progress: `${Math.min(value, goal)}/${goal}`,
   });
   return [
-    step('erster', '🥄', 'Erster Löffel', n, 1),
-    step('zehn', '🌱', '10 Lebensmittel', n, 10),
-    step('gemuese', '🥦', '10 Gemüsesorten', veg, 10),
-    step('obst', '🍓', '10 Obstsorten', fruit, 10),
-    step('eisen', '💪', '5 eisenreiche Lebensmittel', iron, 5),
-    step('allergene', '🛡️', 'Alle 8 Allergen-Gruppen', allergensDone, ALLERGEN_GROUPS.length),
-    step('fuenfzig', '⭐', '50 Lebensmittel', n, 50),
-    step('hundert', '🏆', 'Alle 100', n, FOODS.length),
+    step('erster', '🥄', t('Erster Löffel'), n, 1),
+    step('zehn', '🌱', t('10 Lebensmittel'), n, 10),
+    step('gemuese', '🥦', t('10 Gemüsesorten'), veg, 10),
+    step('obst', '🍓', t('10 Obstsorten'), fruit, 10),
+    step('eisen', '💪', t('5 eisenreiche Lebensmittel'), iron, 5),
+    step('allergene', '🛡️', t('Alle 8 Allergen-Gruppen'), allergensDone, ALLERGEN_GROUPS.length),
+    step('fuenfzig', '⭐', t('50 Lebensmittel'), n, 50),
+    step('hundert', '🏆', t('Alle 100'), n, FOODS.length),
   ];
 }

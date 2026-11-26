@@ -7,6 +7,7 @@ import {
 import { useChild } from '@/state/AppContext';
 import { Button, Card, Choice, Hero, P, ProgressBar, Row, Screen, Small, SourceLink } from '@/ui/components';
 import { color, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 const SOURCES = [
   { label: 'NHS: Your baby’s first solid foods', url: 'https://www.nhs.uk/baby/weaning-and-feeding/babys-first-solid-foods/' },
@@ -29,57 +30,56 @@ export default function Reifecheck() {
 
   return (
     <Screen edges={['left', 'right']}>
-      <Stack.Screen options={{ title: 'Reifezeichen-Checkliste' }} />
+      <Stack.Screen options={{ title: t('Reifezeichen-Checkliste') }} />
       {!done ? (
         <>
           <Row style={{ justifyContent: 'space-between', marginBottom: space.sm }}>
             {step > 0 ? (
               <Pressable onPress={() => setStep((s) => s - 1)} accessibilityRole="button" hitSlop={12}>
-                <Text style={[type.bodyBold, { color: color.sageDeep }]}>‹ Zurück</Text>
+                <Text style={[type.bodyBold, { color: color.sageDeep }]}>{t('‹ Zurück')}</Text>
               </Pressable>
             ) : <View />}
-            <Small>Zeichen {step + 1} von {READINESS_SIGNS_LIST.length}</Small>
+            <Small>{t('Zeichen')}{' '}{step + 1} {' '}{t('von {0}', { 0: READINESS_SIGNS_LIST.length })}</Small>
           </Row>
           <ProgressBar value={step + 1} max={READINESS_SIGNS_LIST.length} />
           <Text style={{ fontSize: 56, marginTop: space.xl }}>{sign.emoji}</Text>
           <Hero style={{ marginVertical: space.lg, fontSize: 26, lineHeight: 32 }}>{sign.question}</Hero>
           <P soft style={{ marginBottom: space.xl }}>{sign.help}</P>
-          <Choice emoji="👀" label="Ja, beobachtet" selected={answers[sign.id] === 'beobachtet'} onPress={() => answer('beobachtet')} />
-          <Choice emoji="⏳" label="Noch nicht beobachtet" selected={answers[sign.id] === 'noch_nicht'} onPress={() => answer('noch_nicht')} />
+          <Choice emoji="👀" label={t('Ja, beobachtet')} selected={answers[sign.id] === 'beobachtet'} onPress={() => answer('beobachtet')} />
+          <Choice emoji="⏳" label={t('Noch nicht beobachtet')} selected={answers[sign.id] === 'noch_nicht'} onPress={() => answer('noch_nicht')} />
           {step === 0 ? (
             <Card tone="butter" style={{ marginTop: space.lg }}>
-              <P bold>Keine Reifezeichen sind übrigens:</P>
+              <P bold>{t('Keine Reifezeichen sind übrigens:')}</P>
               {NOT_READINESS_SIGNS.map((s) => <P key={s}>• {s}</P>)}
             </Card>
           ) : null}
         </>
       ) : (
         <>
-          <Hero style={{ marginTop: space.lg }}>Deine Beobachtungen</Hero>
+          <Hero style={{ marginTop: space.lg }}>{t('Deine Beobachtungen')}</Hero>
           <P soft style={{ marginTop: space.xs, marginBottom: space.lg }}>
-            {countObserved(answers)} von {READINESS_SIGNS_LIST.length} Zeichen hast du bei {child.name} schon beobachtet.
-          </P>
+            {t('{0} von {1} Zeichen hast du bei {2} schon beobachtet.', { 0: countObserved(answers), 1: READINESS_SIGNS_LIST.length, 2: child.name })}</P>
           <Card>
             {READINESS_SIGNS_LIST.map((s) => (
               <Row key={s.id} style={{ paddingVertical: space.sm }}>
                 <Text style={{ fontSize: 22 }}>{answers[s.id] === 'beobachtet' ? '✅' : '⏳'}</Text>
-                <P style={{ flex: 1 }}>{s.title}</P>
+                <P style={{ flex: 1 }}>{t(s.title)}</P>
               </Row>
             ))}
           </Card>
           <Card tone="sage">
-            <P>{READINESS_DECISION}</P>
+            <P>{t(READINESS_DECISION)}</P>
           </Card>
           <Card tone="butter">
-            <P>{READINESS_GENERAL}</P>
+            <P>{t(READINESS_GENERAL)}</P>
           </Card>
           <View style={{ gap: space.md }}>
-            <Button label="Fertig" onPress={() => router.back()} />
-            <Button label="Startdatum anpassen" variant="soft" onPress={() => router.push({ pathname: '/kind', params: { id: child.id } })} />
-            <Button label="Noch einmal durchgehen" variant="ghost" onPress={() => { setAnswers({}); setStep(0); }} />
+            <Button label={t('Fertig')} onPress={() => router.back()} />
+            <Button label={t('Startdatum anpassen')} variant="soft" onPress={() => router.push({ pathname: '/kind', params: { id: child.id } })} />
+            <Button label={t('Noch einmal durchgehen')} variant="ghost" onPress={() => { setAnswers({}); setStep(0); }} />
           </View>
           <Card style={{ marginTop: space.xl }}>
-            <Small bold soft={false}>Quellen</Small>
+            <Small bold soft={false}>{t('Quellen')}</Small>
             {SOURCES.map((s) => <View key={s.url} style={{ marginTop: space.xs }}><SourceLink label={s.label} url={s.url} /></View>)}
           </Card>
         </>

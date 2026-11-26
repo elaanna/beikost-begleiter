@@ -4,6 +4,7 @@ import { FOOD_BY_ID } from '@/data/foods';
 import { addDays, todayIso } from '@/domain/dates';
 import { introDays, planDays, SLOT_LABEL } from '@/domain/planner';
 import type { Child, FoodLog, MealSlot } from '@/domain/types';
+import { t } from '@/i18n';
 
 export interface ReminderSettings {
   enabled: boolean;
@@ -50,16 +51,16 @@ if (remindersSupported) {
 
 /** Text einer Erinnerung – das neue Lebensmittel steht im Vordergrund. */
 export function reminderText(child: Child, slot: MealSlot, title: string, foodIds: string[], newFoodId?: string, newFoodDay?: number, discreet = false) {
-  if (discreet) return { title: `Zeit für ${SLOT_LABEL[slot]} 🥄`, body: 'Tippe hier, um den Plan zu sehen.' };
+  if (discreet) return { title: t('Zeit für {0} 🥄', { 0: SLOT_LABEL[slot] }), body: t('Tippe hier, um den Plan zu sehen.') };
   if (newFoodId) {
     const f = FOOD_BY_ID[newFoodId];
     return {
-      title: `${SLOT_LABEL[slot]}: neu ist ${f.name} ${f.emoji}`,
-      body: `Tag ${newFoodDay} von ${introDays(f)} für ${child.name}. ${f.hint ? 'Bitte Hinweis in der App beachten.' : ''}`.trim(),
+      title: t('{0}: neu ist {1} {2}', { 0: SLOT_LABEL[slot], 1: f.name, 2: f.emoji }),
+      body: t('Tag {0} von {1} für {2}. {3}', { 0: newFoodDay, 1: introDays(f), 2: child.name, 3: f.hint ? 'Bitte Hinweis in der App beachten.' : '' }).trim(),
     };
   }
   return {
-    title: `${SLOT_LABEL[slot]} für ${child.name}`,
+    title: t('{0} für {1}', { 0: SLOT_LABEL[slot], 1: child.name }),
     body: `${title}: ${foodIds.map((id) => FOOD_BY_ID[id].name).join(', ')}`,
   };
 }

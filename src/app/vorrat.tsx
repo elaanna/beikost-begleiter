@@ -14,6 +14,7 @@ import { ConfirmButton } from '@/ui/ConfirmButton';
 import { DateField } from '@/ui/DateField';
 import { useToast } from '@/ui/Toast';
 import { color, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 type Tab = 'gefroren' | 'vorrat';
 
@@ -48,7 +49,7 @@ export default function Vorrat() {
     const label = (recipe?.name ?? name).trim();
     if (!label) return;
     await saveStock({ id: newId(), kind: 'gefroren', name: label, recipeId: recipe?.id ?? null, foodId: null, portions, madeOn });
-    toast({ emoji: '❄️', text: `${portions} Portionen ${label} eingetragen` });
+    toast({ emoji: '❄️', text: t('{0} Portionen {1} eingetragen', { 0: portions, 1: label }) });
     setAdding(false); setRecipeId(null); setName(''); setPortions(4); setMadeOn(today);
   };
 
@@ -62,7 +63,7 @@ export default function Vorrat() {
   return (
     <Screen edges={['left', 'right']}>
       <Segmented<Tab>
-        options={[{ id: 'gefroren', label: '❄️ Gefrierfach' }, { id: 'vorrat', label: '🧺 Vorrat' }]}
+        options={[{ id: 'gefroren', label: t('❄️ Gefrierfach') }, { id: 'vorrat', label: t('🧺 Vorrat') }]}
         value={tab}
         onChange={setTab}
       />
@@ -70,46 +71,46 @@ export default function Vorrat() {
       {tab === 'gefroren' ? (
         <>
           {frozen.length === 0 && !adding ? (
-            <Card tone="sage"><P>Noch nichts eingefroren. Vorkochen spart Zeit: einmal kochen, mehrere Mahlzeiten.</P></Card>
+            <Card tone="sage"><P>{t('Noch nichts eingefroren. Vorkochen spart Zeit: einmal kochen, mehrere Mahlzeiten.')}</P></Card>
           ) : null}
           {frozen.map((item) => <FrozenRow key={item.id} item={item} today={today} onSave={saveStock} onRemove={removeStock} />)}
 
           {adding ? (
             <Card>
-              <Heading style={{ marginBottom: space.md }}>Portionen einfrieren</Heading>
-              <Small bold soft={false} style={{ marginBottom: space.xs }}>Rezept</Small>
+              <Heading style={{ marginBottom: space.md }}>{t('Portionen einfrieren')}</Heading>
+              <Small bold soft={false} style={{ marginBottom: space.xs }}>{t('Rezept')}</Small>
               <PillRow>
                 {freezable.map((r) => (
                   <Pill key={r.id} label={`${r.emoji} ${r.name}`} selected={recipeId === r.id} onPress={() => { setRecipeId(r.id); setName(''); }} />
                 ))}
               </PillRow>
-              <Field label="… oder eigener Name" value={name} onChangeText={(v) => { setName(v); setRecipeId(null); }} placeholder="z. B. Karotten-Hirse" maxLength={60} />
-              <Stepper label="Portionen" value={portions} onChange={setPortions} />
-              <DateField label="Eingefroren am" value={madeOn} onChange={setMadeOn} maximum={today} />
-              <Button label="Eintragen" disabled={!recipeId && !name.trim()} onPress={addFrozen} />
-              <Button label="Abbrechen" variant="ghost" onPress={() => setAdding(false)} />
+              <Field label={t('… oder eigener Name')} value={name} onChangeText={(v) => { setName(v); setRecipeId(null); }} placeholder={t('z. B. Karotten-Hirse')} maxLength={60} />
+              <Stepper label={t('Portionen')} value={portions} onChange={setPortions} />
+              <DateField label={t('Eingefroren am')} value={madeOn} onChange={setMadeOn} maximum={today} />
+              <Button label={t('Eintragen')} disabled={!recipeId && !name.trim()} onPress={addFrozen} />
+              <Button label={t('Abbrechen')} variant="ghost" onPress={() => setAdding(false)} />
             </Card>
           ) : (
-            <Button label="Portionen einfrieren" icon={Plus} onPress={() => setAdding(true)} />
+            <Button label={t('Portionen einfrieren')} icon={Plus} onPress={() => setAdding(true)} />
           )}
 
-          <Title>Vorkochen & Einfrieren</Title>
-          <Button label="Vorkoch-Sonntag: geführt mit Timern" icon={CookingPot} variant="soft" style={{ marginBottom: space.md }} onPress={() => router.push('/vorkochen')} />
+          <Title>{t('Vorkochen & Einfrieren')}</Title>
+          <Button label={t('Vorkoch-Sonntag: geführt mit Timern')} icon={CookingPot} variant="soft" style={{ marginBottom: space.md }} onPress={() => router.push('/vorkochen')} />
           <Card tone="butter">
             {MEAL_PREP_RULES.map((r) => <P key={r} style={{ marginBottom: space.xs }}>• {r}</P>)}
-            <Small style={{ marginTop: space.sm }}>Allgemeine Hinweise – die App kann Haltbarkeit und Frische im Einzelfall nicht beurteilen.</Small>
+            <Small style={{ marginTop: space.sm }}>{t('Allgemeine Hinweise – die App kann Haltbarkeit und Frische im Einzelfall nicht beurteilen.')}</Small>
             {STORAGE_SOURCES.map((s) => <View key={s.url} style={{ marginTop: space.xs }}><SourceLink label={s.label} url={s.url} /></View>)}
           </Card>
         </>
       ) : (
         <>
-          <P soft style={{ marginBottom: space.md }}>Was du da hast, landet auf der Einkaufsliste als „vorrätig“ – und hilft bei „Was habe ich da?“.</P>
+          <P soft style={{ marginBottom: space.md }}>{t('Was du da hast, landet auf der Einkaufsliste als „vorrätig“ – und hilft bei „Was habe ich da?“.')}</P>
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder="Lebensmittel suchen, z. B. Hirse"
+            placeholder={t('Lebensmittel suchen, z. B. Hirse')}
             placeholderTextColor={color.inkSoft}
-            accessibilityLabel="Lebensmittel für den Vorrat suchen"
+            accessibilityLabel={t('Lebensmittel für den Vorrat suchen')}
             maxLength={40}
             style={[type.body, { backgroundColor: color.surface, borderRadius: radius.pill, paddingHorizontal: space.lg, minHeight: 52, borderWidth: 2, borderColor: color.line, color: color.ink, marginBottom: space.md }]}
           />
@@ -120,19 +121,19 @@ export default function Vorrat() {
                 style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, backgroundColor: color.surface, borderRadius: radius.md, marginBottom: space.sm }}>
                 <Text style={{ fontSize: 24 }}>{f.emoji}</Text>
                 <P style={{ flex: 1 }}>{f.name}</P>
-                <Text style={[type.bodyBold, { color: on ? color.sageDeep : color.inkSoft }]}>{on ? '✓ da' : '+ da'}</Text>
+                <Text style={[type.bodyBold, { color: on ? color.sageDeep : color.inkSoft }]}>{on ? t('✓ da') : t('+ da')}</Text>
               </Pressable>
             );
           })}
-          <Title>Im Vorrat ({pantry.length})</Title>
-          {pantry.length === 0 ? <Card><P>Noch nichts eingetragen.</P></Card> : (
+          <Title>{t('Im Vorrat ({0})', { 0: pantry.length })}</Title>
+          {pantry.length === 0 ? <Card><P>{t('Noch nichts eingetragen.')}</P></Card> : (
             <Card>
               <Row style={{ flexWrap: 'wrap', gap: space.sm }}>
                 {pantry.map((p) => (
                   <Pill key={p.id} label={`${p.foodId ? FOOD_BY_ID[p.foodId]?.emoji ?? '' : ''} ${p.name} ✕`} selected onPress={() => p.foodId && togglePantry(p.foodId)} />
                 ))}
               </Row>
-              <Small style={{ marginTop: space.sm }}>Antippen, wenn etwas aufgebraucht ist.</Small>
+              <Small style={{ marginTop: space.sm }}>{t('Antippen, wenn etwas aufgebraucht ist.')}</Small>
             </Card>
           )}
         </>
@@ -152,19 +153,18 @@ function FrozenRow({ item, today, onSave, onRemove }: {
         <Text style={{ fontSize: 30 }}>{recipe?.emoji ?? '❄️'}</Text>
         <View style={{ flex: 1 }}>
           <P bold>{item.name}</P>
-          <Small>Eingefroren am {formatDayLong(item.madeOn)} · vor {age.days} Tagen</Small>
+          <Small>{t('Eingefroren am {0} · vor {1} Tagen', { 0: formatDayLong(item.madeOn), 1: age.days })}</Small>
           {age.beyondGuide ? (
             <Text style={[type.small, { color: color.peachDeep, marginTop: 2 }]}>
-              Älter als die allgemeine Orientierung von etwa 2 Monaten – im Zweifel nicht mehr verwenden.
-            </Text>
+              {t('Älter als die allgemeine Orientierung von etwa 2 Monaten – im Zweifel nicht mehr verwenden.')}</Text>
           ) : null}
         </View>
       </Row>
-      <Stepper label="Portionen" value={item.portions} onChange={(v) => onSave({ ...item, portions: v })} />
+      <Stepper label={t('Portionen')} value={item.portions} onChange={(v) => onSave({ ...item, portions: v })} />
       {item.portions === 0 ? (
-        <Button label="Leer – entfernen" variant="soft" onPress={() => onRemove(item.id)} />
+        <Button label={t('Leer – entfernen')} variant="soft" onPress={() => onRemove(item.id)} />
       ) : (
-        <ConfirmButton label="Entfernen" confirmLabel="Ja, entfernen" variant="ghost" onConfirm={() => onRemove(item.id)} />
+        <ConfirmButton label={t('Entfernen')} confirmLabel={t('Ja, entfernen')} variant="ghost" onConfirm={() => onRemove(item.id)} />
       )}
     </Card>
   );

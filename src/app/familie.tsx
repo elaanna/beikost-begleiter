@@ -14,6 +14,7 @@ import { openWissen } from '@/ui/nav';
 import { remindersSupported, requestReminderPermission } from '@/notifications/reminders';
 import { Switch } from 'react-native';
 import { brand, color, space } from '@/ui/theme';
+import { t } from '@/i18n';
 
 export default function Familie() {
   const app = useChild();
@@ -33,65 +34,65 @@ export default function Familie() {
             key={c.id}
             emoji={Baby}
             title={c.name}
-            subtitle={`${ageInMonths(c.birthDate, today)} Monate · geboren im ${formatMonth(c.birthDate)}`}
+            subtitle={t('{0} Monate · geboren im {1}', { 0: ageInMonths(c.birthDate, today), 1: formatMonth(c.birthDate) })}
             onPress={() => router.push({ pathname: '/kind', params: { id: c.id } })}
           />
         ))}
-        {isPro ? <ListItem emoji={Plus} title="Weiteres Kind anlegen" onPress={() => router.push('/kind')} /> : null}
+        {isPro ? <ListItem emoji={Plus} title={t('Weiteres Kind anlegen')} onPress={() => router.push('/kind')} /> : null}
       </Card>
 
-      <Card tone="peach" onPress={() => router.push('/dienste')} accessibilityLabel="Dienstplan öffnen">
+      <Card tone="peach" onPress={() => router.push('/dienste')} accessibilityLabel={t('Dienstplan öffnen')}>
         <Row>
           <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: color.surface, alignItems: 'center', justifyContent: 'center' }}><Users size={26} strokeWidth={1.75} color={brand.blue} /></View>
           <View style={{ flex: 1 }}>
-            <P bold>Dienstplan & Kita</P>
-            <Small soft={false}>Wer füttert, wer bringt, wer holt ab – Lücken in Rot</Small>
+            <P bold>{t('Dienstplan & Kita')}</P>
+            <Small soft={false}>{t('Wer füttert, wer bringt, wer holt ab – Lücken in Rot')}</Small>
           </View>
           <Text style={{ fontSize: 22, color: color.inkSoft }}>›</Text>
         </Row>
       </Card>
 
-      <Title>Du</Title>
+      <Title>{t('Du')}</Title>
       <Card>
         <Field
-          label="Dein Vorname"
+          label={t('Dein Vorname')}
           value={app.parentName}
           onChangeText={(v) => app.saveParentName(v)}
-          placeholder="z. B. Michaela"
-          hint="Nur für die Begrüßung auf diesem Handy."
+          placeholder={t('z. B. Michaela')}
+          hint={t('Nur für die Begrüßung auf diesem Handy.')}
           autoCapitalize="words"
           autoComplete="name"
           maxLength={40}
         />
-        <ListItem emoji={Mail} title="Konto & Handywechsel" subtitle={app.accountEmail ?? 'Noch kein Konto'} onPress={() => router.push('/konto')} />
+        <ListItem emoji={Mail} title={t('Konto & Handywechsel')} subtitle={app.accountEmail ?? t('Noch kein Konto')} onPress={() => router.push('/konto')} />
       </Card>
 
-      <Title>Gemeinsam planen</Title>
+      <Title>{t('Gemeinsam planen')}</Title>
       <FamilySharing />
       {message ? <P style={{ color: color.sageDeep, marginBottom: space.md }}>{message}</P> : null}
 
-      <Title>Erinnerungen</Title>
+      <Title>{t('Erinnerungen')}</Title>
       <Card>
         <Row style={{ justifyContent: 'space-between' }}>
           <View style={{ flex: 1 }}>
-            <P bold>🔔 An Mahlzeiten erinnern</P>
-            <Small>Mit dem, was gerade dran ist – zum Beispiel „Mittag: neu ist Ei, Tag 1 von 3“.</Small>
+            <P bold>{t('🔔 An Mahlzeiten erinnern')}</P>
+            <Small>{t('Mit dem, was gerade dran ist – zum Beispiel „Mittag: neu ist Ei, Tag 1 von 3“.')}</Small>
           </View>
           <Switch
             value={app.reminders.enabled}
             disabled={!remindersSupported}
             trackColor={{ true: color.sage, false: color.line }}
-            accessibilityLabel="Erinnerungen"
+            accessibilityLabel={t('Erinnerungen')}
             onValueChange={async (v) => {
               if (v && !(await requestReminderPermission())) {
-                setMessage('Mitteilungen sind nicht erlaubt. Du kannst sie in den Einstellungen deines Handys einschalten.');
+                setMessage(t('Mitteilungen sind nicht erlaubt. Du kannst sie in den Einstellungen deines Handys einschalten.'));
                 return;
               }
               await app.saveReminders({ ...app.reminders, enabled: v });
             }}
           />
         </Row>
-        {!remindersSupported ? <Small style={{ marginTop: space.sm }}>Erinnerungen funktionieren nur in der App auf dem Handy.</Small> : null}
+        {!remindersSupported ? <Small style={{ marginTop: space.sm }}>{t('Erinnerungen funktionieren nur in der App auf dem Handy.')}</Small> : null}
         {app.reminders.enabled ? (
           <View style={{ marginTop: space.lg }}>
             {(['mittag', 'nachmittag', 'abend'] as const).map((slot) => (
@@ -102,16 +103,16 @@ export default function Familie() {
                 onChange={(v) => app.saveReminders({ ...app.reminders, times: { ...app.reminders.times, [slot]: v } })}
               />
             ))}
-            <Small>Erinnert nur an Mahlzeiten, die laut Breiplan schon dran sind – am Familientisch pausieren die Erinnerungen.</Small>
+            <Small>{t('Erinnert nur an Mahlzeiten, die laut Breiplan schon dran sind – am Familientisch pausieren die Erinnerungen.')}</Small>
             <Row style={{ justifyContent: 'space-between', marginTop: space.lg }}>
               <View style={{ flex: 1 }}>
-                <P bold>🔒 Details auf dem Sperrbildschirm ausblenden</P>
-                <Small>Zeigt nur „Zeit für Mittag“ – ohne Namen und Lebensmittel.</Small>
+                <P bold>{t('🔒 Details auf dem Sperrbildschirm ausblenden')}</P>
+                <Small>{t('Zeigt nur „Zeit für Mittag“ – ohne Namen und Lebensmittel.')}</Small>
               </View>
               <Switch
                 value={app.reminders.discreet}
                 trackColor={{ true: color.sage, false: color.line }}
-                accessibilityLabel="Details auf dem Sperrbildschirm ausblenden"
+                accessibilityLabel={t('Details auf dem Sperrbildschirm ausblenden')}
                 onValueChange={(v) => app.saveReminders({ ...app.reminders, discreet: v })}
               />
             </Row>
@@ -119,39 +120,37 @@ export default function Familie() {
         ) : null}
       </Card>
 
-      <Title>Für die Kinderarztpraxis</Title>
+      <Title>{t('Für die Kinderarztpraxis')}</Title>
       <Card tone="sage">
         <P style={{ marginBottom: space.lg }}>
-          Alles auf einen Blick für die U5 oder U6: Allergene mit Datum, Reaktionen, was probiert wurde, Eisen und Verdauung.
-        </P>
+          {t('Alles auf einen Blick für die U5 oder U6: Allergene mit Datum, Reaktionen, was probiert wurde, Eisen und Verdauung.')}</P>
         <Button
-          label="Bericht als PDF"
+          label={t('Bericht als PDF')}
           icon={Stethoscope}
-          onPress={() => shareHtmlAsPdf(doctorReportHtml(child, logs, digestion, today), `Beikost-Bericht ${child.name}`)}
+          onPress={() => shareHtmlAsPdf(doctorReportHtml(child, logs, digestion, today), t('Beikost-Bericht {0}', { 0: child.name }))}
         />
       </Card>
 
-      <Title>Notfallblatt</Title>
+      <Title>{t('Notfallblatt')}</Title>
       <Card>
         <P soft style={{ marginBottom: space.lg }}>
-          Allergien, beobachtete Reaktionen und Notruf-Hinweise auf einer Seite – für Oma, Babysitter oder Kita.
-        </P>
-        <Field label="Telefon Eltern" value={parentContact} onChangeText={setParentContact} placeholder="0151 …" keyboardType="phone-pad" />
-        <Field label="Kinderarztpraxis" value={doctor} onChangeText={setDoctor} placeholder="Name und Telefon" />
-        <Button label="Notfallblatt als PDF" icon={FileText} variant="soft" onPress={() => shareHtmlAsPdf(emergencyHtml(child, logs, { parent: parentContact, doctor }), 'Notfallblatt')} />
+          {t('Allergien, beobachtete Reaktionen und Notruf-Hinweise auf einer Seite – für Oma, Babysitter oder Kita.')}</P>
+        <Field label={t('Telefon Eltern')} value={parentContact} onChangeText={setParentContact} placeholder="0151 …" keyboardType="phone-pad" />
+        <Field label={t('Kinderarztpraxis')} value={doctor} onChangeText={setDoctor} placeholder={t('Name und Telefon')} />
+        <Button label={t('Notfallblatt als PDF')} icon={FileText} variant="soft" onPress={() => shareHtmlAsPdf(emergencyHtml(child, logs, { parent: parentContact, doctor }), 'Notfallblatt')} />
       </Card>
 
-      <Title>Mehr</Title>
+      <Title>{t('Mehr')}</Title>
       <Card style={{ paddingVertical: space.sm, paddingHorizontal: space.sm }}>
         <ListItem
           emoji={Star}
-          title="Beikost-Paket"
-          subtitle={previewMode ? 'Testversion: alles freigeschaltet' : isPro ? `Aktiv${until ? ` bis ${formatDayLong(until.slice(0, 10))}` : ''}` : '12 Monate, einmal zahlen'}
+          title={t('Beikost-Paket')}
+          subtitle={previewMode ? t('Testversion: alles freigeschaltet') : isPro ? t('Aktiv{0}', { 0: until ? ` bis ${formatDayLong(until.slice(0, 10))}` : '' }) : t('12 Monate, einmal zahlen')}
           onPress={() => router.push('/paywall')}
         />
-        <ListItem emoji={GraduationCap} title="Geführte Tour noch einmal starten" onPress={() => app.restartTutorial()} />
-        <ListItem emoji={BookOpen} title="Leitlinien & Quellen" onPress={() => openWissen('leitlinien')} />
-        <ListItem emoji={Lock} title="Datenschutz, Impressum & Hinweis" onPress={() => router.push('/rechtliches')} />
+        <ListItem emoji={GraduationCap} title={t('Geführte Tour noch einmal starten')} onPress={() => app.restartTutorial()} />
+        <ListItem emoji={BookOpen} title={t('Leitlinien & Quellen')} onPress={() => openWissen('leitlinien')} />
+        <ListItem emoji={Lock} title={t('Datenschutz, Impressum & Hinweis')} onPress={() => router.push('/rechtliches')} />
       </Card>
     </Screen>
   );

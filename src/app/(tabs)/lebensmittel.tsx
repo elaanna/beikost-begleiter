@@ -11,6 +11,7 @@ import type { FoodCategory } from '@/domain/types';
 import { useChild } from '@/state/AppContext';
 import { Card, Heading, Hero, Pill, PillRow, Row, Screen, Small } from '@/ui/components';
 import { brand, color, radius, space, TOUCH, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 type Filter = 'alle' | 'probiert' | 'offen';
 
@@ -40,20 +41,20 @@ export default function ProbierPass() {
 
   return (
     <Screen>
-      <Hero>Lebensmittel entdecken</Hero>
+      <Hero>{t('Lebensmittel entdecken')}</Hero>
       <Small style={{ marginBottom: space.lg }}>
         {triedCount === 0
-          ? `Eure Beikostreise beginnt gerade. Jedes Kind hat sein eigenes Tempo.`
-          : `${triedCount} ${triedCount === 1 ? 'Lebensmittel' : 'Lebensmittel'} entdeckt – jedes Kind hat sein eigenes Tempo.`}
+          ? t('Eure Beikostreise beginnt gerade. Jedes Kind hat sein eigenes Tempo.')
+          : t('{0} {1} entdeckt – jedes Kind hat sein eigenes Tempo.', { 0: triedCount, 1: triedCount === 1 ? 'Lebensmittel' : 'Lebensmittel' })}
       </Small>
 
       {reoffer.length ? (
-        <Card tone="peach" onPress={() => router.push('/wiederanbieten')} accessibilityLabel="Noch mal anbieten" style={{ paddingVertical: space.lg }}>
+        <Card tone="peach" onPress={() => router.push('/wiederanbieten')} accessibilityLabel={t('Noch mal anbieten')} style={{ paddingVertical: space.lg }}>
           <Row>
             <RotateCcw size={24} strokeWidth={1.75} color={brand.blue} />
             <View style={{ flex: 1 }}>
-              <Text style={[type.bodyBold, { color: color.ink }]}>Noch mal anbieten</Text>
-              <Small soft={false}>{reoffer.slice(0, 3).map((r) => FOOD_BY_ID[r.foodId].name).join(', ')}{reoffer.length > 3 ? ' …' : ''} – ohne Druck, im eigenen Tempo</Small>
+              <Text style={[type.bodyBold, { color: color.ink }]}>{t('Noch mal anbieten')}</Text>
+              <Small soft={false}>{reoffer.slice(0, 3).map((r) => FOOD_BY_ID[r.foodId].name).join(', ')}{reoffer.length > 3 ? ' …' : ''} {' '}{t('– ohne Druck, im eigenen Tempo')}</Small>
             </View>
           </Row>
         </Card>
@@ -62,14 +63,14 @@ export default function ProbierPass() {
       {/* Erinnerungen statt Fortschrittsbalken: nur Erreichtes, ohne Zähler und Vorgaben (kein Leistungsdruck) */}
       {ms.some((m) => m.reached) ? (
         <Card tone="yellow" style={{ paddingVertical: space.lg }}>
-          <Text style={[type.cardTitle, { color: brand.blue }]}>Eure kleinen Erinnerungen</Text>
+          <Text style={[type.cardTitle, { color: brand.blue }]}>{t('Eure kleinen Erinnerungen')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: space.md, marginHorizontal: -space.sm }}>
             {ms.filter((m) => m.reached).map((m) => (
               <View key={m.id} style={{ width: 88, alignItems: 'center', marginHorizontal: space.xs }} accessibilityLabel={m.title}>
                 <View style={{ width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: color.surface }}>
                   <Text style={{ fontSize: 28 }}>{m.emoji}</Text>
                 </View>
-                <Text style={[type.caption, { textAlign: 'center', color: color.ink, marginTop: 4 }]} numberOfLines={2}>{m.title}</Text>
+                <Text style={[type.caption, { textAlign: 'center', color: color.ink, marginTop: 4 }]} numberOfLines={2}>{t(m.title)}</Text>
               </View>
             ))}
           </ScrollView>
@@ -77,10 +78,10 @@ export default function ProbierPass() {
       ) : null}
 
       <TextInput
-        accessibilityLabel="Lebensmittel suchen"
+        accessibilityLabel={t('Lebensmittel suchen')}
         value={query}
         onChangeText={setQuery}
-        placeholder="🔍  Lebensmittel suchen"
+        placeholder={t('🔍 Lebensmittel suchen')}
         placeholderTextColor={color.inkSoft}
         style={{
           minHeight: TOUCH, borderRadius: radius.pill, paddingHorizontal: space.xl, backgroundColor: color.surface,
@@ -89,7 +90,7 @@ export default function ProbierPass() {
       />
       <PillRow>
         {(['alle', 'offen', 'probiert'] as Filter[]).map((f) => (
-          <Pill key={f} label={{ alle: 'Alle', offen: 'Noch zu entdecken', probiert: 'Entdeckt' }[f]} selected={filter === f} onPress={() => setFilter(f)} />
+          <Pill key={f} label={t({ alle: 'Alle', offen: 'Noch zu entdecken', probiert: 'Entdeckt' }[f])} selected={filter === f} onPress={() => setFilter(f)} />
         ))}
       </PillRow>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: -space.sm, marginBottom: space.xl, marginHorizontal: -space.screenX }}
@@ -101,12 +102,12 @@ export default function ProbierPass() {
         </View>
       </ScrollView>
 
-      {groups.length === 0 ? <Small>Nichts gefunden.</Small> : null}
+      {groups.length === 0 ? <Small>{t('Nichts gefunden.')}</Small> : null}
       {groups.map(([cat, items], gi) => (
         <View key={cat} style={{ marginBottom: space.xxl, paddingTop: gi ? space.xl : 0, borderTopWidth: gi ? 1 : 0, borderTopColor: color.line }}>
           <Row style={{ justifyContent: 'space-between', alignItems: 'baseline', marginBottom: space.md }}>
             <Heading>{CATEGORY_LABEL[cat]}</Heading>
-            {items.some((f) => tried.has(f.id)) ? <Small>{items.filter((f) => tried.has(f.id)).length} entdeckt</Small> : null}
+            {items.some((f) => tried.has(f.id)) ? <Small>{items.filter((f) => tried.has(f.id)).length} {' '}{t('entdeckt')}</Small> : null}
           </Row>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
             {items.map((f) => {

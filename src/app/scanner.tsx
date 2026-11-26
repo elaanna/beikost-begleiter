@@ -6,6 +6,7 @@ import { analyzeProduct, fetchProduct, PRODUCT_SOURCES, VERDICT_TEXT, type Check
 import { useChild } from '@/state/AppContext';
 import { Button, Card, P, Row, Screen, Small, SourceLink } from '@/ui/components';
 import { brand, color, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 const LEVEL_ICON: Record<CheckLevel, { icon: string; bg: string }> = {
   gut: { icon: '✓', bg: brand.success },
@@ -45,7 +46,7 @@ export default function Scanner() {
     <Screen edges={['left', 'right']}>
       {state === 'scan' || state === 'laden' ? (
         <>
-          <P soft style={{ marginBottom: space.md }}>Halte die Kamera auf den Barcode. Du siehst sofort, was für {child.name} drinsteckt.</P>
+          <P soft style={{ marginBottom: space.md }}>{t('Halte die Kamera auf den Barcode. Du siehst sofort, was für {0} drinsteckt.', { 0: child.name })}</P>
           {permission?.granted ? (
             <View style={{ height: 300, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: '#000', marginBottom: space.lg }}>
               <CameraView
@@ -57,22 +58,22 @@ export default function Scanner() {
               <View pointerEvents="none" style={{ position: 'absolute', left: '12%', right: '12%', top: '38%', height: '24%', borderWidth: 3, borderColor: '#fff', borderRadius: radius.md, opacity: 0.85 }} />
               {state === 'laden' ? (
                 <View style={{ position: 'absolute', bottom: 16, alignSelf: 'center', backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999 }}>
-                  <Text style={[type.smallBold, { color: '#fff' }]}>Suche Produkt …</Text>
+                  <Text style={[type.smallBold, { color: '#fff' }]}>{t('Suche Produkt …')}</Text>
                 </View>
               ) : null}
             </View>
           ) : (
             <Card tone="sage">
-              <P bold>📷 Kamera für den Scanner</P>
-              <P style={{ marginTop: space.xs }}>Die Kamera liest nur den Barcode. Es werden keine Fotos gespeichert.</P>
+              <P bold>{t('📷 Kamera für den Scanner')}</P>
+              <P style={{ marginTop: space.xs }}>{t('Die Kamera liest nur den Barcode. Es werden keine Fotos gespeichert.')}</P>
               {permission && !permission.canAskAgain && Platform.OS !== 'web' ? (
-                <Button label="In den Einstellungen erlauben" variant="soft" onPress={() => Linking.openSettings()} />
+                <Button label={t('In den Einstellungen erlauben')} variant="soft" onPress={() => Linking.openSettings()} />
               ) : (
-                <Button label="Kamera erlauben" onPress={requestPermission} />
+                <Button label={t('Kamera erlauben')} onPress={requestPermission} />
               )}
             </Card>
           )}
-          <Small bold soft={false} style={{ marginBottom: space.xs }}>Oder Barcode eintippen</Small>
+          <Small bold soft={false} style={{ marginBottom: space.xs }}>{t('Oder Barcode eintippen')}</Small>
           <Row>
             <TextInput
               value={manual}
@@ -80,30 +81,30 @@ export default function Scanner() {
               placeholder="z. B. 4062300020719"
               placeholderTextColor={color.inkSoft}
               keyboardType="number-pad"
-              accessibilityLabel="Barcode eintippen"
+              accessibilityLabel={t('Barcode eintippen')}
               style={[type.body, { flex: 1, backgroundColor: color.surface, borderRadius: radius.pill, paddingHorizontal: space.lg, minHeight: 52, borderWidth: 2, borderColor: color.line, color: color.ink }]}
             />
-            <Button label="Prüfen" disabled={manual.length < 8 || state === 'laden'} onPress={() => lookup(manual)} />
+            <Button label={t('Prüfen')} disabled={manual.length < 8 || state === 'laden'} onPress={() => lookup(manual)} />
           </Row>
         </>
       ) : null}
 
       {state === 'nicht_gefunden' || state === 'fehler' ? (
         <Card tone="butter">
-          <P bold>{state === 'fehler' ? 'Keine Verbindung' : 'Produkt nicht gefunden'}</P>
+          <P bold>{state === 'fehler' ? t('Keine Verbindung') : t('Produkt nicht gefunden')}</P>
           <P style={{ marginTop: space.xs }}>
             {state === 'fehler'
-              ? 'Bitte prüfe deine Internetverbindung und versuche es noch einmal.'
-              : 'Dieses Produkt kennt Open Food Facts noch nicht. Lies am besten die Zutatenliste auf der Packung: Zucker, Sirup, Honig und Salz sollten nicht dabei sein.'}
+              ? t('Bitte prüfe deine Internetverbindung und versuche es noch einmal.')
+              : t('Dieses Produkt kennt Open Food Facts noch nicht. Lies am besten die Zutatenliste auf der Packung: Zucker, Sirup, Honig und Salz sollten nicht dabei sein.')}
           </P>
-          <Button label="Nochmal scannen" onPress={reset} />
+          <Button label={t('Nochmal scannen')} onPress={reset} />
         </Card>
       ) : null}
 
       {state === 'fertig' && result ? <ResultCard result={result} childName={child.name} onAgain={reset} /> : null}
 
       <View style={{ marginTop: space.lg, gap: space.xs }}>
-        <Small>Allgemeine Einordnung nach Zutatenliste – keine Garantie für Allergenfreiheit oder Eignung. Bitte immer die Packung prüfen.</Small>
+        <Small>{t('Allgemeine Einordnung nach Zutatenliste – keine Garantie für Allergenfreiheit oder Eignung. Bitte immer die Packung prüfen.')}</Small>
         {PRODUCT_SOURCES.map((s) => <SourceLink key={s.url} label={s.label} url={s.url} />)}
       </View>
     </Screen>
@@ -133,8 +134,8 @@ function ResultCard({ result, childName, onAgain }: { result: ProductCheck; chil
                   <Text style={[type.smallBold, { color: '#fff' }]}>{LEVEL_ICON[pt.level].icon}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <P bold>{pt.title}</P>
-                  <Small soft={false}>{pt.text}</Small>
+                  <P bold>{t(pt.title)}</P>
+                  <Small soft={false}>{t(pt.text)}</Small>
                 </View>
               </Row>
             ))}
@@ -142,7 +143,7 @@ function ResultCard({ result, childName, onAgain }: { result: ProductCheck; chil
         </View>
       </View>
       <Pressable onPress={onAgain} accessibilityRole="button" style={{ backgroundColor: color.sageDeep, borderRadius: 999, minHeight: 56, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={[type.bodyBold, { color: '#fff' }]}>📷 Nächstes Produkt scannen</Text>
+        <Text style={[type.bodyBold, { color: '#fff' }]}>{t('📷 Nächstes Produkt scannen')}</Text>
       </Pressable>
     </>
   );

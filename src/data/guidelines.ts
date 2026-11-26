@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 /**
  * Wissen, das die App anzeigt und in der Planungslogik verwendet.
  * Jede Aussage trägt ihre Quelle mit Link, damit Eltern sie nachlesen können.
@@ -79,7 +80,7 @@ export interface GuidelineStatement {
   important?: boolean;
 }
 
-export const TOPIC_LABEL: Record<Topic, { title: string; emoji: string }> = {
+export const TOPIC_LABEL: Record<Topic, { title: string; emoji: string }> = tr({
   beikoststart: { title: 'Wann starten?', emoji: '🗓️' },
   neue_lebensmittel: { title: 'Neue Lebensmittel', emoji: '🥕' },
   allergene: { title: 'Allergene: was die Leitlinie sagt', emoji: '🥚' },
@@ -87,9 +88,9 @@ export const TOPIC_LABEL: Record<Topic, { title: string; emoji: string }> = {
   trinken: { title: 'Trinken & Milch', emoji: '🥛' },
   saeuglingsnahrung: { title: 'Säuglingsnahrung', emoji: '🍼' },
   ergaenzung: { title: 'Nahrungsergänzung', emoji: '💊' },
-};
+});
 
-export const STATEMENTS: GuidelineStatement[] = [
+export const STATEMENTS: GuidelineStatement[] = tr([
   // --- Beikoststart ---
   {
     id: 'start-fenster', topic: 'beikoststart', source: 'allergie', strength: 'Empfehlung B',
@@ -185,10 +186,10 @@ export const STATEMENTS: GuidelineStatement[] = [
     id: 'erg-vitd', topic: 'ergaenzung', source: 'allergie',
     text: 'Die übliche Vitamin-D-Gabe bleibt bestehen – sie ist für die Knochen, nicht gegen Allergien.',
   },
-];
+]);
 
 /** Lebensmittel, die im ersten Lebensjahr nicht angeboten werden. */
-export const AVOID_FIRST_YEAR: { name: string; emoji: string; why: string }[] = [
+export const AVOID_FIRST_YEAR: { name: string; emoji: string; why: string }[] = tr([
   { name: 'Honig und Ahornsirup', emoji: '🍯', why: 'Können Sporen enthalten, die Säuglingsbotulismus auslösen.' },
   { name: 'Ganze Nüsse und Erdnüsse', emoji: '🥜', why: 'Hohe Erstickungsgefahr – bis ins Kindergartenalter nur als Mus.' },
   { name: 'Ganze runde Früchte', emoji: '🍇', why: 'Trauben, Kirschtomaten, Beeren immer vierteln oder zerdrücken.' },
@@ -201,35 +202,35 @@ export const AVOID_FIRST_YEAR: { name: string; emoji: string; why: string }[] = 
   { name: 'Kuhmilch als Getränk', emoji: '🥛', why: 'Erst gegen Ende des 1. Jahres in kleinen Mengen; im Brei erlaubt.' },
   { name: 'Reisdrinks, Reiswaffeln als Dauersnack', emoji: '🍘', why: 'Können Arsen enthalten.' },
   { name: 'Thunfisch, Schwertfisch', emoji: '🐟', why: 'Höhere Quecksilberbelastung.' },
-];
+]);
 
 /** Reifezeichen für den Beikoststart. */
-export const READINESS_SIGNS = [
+export const READINESS_SIGNS = tr([
   'Sitzt mit wenig Hilfe aufrecht und hält den Kopf sicher',
   'Zeigt Interesse an eurem Essen',
   'Öffnet den Mund, wenn ein Löffel kommt',
   'Schiebt Essen nicht mehr reflexartig mit der Zunge heraus',
   'Greift Dinge und führt sie zum Mund',
-];
+]);
 
 /** Anzeichen, bei denen sofort der Notruf gewählt werden muss. */
-export const EMERGENCY_SIGNS = [
+export const EMERGENCY_SIGNS = tr([
   'Atemnot, pfeifende Atmung, anhaltender Husten',
   'Schwellung von Lippen, Zunge oder Gesicht',
   'Blässe, Schlappheit, Bewusstseinstrübung',
   'Ausgedehnter Ausschlag zusammen mit Erbrechen',
-];
+]);
 
 /** Würgen vs. Verschlucken – der wichtigste Unterschied für Eltern. */
-export const GAG_VS_CHOKE = {
+export const GAG_VS_CHOKE = tr({
   gag: 'Das Baby hustet, würgt, wird rot und schiebt das Essen nach vorne. Ruhig bleiben und nicht in den Mund greifen.',
   choke: 'Das Baby ist still, kann nicht husten oder schreien, läuft blau an. Sofort 112 und Erste Hilfe.',
-};
+});
 
 /** Sicherheitsregeln beim Essen. */
-export const SAFE_EATING = [
+export const SAFE_EATING = tr([
   'Immer aufrecht sitzend essen, nie im Liegen oder unterwegs im Kinderwagen',
   'Nie unbeaufsichtigt essen lassen',
   'Neue Allergene mittags anbieten, nicht kurz vor dem Schlafen',
   'Einen Erste-Hilfe-Kurs am Kind besuchen',
-];
+]);

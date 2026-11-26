@@ -14,6 +14,7 @@ import { Button, Card, DayDots, Heading, Hero, IconLabel, Important, P, Row, Scr
 import { ChefHat, RefreshCw } from 'lucide-react-native';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { color, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 /** Details zu einer geplanten Mahlzeit: Mengen, Zubereitung je Lebensmittel, Hinweise. */
 export default function Mahlzeit() {
@@ -29,7 +30,7 @@ export default function Mahlzeit() {
   if (!meal) {
     return (
       <Screen edges={['left', 'right']}>
-        <P>Für diesen Tag ist diese Mahlzeit nicht geplant.</P>
+        <P>{t('Für diesen Tag ist diese Mahlzeit nicht geplant.')}</P>
       </Screen>
     );
   }
@@ -56,7 +57,7 @@ export default function Mahlzeit() {
         />
       ) : null}
       <Small>{formatDayLong(date)} · {SLOT_LABEL[meal.slot]}</Small>
-      <Hero style={{ marginTop: space.xs, marginBottom: space.lg }}>{meal.title}</Hero>
+      <Hero style={{ marginTop: space.xs, marginBottom: space.lg }}>{t(meal.title)}</Hero>
 
       {newFood ? (
         <Card tone="yellow" hero>
@@ -65,29 +66,28 @@ export default function Mahlzeit() {
               <Text style={{ fontSize: 36 }}>{newFood.emoji}</Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[type.smallBold, { color: color.peachDeep }]}>Neu</Text>
+              <Text style={[type.smallBold, { color: color.peachDeep }]}>{t('Neu')}</Text>
               <Heading>{newFood.name}</Heading>
               <Row style={{ marginTop: space.xs }}>
                 <DayDots day={meal.newFoodDay ?? 1} total={introDays(newFood)} />
-                <Small soft={false}>Tag {meal.newFoodDay} von {introDays(newFood)}</Small>
+                <Small soft={false}>{t('Tag {0} von {1}', { 0: meal.newFoodDay, 1: introDays(newFood) })}</Small>
               </Row>
             </View>
           </Row>
           <P style={{ marginTop: space.md }}>
-            Das neue Lebensmittel ein paar Tage hintereinander geben und dazu nur Bekanntes – so kannst du gut beobachten, wie es vertragen wird.
-          </P>
+            {t('Das neue Lebensmittel ein paar Tage hintereinander geben und dazu nur Bekanntes – so kannst du gut beobachten, wie es vertragen wird.')}</P>
         </Card>
       ) : null}
 
       {ordered.filter((f) => f.hint).map((f) => (
-        <Important key={f.id} title={`${f.emoji} ${f.name}`}>{f.hint}</Important>
+        <Important key={f.id} title={`${f.emoji} ${f.name}`}>{t(f.hint)}</Important>
       ))}
 
-      <Title>Wie viel?</Title>
+      <Title>{t('Wie viel?')}</Title>
       <Card>
         {portion.lines.map((l) => (
           <Row key={l.label} style={{ justifyContent: 'space-between', paddingVertical: space.xs }}>
-            <P style={{ flex: 1 }}>{l.label}</P>
+            <P style={{ flex: 1 }}>{t(l.label)}</P>
             <P bold>{l.amount}</P>
           </Row>
         ))}
@@ -96,18 +96,18 @@ export default function Mahlzeit() {
 
       {frozen ? (
         <Card tone="sage">
-          <P bold>Im Gefrierfach: {frozen.portions} {frozen.portions === 1 ? 'Portion' : 'Portionen'} {frozen.name}</P>
-          <Small soft={false}>Am Vorabend in den Kühlschrank legen, dann gut erwärmen. Öl erst danach zugeben.</Small>
+          <P bold>{t('Im Gefrierfach: {0}', { 0: frozen.portions })}{' '}{frozen.portions === 1 ? t('Portion') : t('Portionen')} {frozen.name}</P>
+          <Small soft={false}>{t('Am Vorabend in den Kühlschrank legen, dann gut erwärmen. Öl erst danach zugeben.')}</Small>
         </Card>
       ) : null}
 
-      <Title>👩‍🍳 So bereitest du es zu</Title>
+      <Title>{t('👩‍🍳 So bereitest du es zu')}</Title>
       {recipe ? (
         <Card>
-          <P bold>{recipe.emoji} Rezept: {recipe.name}</P>
+          <P bold>{t('{0} Rezept: {1}', { 0: recipe.emoji, 1: recipe.name })}</P>
           {recipe.steps.map((s, i) => <P key={s} style={{ marginTop: space.xs }}>{i + 1}. {s}</P>)}
           <Pressable onPress={() => router.push(`/rezept/${recipe.id}`)} accessibilityRole="link">
-            <IconLabel icon={ChefHat} label="Ganzes Rezept mit Zutaten & Einfrieren" chevron small={false} style={{ marginTop: space.md }} />
+            <IconLabel icon={ChefHat} label={t('Ganzes Rezept mit Zutaten & Einfrieren')} chevron small={false} style={{ marginTop: space.md }} />
           </Pressable>
         </Card>
       ) : null}
@@ -116,7 +116,7 @@ export default function Mahlzeit() {
           key={f.id}
           onPress={() => router.push(`/food/${f.id}`)}
           accessibilityRole="link"
-          accessibilityLabel={`${f.name}: mehr Infos`}
+          accessibilityLabel={t('{0}: mehr Infos', { 0: f.name })}
           style={({ pressed }) => ({
             backgroundColor: pressed ? color.sageSoft : color.surface, borderRadius: radius.lg, padding: space.lg, marginBottom: space.md,
           })}
@@ -124,7 +124,7 @@ export default function Mahlzeit() {
           <Row style={{ alignItems: 'flex-start' }}>
             <Text style={{ fontSize: 30 }}>{f.emoji}</Text>
             <View style={{ flex: 1 }}>
-              <P bold>{f.name}{f.id === meal.newFoodId ? ' · neu' : ''}</P>
+              <P bold>{f.name}{f.id === meal.newFoodId ? t(' · neu') : ''}</P>
               <P style={{ marginTop: space.xs }}>{preparationFor(f, child)}</P>
             </View>
             <Text style={{ fontSize: 20, color: color.inkSoft }}>›</Text>
@@ -134,16 +134,15 @@ export default function Mahlzeit() {
 
       {allergens.length ? (
         <Card tone="butter">
-          <P><Text style={type.bodyBold}>Enthält: </Text>{allergens.map((a) => ALLERGEN_LABEL[a]).join(', ')}</P>
+          <P><Text style={type.bodyBold}>{t('Enthält:')}{' '}</Text>{allergens.map((a) => ALLERGEN_LABEL[a]).join(', ')}</P>
         </Card>
       ) : null}
 
       <Small style={{ marginBottom: space.lg }}>
-        Immer im Sitzen und unter Aufsicht essen lassen. Lauwarm anbieten – Temperatur vorher prüfen.
-      </Small>
+        {t('Immer im Sitzen und unter Aufsicht essen lassen. Lauwarm anbieten – Temperatur vorher prüfen.')}</Small>
 
       {!meal.newFoodId && date >= today ? (
-        <Button label="Diese Mahlzeit tauschen" icon={RefreshCw} variant="soft" onPress={() => setSwapOpen(true)} />
+        <Button label={t('Diese Mahlzeit tauschen')} icon={RefreshCw} variant="soft" onPress={() => setSwapOpen(true)} />
       ) : null}
       <SwapSheet date={date} meal={swapOpen ? meal : null} onClose={() => setSwapOpen(false)} />
     </Screen>

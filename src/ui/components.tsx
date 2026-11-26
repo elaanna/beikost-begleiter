@@ -3,6 +3,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronRight, type LucideIcon } from 'lucide-react-native';
 import { brand, color, font, ICON, radius, space, TOUCH, type } from './theme';
+import { t } from '@/i18n';
 
 /** Symbol: Emoji (Lebensmittel, Illustration) oder Lucide-Icon (Bedienelemente, laut Guidelines 24 px / 1.75). */
 export type IconLike = string | LucideIcon;
@@ -91,9 +92,9 @@ export function Important({ title = 'Wichtig', children, action }: { title?: str
     <View style={s.important} accessibilityRole="alert">
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.xs }}>
         <View style={s.importantBadge}><Text style={{ color: '#fff', fontFamily: font.bodyHeavy, fontSize: 14 }}>!</Text></View>
-        <Text style={[type.smallBold, { color: color.redDeep }]}>{title}</Text>
+        <Text style={[type.smallBold, { color: color.redDeep }]}>{t(title)}</Text>
       </View>
-      {typeof children === 'string' ? <Text style={[type.body, { color: color.redDeep }]}>{children}</Text> : children}
+      {typeof children === 'string' ? <Text style={[type.body, { color: color.redDeep }]}>{t(children)}</Text> : children}
       {action}
     </View>
   );
@@ -194,7 +195,7 @@ export function Segmented<T extends string>({ options, value, onChange }: {
             adjustsFontSizeToFit
             style={[type.bodyBold, { color: value === o.id ? color.sageDeep : color.inkSoft, fontSize: options.length > 3 ? 14 : 16 }]}
           >
-            {o.label}
+            {t(o.label)}
           </Text>
         </Pressable>
       ))}
@@ -241,7 +242,7 @@ export function FoodBadge({ emoji, size = 56, tone = 'peach' }: { emoji: string;
 /** Punkte für Tag 1–n eines neuen Lebensmittels. */
 export function DayDots({ day, total }: { day: number; total: number }) {
   return (
-    <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={`Tag ${day} von ${total}`}>
+    <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={t('Tag {0} von {1}', { 0: day, 1: total })}>
       {Array.from({ length: total }, (_, i) => (
         <View key={i} style={[s.dot, { backgroundColor: i < day ? color.peach : 'transparent' }]} />
       ))}
@@ -300,7 +301,7 @@ export function LockedNotice({ text, onUnlock }: { text: string; onUnlock: () =>
     <Card tone="butter" style={{ gap: space.md }}>
       <Text style={{ fontSize: 28 }}>🔓</Text>
       <P>{text}</P>
-      <Button label="Beikost-Paket ansehen" onPress={onUnlock} />
+      <Button label={t('Beikost-Paket ansehen')} onPress={onUnlock} />
     </Card>
   );
 }

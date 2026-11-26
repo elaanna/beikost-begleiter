@@ -5,6 +5,7 @@
  */
 import { FOOD_BY_ID } from '@/data/foods';
 import type { MealSlot } from './types';
+import { t, tr } from '@/i18n';
 
 export interface PortionLine {
   label: string;
@@ -17,13 +18,13 @@ export interface Portion {
   note: string;
 }
 
-export const PORTION_SOURCES = [
+export const PORTION_SOURCES = tr([
   { label: 'KKH: Beikost (nach Gesund ins Leben)', url: 'https://www.kkh.de/leistungen/familie-kind/saeuglinge/babykost/beikost' },
   { label: 'Apotheken Umschau: Babybrei-Rezepte', url: 'https://www.apotheken-umschau.de/familie/kinderernaehrung/beikost/baby-brei-selbermachen-rezepte-790023.html' },
-];
+]);
 
 /** Vollständige Rezepte (Zielmenge, wenn das Kind die ganze Mahlzeit isst). */
-export const FULL_PORTIONS: Record<MealSlot, Portion> = {
+export const FULL_PORTIONS: Record<MealSlot, Portion> = tr({
   mittag: {
     title: 'Gemüse-Kartoffel-Fleisch-Brei',
     lines: [
@@ -54,7 +55,7 @@ export const FULL_PORTIONS: Record<MealSlot, Portion> = {
     ],
     note: 'Etwa einen Monat nach dem Abendbrei. Milchfrei.',
   },
-};
+});
 
 /** Menge für eine konkrete Mahlzeit im Plan, abhängig vom Tag seit Beikoststart. */
 export function portionFor(slot: MealSlot, dayIndex: number, foodIds: string[]): Portion {
@@ -62,20 +63,20 @@ export function portionFor(slot: MealSlot, dayIndex: number, foodIds: string[]):
   if (slot === 'mittag') {
     const cats = foodIds.map((id) => FOOD_BY_ID[id]?.category);
     const lines: PortionLine[] = [];
-    const veg = dayIndex < 7 ? 'einige Löffel, langsam bis 100 g' : '100 g';
-    if (cats.includes('gemuese')) lines.push({ label: 'Gemüse', amount: veg });
-    if (foodIds.some((id) => ['kartoffel', 'reis', 'nudeln'].includes(id))) lines.push({ label: 'Kartoffel, Reis oder Nudeln', amount: '50 g' });
+    const veg = dayIndex < 7 ? t('einige Löffel, langsam bis 100 g') : '100 g';
+    if (cats.includes('gemuese')) lines.push({ label: t('Gemüse'), amount: veg });
+    if (foodIds.some((id) => ['kartoffel', 'reis', 'nudeln'].includes(id))) lines.push({ label: t('Kartoffel, Reis oder Nudeln'), amount: '50 g' });
     if (cats.includes('fleisch') || cats.includes('fisch')) lines.push({ label: cats.includes('fisch') ? 'Fisch' : 'Fleisch', amount: '30 g' });
-    if (foodIds.includes('ei')) lines.push({ label: 'Ei (hart gekocht)', amount: 'etwa ½ Ei' });
-    if (cats.includes('huelsenfruechte')) lines.push({ label: 'Linsen oder Bohnen (gegart)', amount: 'etwa 30 g' });
-    if (cats.includes('fett')) lines.push({ label: 'Rapsöl', amount: '1 EL' });
+    if (foodIds.includes('ei')) lines.push({ label: t('Ei (hart gekocht)'), amount: t('etwa ½ Ei') });
+    if (cats.includes('huelsenfruechte')) lines.push({ label: t('Linsen oder Bohnen (gegart)'), amount: t('etwa 30 g') });
+    if (cats.includes('fett')) lines.push({ label: t('Rapsöl'), amount: t('1 EL') });
     return {
-      title: 'Menge',
+      title: t('Menge'),
       lines,
       note: dayIndex < 7
-        ? 'Am Anfang reichen wenige Löffel – den Rest der Mahlzeit trinkt dein Kind weiter Milch.'
-        : 'Richtwerte. Dein Kind bestimmt, wie viel es isst.',
+        ? t('Am Anfang reichen wenige Löffel – den Rest der Mahlzeit trinkt dein Kind weiter Milch.')
+        : t('Richtwerte. Dein Kind bestimmt, wie viel es isst.'),
     };
   }
-  return { title: 'Menge', lines: full.lines, note: 'Richtwerte. Dein Kind bestimmt, wie viel es isst.' };
+  return { title: t('Menge'), lines: full.lines, note: t('Richtwerte. Dein Kind bestimmt, wie viel es isst.') };
 }

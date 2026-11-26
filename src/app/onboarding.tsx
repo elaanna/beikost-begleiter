@@ -9,14 +9,15 @@ import { useApp } from '@/state/AppContext';
 import { Button, Card, Field, Hero, Important, P, ProgressBar, Row, Screen, Small } from '@/ui/components';
 import { AllergyStep, ApproachStep, MilkStep, NameAndBirth, StartStep, useChildDraft } from '@/ui/ChildForm';
 import { color, space, type } from '@/ui/theme';
+import { t, tr } from '@/i18n';
 
-const STEPS = [
+const STEPS = tr([
   { title: 'Hallo! Wer startet mit der Beikost?', emoji: '👶' },
   { title: 'Wie trinkt dein Kind Milch?', emoji: '🍼' },
   { title: 'Wie möchtet ihr starten?', emoji: '🥄' },
   { title: 'Gibt es bekannte Allergien?', emoji: '🩺' },
   { title: 'Wann geht es los?', emoji: '🗓️' },
-];
+]);
 
 /** Eine Frage pro Schritt, Auswahlkarten statt Formular. */
 export default function Onboarding() {
@@ -34,22 +35,22 @@ export default function Onboarding() {
       <Row style={{ justifyContent: 'space-between', marginBottom: space.sm }}>
         {step > 0 ? (
           <Pressable onPress={() => setStep((s) => s - 1)} accessibilityRole="button" hitSlop={12}>
-            <Text style={[type.bodyBold, { color: color.sageDeep }]}>‹ Zurück</Text>
+            <Text style={[type.bodyBold, { color: color.sageDeep }]}>{t('‹ Zurück')}</Text>
           </Pressable>
         ) : <View />}
-        <Small>Schritt {step + 1} von {STEPS.length}</Small>
+        <Small>{t('Schritt')}{' '}{step + 1} {' '}{t('von {0}', { 0: STEPS.length })}</Small>
       </Row>
       <ProgressBar value={step + 1} max={STEPS.length} />
 
       <Text style={{ fontSize: 56, marginTop: space.xl }}>{STEPS[step].emoji}</Text>
-      <Hero style={{ marginVertical: space.lg }}>{STEPS[step].title}</Hero>
+      <Hero style={{ marginVertical: space.lg }}>{t(STEPS[step].title)}</Hero>
 
       {step === 0 ? (
         <>
           <NameAndBirth d={d} />
-          <Field label="Und wie heißt du? (freiwillig)" value={parentName} onChangeText={setParentName} placeholder="Dein Vorname" hint="Damit wir dich jeden Tag persönlich begrüßen können. Bleibt auf diesem Handy." autoCapitalize="words" autoComplete="name" maxLength={40} />
+          <Field label={t('Und wie heißt du? (freiwillig)')} value={parentName} onChangeText={setParentName} placeholder={t('Dein Vorname')} hint={t('Damit wir dich jeden Tag persönlich begrüßen können. Bleibt auf diesem Handy.')} autoCapitalize="words" autoComplete="name" maxLength={40} />
           <Pressable onPress={() => router.push('/rechtliches')} accessibilityRole="link">
-            <Small>Diese App ersetzt keine kinderärztliche Beratung. <Text style={{ textDecorationLine: 'underline' }}>Datenschutz & Hinweise</Text></Small>
+            <Small>{t('Diese App ersetzt keine kinderärztliche Beratung.')}{' '}<Text style={{ textDecorationLine: 'underline' }}>{t('Datenschutz & Hinweise')}</Text></Small>
           </Pressable>
         </>
       ) : null}
@@ -59,9 +60,7 @@ export default function Onboarding() {
           <ApproachStep d={d} />
           {d.approach === 'blw' ? (
             <Important>
-              Laut Netzwerk Gesund ins Leben fehlen für Baby-led Weaning bisher ein durchgerechnetes Konzept und ein
-              Sicherheitsnachweis. Achte besonders auf weiche Stücke und lass dein Kind nie allein essen.
-            </Important>
+              {t('Laut Netzwerk Gesund ins Leben fehlen für Baby-led Weaning bisher ein durchgerechnetes Konzept und ein Sicherheitsnachweis. Achte besonders auf weiche Stücke und lass dein Kind nie allein essen.')}</Important>
           ) : null}
         </>
       ) : null}
@@ -72,12 +71,9 @@ export default function Onboarding() {
             <Row>
               <View style={{ flex: 1 }}>
                 <P>
-                  Ich willige ein, dass Gesundheitsangaben meines Kindes (Allergien, Reaktionen, Verdauung) in der App
-                  gespeichert werden. Sie bleiben auf diesem Gerät, bis du die Familienfreigabe startest oder die Cloud-Sicherung einschaltest. Widerruf jederzeit
-                  unter Familie → Datenschutz (löscht die Daten).
-                </P>
+                  {t('Ich willige ein, dass Gesundheitsangaben meines Kindes (Allergien, Reaktionen, Verdauung) in der App gespeichert werden. Sie bleiben auf diesem Gerät, bis du die Familienfreigabe startest oder die Cloud-Sicherung einschaltest. Widerruf jederzeit unter Familie → Datenschutz (löscht die Daten).')}</P>
               </View>
-              <Switch value={consent} onValueChange={setConsent} trackColor={{ true: color.sage, false: color.line }} accessibilityLabel="Einwilligung Gesundheitsdaten" />
+              <Switch value={consent} onValueChange={setConsent} trackColor={{ true: color.sage, false: color.line }} accessibilityLabel={t('Einwilligung Gesundheitsdaten')} />
             </Row>
           </Card>
         </>
@@ -85,7 +81,7 @@ export default function Onboarding() {
       {step === 4 ? <StartStep d={d} /> : null}
 
       <Button
-        label={last ? 'Plan erstellen' : 'Weiter'}
+        label={last ? t('Plan erstellen') : t('Weiter')}
         disabled={!canNext}
         style={{ marginTop: space.xl }}
         onPress={async () => {

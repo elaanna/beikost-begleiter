@@ -9,6 +9,7 @@ import { lunchboxShopping, lunchboxWeek } from '@/domain/toddler';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, Hero, IconLabel, LockedNotice, P, Row, Screen, Small, SourceLink, Title } from '@/ui/components';
 import { brand, color, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 /** Kita-Brotdose: Ideen für Montag bis Freitag aus dem, was das Kind schon kennt, plus Einkaufsliste. */
 export default function Brotdose() {
@@ -23,18 +24,17 @@ export default function Brotdose() {
   if (!isPro) {
     return (
       <Screen edges={['left', 'right']}>
-        <Hero style={{ marginBottom: space.lg }}>Kita-Brotdose</Hero>
-        <LockedNotice text="Brotdosen-Ideen für die Woche mit Einkaufsliste gehören zum Beikost-Paket." onUnlock={() => router.push('/paywall')} />
+        <Hero style={{ marginBottom: space.lg }}>{t('Kita-Brotdose')}</Hero>
+        <LockedNotice text={t('Brotdosen-Ideen für die Woche mit Einkaufsliste gehören zum Beikost-Paket.')} onUnlock={() => router.push('/paywall')} />
       </Screen>
     );
   }
 
   return (
     <Screen edges={['left', 'right']}>
-      <Hero style={{ marginBottom: space.xs }}>Kita-Brotdose</Hero>
+      <Hero style={{ marginBottom: space.xs }}>{t('Kita-Brotdose')}</Hero>
       <P soft style={{ marginBottom: space.lg }}>
-        Ideen für {formatDay(monday, false)} – {formatDay(addDays(monday, 4), false)} aus Lebensmitteln, die {child.name} schon kennt.
-      </P>
+        {t('Ideen für {0} – {1} aus Lebensmitteln, die {2} schon kennt.', { 0: formatDay(monday, false), 1: formatDay(addDays(monday, 4), false), 2: child.name })}</P>
       {week.map((d) => (
         <Card key={d.date} style={{ paddingVertical: space.lg }}>
           <Text style={[type.cardTitle, { color: brand.blue, marginBottom: space.sm }]}>{formatDay(d.date)}</Text>
@@ -42,40 +42,40 @@ export default function Brotdose() {
             <Row key={part} style={{ paddingVertical: 3 }}>
               <Small style={{ width: 120 }}>{LUNCHBOX_LABEL[part]}</Small>
               <View style={{ flex: 1 }}>
-                <P>{d.items[part].text}</P>
-                {!d.items[part].known ? <Small style={{ color: color.peachDeep }}>Noch nicht probiert – erst zu Hause anbieten</Small> : null}
+                <P>{t(d.items[part].text)}</P>
+                {!d.items[part].known ? <Small style={{ color: color.peachDeep }}>{t('Noch nicht probiert – erst zu Hause anbieten')}</Small> : null}
               </View>
             </Row>
           ))}
-          <Small style={{ marginTop: space.xs }}>Dazu: Wasser oder ungesüßter Tee</Small>
+          <Small style={{ marginTop: space.xs }}>{t('Dazu: Wasser oder ungesüßter Tee')}</Small>
         </Card>
       ))}
-      <Button label="Neu mischen" icon={Shuffle} variant="soft" onPress={() => setShuffle((x) => x + 1)} />
+      <Button label={t('Neu mischen')} icon={Shuffle} variant="soft" onPress={() => setShuffle((x) => x + 1)} />
 
       <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title>Einkaufsliste</Title>
-        <Pressable accessibilityRole="button" accessibilityLabel="Einkaufsliste teilen" hitSlop={10}
-          onPress={() => Share.share({ message: shoppingText(`Brotdose ${formatDay(monday, false)} – ${formatDay(addDays(monday, 4), false)}`, shopping.map((x) => ({ name: x.text, detail: `${x.count}×` }))) })}>
-          <IconLabel icon={Share2} label="Teilen" />
+        <Title>{t('Einkaufsliste')}</Title>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('Einkaufsliste teilen')} hitSlop={10}
+          onPress={() => Share.share({ message: shoppingText(t('Brotdose {0} – {1}', { 0: formatDay(monday, false), 1: formatDay(addDays(monday, 4), false) }), shopping.map((x) => ({ name: x.text, detail: `${x.count}×` }))) })}>
+          <IconLabel icon={Share2} label={t('Teilen')} />
         </Pressable>
       </Row>
       <Card>
         {shopping.map((x) => (
           <Row key={x.text} style={{ justifyContent: 'space-between', paddingVertical: 4 }}>
-            <P>{x.text}</P>
+            <P>{t(x.text)}</P>
             <Small soft={false}>{x.count}×</Small>
           </Row>
         ))}
       </Card>
 
-      <Title>Gut zu wissen</Title>
+      <Title>{t('Gut zu wissen')}</Title>
       <Card tone="lilac">
         <View style={{ gap: space.sm }}>
-          {LUNCHBOX_TIPS.map((t) => <Small key={t} soft={false}>• {t}</Small>)}
+          {LUNCHBOX_TIPS.map((tx) => <Small key={tx} soft={false}>• {t(tx)}</Small>)}
         </View>
       </Card>
       {LUNCHBOX_SOURCES.map((s) => <SourceLink key={s.url} label={s.label} url={s.url} />)}
-      <Small style={{ marginTop: space.sm, color: color.inkSoft }}>Allgemeine Ideen – ausgeschlossene Lebensmittel und Allergene lässt die App weg.</Small>
+      <Small style={{ marginTop: space.sm, color: color.inkSoft }}>{t('Allgemeine Ideen – ausgeschlossene Lebensmittel und Allergene lässt die App weg.')}</Small>
     </Screen>
   );
 }

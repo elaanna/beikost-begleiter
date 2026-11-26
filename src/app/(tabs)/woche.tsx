@@ -20,6 +20,7 @@ import { isTablePhase, tableDays, type TableDay } from '@/domain/toddler';
 import { TABLE_SLOT_INFO } from '@/data/toddler';
 import { shareHtmlAsPdf } from '@/ui/exportPdf';
 import { brand, color, ICON, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 type View_ = 'woche' | 'einkauf';
 
@@ -51,11 +52,11 @@ export default function Plan() {
 
   return (
     <Screen>
-      <Hero style={{ marginBottom: space.lg }}>Woche</Hero>
+      <Hero style={{ marginBottom: space.lg }}>{t('Woche')}</Hero>
       <Segmented<View_>
         options={[
-          { id: 'woche', label: 'Plan' },
-          { id: 'einkauf', label: 'Einkauf' },
+          { id: 'woche', label: t('Plan') },
+          { id: 'einkauf', label: t('Einkauf') },
         ]}
         value={mode}
         onChange={setMode}
@@ -65,23 +66,23 @@ export default function Plan() {
 
       {/* Wochenwahl */}
       <Row style={{ justifyContent: 'space-between', marginBottom: space.lg }}>
-        <WeekArrow label="‹" a11y="Vorherige Woche" onPress={() => setOffset((o) => o - 1)} />
+        <WeekArrow label="‹" a11y={t('Vorherige Woche')} onPress={() => setOffset((o) => o - 1)} />
         <View style={{ alignItems: 'center' }}>
-          <Heading>{offset === 0 ? 'Diese Woche' : offset === 1 ? 'Nächste Woche' : offset === -1 ? 'Letzte Woche' : `${formatDay(from, false)}`}</Heading>
+          <Heading>{offset === 0 ? t('Diese Woche') : offset === 1 ? t('Nächste Woche') : offset === -1 ? t('Letzte Woche') : `${formatDay(from, false)}`}</Heading>
           <Small>{formatDay(from, false)} – {formatDay(addDays(from, 6), false)}</Small>
         </View>
-        <WeekArrow label="›" a11y="Nächste Woche" onPress={() => setOffset((o) => o + 1)} />
+        <WeekArrow label="›" a11y={t('Nächste Woche')} onPress={() => setOffset((o) => o + 1)} />
       </Row>
 
       {locked ? (
         <LockedNotice
           text={mode === 'einkauf'
-            ? 'Mit dem Beikost-Paket entsteht aus dem Plan automatisch eine Einkaufs- und Vorkochliste.'
-            : 'Die kostenlose Version zeigt die aktuelle Woche. Mit dem Beikost-Paket planst du beliebig weit voraus.'}
+            ? t('Mit dem Beikost-Paket entsteht aus dem Plan automatisch eine Einkaufs- und Vorkochliste.')
+            : t('Die kostenlose Version zeigt die aktuelle Woche. Mit dem Beikost-Paket planst du beliebig weit voraus.')}
           onUnlock={() => router.push('/paywall')}
         />
       ) : mode === 'woche' && table ? (
-        isPro ? <TableWeek days={tDays} today={today} /> : <LockedNotice text="Der Familien-Wochenplan ab 1 Jahr gehört zum Beikost-Paket." onUnlock={() => router.push('/paywall')} />
+        isPro ? <TableWeek days={tDays} today={today} /> : <LockedNotice text={t('Der Familien-Wochenplan ab 1 Jahr gehört zum Beikost-Paket.')} onUnlock={() => router.push('/paywall')} />
       ) : mode === 'woche' ? (
         <>
           {days.map((d) => {
@@ -92,13 +93,13 @@ export default function Plan() {
                   disabled={d.meals.length === 0}
                   onPress={() => router.push({ pathname: '/mahlzeit', params: { date: d.date } })}
                   accessibilityRole="button"
-                  accessibilityLabel={`${formatDay(d.date)}: alle Mahlzeiten mit Mengen und Zubereitung`}
+                  accessibilityLabel={t('{0}: alle Mahlzeiten mit Mengen und Zubereitung', { 0: formatDay(d.date) })}
                   style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: d.meals.length ? space.md : 0 }}
                 >
                   <Heading>{formatDay(d.date)}</Heading>
-                  {isToday ? <Small bold style={{ color: color.sageDeep }}>Heute</Small> : null}
+                  {isToday ? <Small bold style={{ color: color.sageDeep }}>{t('Heute')}</Small> : null}
                 </Pressable>
-                {d.meals.length === 0 ? <Small>Noch keine Beikost</Small> : null}
+                {d.meals.length === 0 ? <Small>{t('Noch keine Beikost')}</Small> : null}
                 {d.meals.map((m) => {
                   const canSwap = !m.newFoodId && d.date >= today;
                   return (
@@ -106,7 +107,7 @@ export default function Plan() {
                       key={m.slot}
                       onPress={() => router.push({ pathname: '/mahlzeit', params: { date: d.date, slot: m.slot } })}
                       accessibilityRole="button"
-                      accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)}: ${m.title}. Mengen und Zubereitung öffnen`}
+                      accessibilityLabel={t('{0} am {1}: {2}. Mengen und Zubereitung öffnen', { 0: SLOT_LABEL[m.slot], 1: formatDay(d.date), 2: m.title })}
                       style={({ pressed }) => ({
                         backgroundColor: m.newFoodId ? brand.yellowSoft : color.creme,
                         borderRadius: radius.md,
@@ -118,17 +119,17 @@ export default function Plan() {
                       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <View style={{ flex: 1 }}>
                           <Text style={[type.small, { color: color.inkSoft }]}>{SLOT_LABEL[m.slot]}</Text>
-                          <Text style={[type.bodyBold, { color: color.ink }]}>{m.title}</Text>
+                          <Text style={[type.bodyBold, { color: color.ink }]}>{t(m.title)}</Text>
                         </View>
                         {canSwap ? (
                           <Pressable
                             onPress={() => setSwapping({ date: d.date, meal: m })}
                             accessibilityRole="button"
-                            accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)} tauschen`}
+                            accessibilityLabel={t('{0} am {1} tauschen', { 0: SLOT_LABEL[m.slot], 1: formatDay(d.date) })}
                             hitSlop={10}
                             style={{ backgroundColor: color.surface, borderRadius: radius.pill, paddingHorizontal: 12, paddingVertical: 6 }}
                           >
-                            <IconLabel icon={RefreshCw} label="Tauschen" />
+                            <IconLabel icon={RefreshCw} label={t('Tauschen')} />
                           </Pressable>
                         ) : null}
                       </Row>
@@ -140,13 +141,13 @@ export default function Plan() {
                             <View key={id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 10, borderRadius: radius.pill, backgroundColor: color.surface }}>
                               <Text style={{ fontSize: 14 }}>{f.emoji}</Text>
                               <Text style={[type.small, { color: isNew ? color.peachDeep : color.ink }]}>
-                                {f.name}{isNew ? ` · neu (${m.newFoodDay})` : ''}
+                                {f.name}{isNew ? t(' · neu ({0})', { 0: m.newFoodDay }) : ''}
                               </Text>
                             </View>
                           );
                         })}
                       </Row>
-                      <IconLabel icon={Scale} label="Mengen & Zubereitung" chevron style={{ marginTop: space.sm }} />
+                      <IconLabel icon={Scale} label={t('Mengen & Zubereitung')} chevron style={{ marginTop: space.sm }} />
                     </Pressable>
                   );
                 })}
@@ -154,24 +155,24 @@ export default function Plan() {
             );
           })}
           {isPro ? (
-            <Button label="Wochenplan als PDF teilen" icon={FileText} variant="soft" onPress={() => shareHtmlAsPdf(planHtml(child, days), 'Wochenplan')} />
+            <Button label={t('Wochenplan als PDF teilen')} icon={FileText} variant="soft" onPress={() => shareHtmlAsPdf(planHtml(child, days), 'Wochenplan')} />
           ) : null}
         </>
       ) : (
         <>
-          {items.length === 0 ? <P soft>In dieser Woche ist noch keine Beikost geplant.</P> : null}
+          {items.length === 0 ? <P soft>{t('In dieser Woche ist noch keine Beikost geplant.')}</P> : null}
           {table ? (
-            <Button label="Kita-Brotdose planen" icon={Sandwich} variant="soft" style={{ marginBottom: space.md }} onPress={() => router.push('/brotdose')} />
+            <Button label={t('Kita-Brotdose planen')} icon={Sandwich} variant="soft" style={{ marginBottom: space.md }} onPress={() => router.push('/brotdose')} />
           ) : null}
           {items.length ? (
-            <Button label="Liste teilen" icon={Share2} variant="soft" style={{ marginBottom: space.sm }} onPress={() => Share.share({
-              message: shoppingText(`Einkauf ${formatDay(from, false)} – ${formatDay(addDays(from, 6), false)}`,
+            <Button label={t('Liste teilen')} icon={Share2} variant="soft" style={{ marginBottom: space.sm }} onPress={() => Share.share({
+              message: shoppingText(t('Einkauf {0} – {1}', { 0: formatDay(from, false), 1: formatDay(addDays(from, 6), false) }),
                 items.filter(({ food }) => !checked.has(food.id) && !inPantry.has(food.id)).map(({ food }) => ({ name: food.name, detail: food.shopUnit }))),
             })} />
           ) : null}
           <Row style={{ gap: space.sm, marginBottom: space.md }}>
-            <Button label="Vorrat" icon={ShoppingBasket} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/vorrat')} />
-            <Button label="Scannen" icon={ScanBarcode} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/scanner')} />
+            <Button label={t('Vorrat')} icon={ShoppingBasket} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/vorrat')} />
+            <Button label={t('Scannen')} icon={ScanBarcode} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/scanner')} />
           </Row>
           {groupByCategory(items).map(([cat, list]) => (
             <Card key={cat} style={{ paddingVertical: space.lg }}>
@@ -198,7 +199,7 @@ export default function Plan() {
                     <FoodBadge emoji={food.emoji} size={36} tone="peach" />
                     <View style={{ flex: 1 }}>
                       <P bold style={isChecked ? { textDecorationLine: 'line-through', color: color.inkSoft } : undefined}>{food.name}</P>
-                      <Small>{inPantry.has(food.id) ? '🧺 vorrätig' : `${food.shopUnit} · für ${servings} ${servings === 1 ? 'Mahlzeit' : 'Mahlzeiten'}`}</Small>
+                      <Small>{inPantry.has(food.id) ? t('🧺 vorrätig') : t('{0} · für {1} {2}', { 0: food.shopUnit, 1: servings, 2: servings === 1 ? 'Mahlzeit' : 'Mahlzeiten' })}</Small>
                     </View>
                   </Pressable>
                 );
@@ -207,12 +208,12 @@ export default function Plan() {
           ))}
           {tasks.length ? (
             <>
-              <Title>Vorkochen</Title>
-              <Button label="Vorkoch-Sonntag starten" icon={CookingPot} style={{ marginBottom: space.md }} onPress={() => router.push('/vorkochen')} />
-              {tasks.map((t) => (
-                <Card key={t.title} tone="sage">
-                  <P bold>🧊 {t.title}</P>
-                  <Small soft={false} style={{ marginTop: space.xs }}>{t.detail}</Small>
+              <Title>{t('Vorkochen')}</Title>
+              <Button label={t('Vorkoch-Sonntag starten')} icon={CookingPot} style={{ marginBottom: space.md }} onPress={() => router.push('/vorkochen')} />
+              {tasks.map((tx) => (
+                <Card key={tx.title} tone="sage">
+                  <P bold>🧊 {t(tx.title)}</P>
+                  <Small soft={false} style={{ marginTop: space.xs }}>{t(tx.detail)}</Small>
                 </Card>
               ))}
             </>
@@ -250,7 +251,7 @@ function TableWeek({ days, today }: { days: TableDay[]; today: string }) {
         <Card key={d.date} style={d.date === today ? { borderWidth: 2.5, borderColor: color.sage } : { paddingVertical: space.lg }}>
           <Row style={{ justifyContent: 'space-between', marginBottom: space.sm }}>
             <Heading>{formatDay(d.date)}</Heading>
-            {d.date === today ? <Small bold style={{ color: color.sageDeep }}>Heute</Small> : null}
+            {d.date === today ? <Small bold style={{ color: color.sageDeep }}>{t('Heute')}</Small> : null}
           </Row>
           {d.meals.map((m) => (
             <Pressable key={m.slot} disabled={!m.recipeId} onPress={() => m.recipeId && router.push(`/rezept/${m.recipeId}`)}
@@ -260,14 +261,14 @@ function TableWeek({ days, today }: { days: TableDay[]; today: string }) {
                 borderRadius: radius.md, backgroundColor: m.recipeId ? brand.yellowSoft : 'transparent', marginVertical: m.recipeId ? 4 : 0,
                 opacity: pressed ? 0.75 : 1,
               })}>
-              <Small style={{ width: 104 }}>{TABLE_SLOT_INFO[m.slot].label}</Small>
-              <Text style={[m.recipeId ? type.smallBold : type.small, { flex: 1, color: color.ink }]}>{m.title}</Text>
+              <Small style={{ width: 104 }}>{t(TABLE_SLOT_INFO[m.slot].label)}</Small>
+              <Text style={[m.recipeId ? type.smallBold : type.small, { flex: 1, color: color.ink }]}>{t(m.title)}</Text>
               {m.recipeId ? <ChevronRight size={16} color={brand.blue} /> : null}
             </Pressable>
           ))}
         </Card>
       ))}
-      <Small style={{ marginBottom: space.lg }}>Orientierung nach Gesund ins Leben: Fisch 1–2× pro Woche, Fleisch nicht jeden Tag. Tauscht gern nach Lust und Saison.</Small>
+      <Small style={{ marginBottom: space.lg }}>{t('Orientierung nach Gesund ins Leben: Fisch 1–2× pro Woche, Fleisch nicht jeden Tag. Tauscht gern nach Lust und Saison.')}</Small>
     </>
   );
 }

@@ -8,6 +8,7 @@
  */
 import type { Allergen, Child, FoodLog } from './types';
 import { FOOD_BY_ID } from '@/data/foods';
+import { t, tr } from '@/i18n';
 
 export interface OffProduct {
   code?: string;
@@ -97,10 +98,10 @@ const ALLERGEN_TAGS: Record<string, Allergen> = {
   'en:milk': 'milch', 'en:eggs': 'ei', 'en:gluten': 'gluten', 'en:peanuts': 'erdnuss', 'en:nuts': 'baumnuss',
   'en:soybeans': 'soja', 'en:sesame-seeds': 'sesam', 'en:fish': 'fisch', 'en:celery': 'sellerie', 'en:mustard': 'senf',
 };
-const ALLERGEN_NAME: Record<Allergen, string> = {
+const ALLERGEN_NAME: Record<Allergen, string> = tr({
   ei: 'Ei', milch: 'Milch', erdnuss: 'Erdnuss', baumnuss: 'Nüsse', fisch: 'Fisch', gluten: 'Gluten',
   soja: 'Soja', sesam: 'Sesam', sellerie: 'Sellerie', senf: 'Senf',
-};
+});
 
 /** Altersangabe auf der Packung, z. B. „ab dem 5. Monat“, „ab 6 Monaten“, „12+“, „ab 1 Jahr“. */
 export function labelMonths(text: string): number | null {
@@ -123,7 +124,7 @@ function ingredientList(text: string): string[] {
 }
 
 export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], ageMonths: number): ProductCheck {
-  const name = p.product_name_de || p.product_name || p.generic_name_de || 'Unbekanntes Produkt';
+  const name = p.product_name_de || p.product_name || p.generic_name_de || t('Unbekanntes Produkt');
   const ingredients = p.ingredients_text_de || p.ingredients_text || p.ingredients_text_en || p.ingredients_text_fr || '';
   // Für die Zuckersuche alle Sprachfassungen zusammen prüfen
   const allText = [p.ingredients_text_de, p.ingredients_text, p.ingredients_text_en, p.ingredients_text_fr].filter(Boolean).join(' , ');
@@ -137,21 +138,21 @@ export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], age
   // Altersangabe der Packung
   const labelAge = labelMonths(`${name} ${p.quantity ?? ''} ${(p.categories_tags ?? []).join(' ')}`);
   if (labelAge !== null && labelAge > ageMonths) {
-    points.push({ level: 'nein', title: `Laut Packung erst ab ${labelAge} Monaten`, text: `${who} ist ${ageMonths} Monate alt.` });
+    points.push({ level: 'nein', title: t('Laut Packung erst ab {0} Monaten', { 0: labelAge }), text: t('{0} ist {1} Monate alt.', { 0: who, 1: ageMonths }) });
   }
 
   // Süßigkeit?
   if ((p.categories_tags ?? []).some((c) => CANDY_CATEGORIES.test(c))) {
-    points.push({ level: 'nein', title: 'Süßigkeit', text: 'Für Babys nicht geeignet: viel Zucker, und zähe oder harte Stücke sind eine Verschluckgefahr.' });
+    points.push({ level: 'nein', title: t('Süßigkeit'), text: t('Für Babys nicht geeignet: viel Zucker, und zähe oder harte Stücke sind eine Verschluckgefahr.') });
   }
 
   // Zucker und Süßungsmittel – Text (alle Sprachen) und Zutaten-Kennungen
   const sugarLabels = new Set<string>();
   for (const [re, label] of SUGAR_WORDS) if (re.test(allText)) sugarLabels.add(label);
-  for (const t of tags) if (SUGAR_TAGS[t]) sugarLabels.add(SUGAR_TAGS[t]);
+  for (const tag of tags) if (SUGAR_TAGS[tag]) sugarLabels.add(SUGAR_TAGS[tag]);
   const honey = sugarLabels.has('Honig');
   if (honey && ageMonths < 12) {
-    points.push({ level: 'nein', title: 'Enthält Honig', text: 'Im ersten Lebensjahr nicht geben – auch nicht erhitzt.' });
+    points.push({ level: 'nein', title: t('Enthält Honig'), text: t('Im ersten Lebensjahr nicht geben – auch nicht erhitzt.') });
   }
   // Honig im ersten Jahr steht schon oben als klares Nein
   const addedLabels = [...sugarLabels].filter((l) => !(l === 'Honig' && ageMonths < 12));
@@ -159,26 +160,26 @@ export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], age
     const firstIdx = list.findIndex((ing) => SUGAR_WORDS.some(([re, l]) => addedLabels.includes(l) && re.test(ing)));
     points.push({
       level: 'achtung',
-      title: `Zugesetzter Zucker: ${addedLabels.join(', ')}`,
-      text: firstIdx >= 0 && firstIdx < 3 ? 'Steht weit vorn in der Zutatenliste.' : 'Für Babys sind zugesetzte Zucker unnötig.',
+      title: t('Zugesetzter Zucker: {0}', { 0: addedLabels.map((l) => t(l)).join(', ') }),
+      text: firstIdx >= 0 && firstIdx < 3 ? t('Steht weit vorn in der Zutatenliste.') : t('Für Babys sind zugesetzte Zucker unnötig.'),
     });
   }
   const sweeteners = (p.additives_tags ?? []).filter((t) => SWEETENER_TAGS.test(t));
   if (sweeteners.length || /sucralose|aspartam|steviol|acesulfam|sorbit|xylit|erythrit/i.test(ingredients)) {
-    points.push({ level: 'achtung', title: 'Süßungsmittel', text: 'Für Babys und Kleinkinder nicht geeignet.' });
+    points.push({ level: 'achtung', title: t('Süßungsmittel'), text: t('Für Babys und Kleinkinder nicht geeignet.') });
   }
 
   // Zuckergehalt (auch natürlicher Zucker, z. B. Trockenfrucht)
   const sugar100 = p.nutriments?.sugars_100g;
   if (sugar100 !== undefined && sugar100 >= SUGAR_HIGH_100G) {
-    points.push({ level: 'achtung', title: `Sehr zuckerreich (${String(Math.round(sugar100)).replace('.', ',')} g Zucker pro 100 g)`, text: 'Für Babys ist so viel Zucker ungünstig – auch wenn er aus Früchten stammt.' });
+    points.push({ level: 'achtung', title: t('Sehr zuckerreich ({0} g Zucker pro 100 g)', { 0: String(Math.round(sugar100)).replace('.', ',') }), text: t('Für Babys ist so viel Zucker ungünstig – auch wenn er aus Früchten stammt.') });
   }
 
   // Salz
   const salt = p.nutriments?.salt_100g ?? (p.nutriments?.sodium_100g !== undefined ? p.nutriments.sodium_100g * 2.5 : undefined);
   if (salt !== undefined) {
-    if (salt > 0.3) points.push({ level: 'achtung', title: `Viel Salz (${salt.toFixed(2).replace('.', ',')} g pro 100 g)`, text: 'Babynieren vertragen nur wenig Salz.' });
-    else if (salt > 0.125) points.push({ level: 'achtung', title: `Salz (${salt.toFixed(2).replace('.', ',')} g pro 100 g)`, text: 'Etwas mehr als für Babykost empfohlen.' });
+    if (salt > 0.3) points.push({ level: 'achtung', title: t('Viel Salz ({0} g pro 100 g)', { 0: salt.toFixed(2).replace('.', ',') }), text: t('Babynieren vertragen nur wenig Salz.') });
+    else if (salt > 0.125) points.push({ level: 'achtung', title: t('Salz ({0} g pro 100 g)', { 0: salt.toFixed(2).replace('.', ',') }), text: t('Etwas mehr als für Babykost empfohlen.') });
   }
 
   // Allergene
@@ -187,31 +188,31 @@ export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], age
   const declared = Array.from(new Set((p.allergens_tags ?? []).map((t) => ALLERGEN_TAGS[t]).filter(Boolean)));
   for (const a of declared) {
     if (child.exclusions.includes(a)) {
-      points.push({ level: 'nein', title: `Enthält ${ALLERGEN_NAME[a]}`, text: `Bei ${who} als Allergie hinterlegt.` });
+      points.push({ level: 'nein', title: t('Enthält {0}', { 0: ALLERGEN_NAME[a] }), text: t('Bei {0} als Allergie hinterlegt.', { 0: who }) });
     } else if (!introduced(a)) {
-      points.push({ level: 'info', title: `Enthält ${ALLERGEN_NAME[a]}`, text: `Bei ${who} noch nicht eingeführt – erst einzeln einführen.` });
+      points.push({ level: 'info', title: t('Enthält {0}', { 0: ALLERGEN_NAME[a] }), text: t('Bei {0} noch nicht eingeführt – erst einzeln einführen.', { 0: who }) });
     } else {
-      points.push({ level: 'info', title: `Enthält ${ALLERGEN_NAME[a]}`, text: `Bei ${who} schon eingeführt.` });
+      points.push({ level: 'info', title: t('Enthält {0}', { 0: ALLERGEN_NAME[a] }), text: t('Bei {0} schon eingeführt.', { 0: who }) });
     }
   }
   const traces = Array.from(new Set((p.traces_tags ?? []).map((t) => ALLERGEN_TAGS[t]).filter((a) => a && child.exclusions.includes(a))));
-  for (const a of traces) points.push({ level: 'achtung', title: `Kann Spuren von ${ALLERGEN_NAME[a]} enthalten`, text: `Bei ${who} als Allergie hinterlegt.` });
+  for (const a of traces) points.push({ level: 'achtung', title: t('Kann Spuren von {0} enthalten', { 0: ALLERGEN_NAME[a] }), text: t('Bei {0} als Allergie hinterlegt.', { 0: who }) });
 
   // Zusatzstoffe
   const additives = (p.additives_tags ?? []).filter((t) => !SWEETENER_TAGS.test(t));
   if (additives.length) {
-    points.push({ level: 'info', title: `${additives.length} Zusatzstoff${additives.length === 1 ? '' : 'e'}`, text: additives.map((t) => t.replace('en:', '').toUpperCase()).join(', ') });
+    points.push({ level: 'info', title: additives.length === 1 ? t('1 Zusatzstoff') : t('{0} Zusatzstoffe', { 0: additives.length }), text: additives.map((t) => t.replace('en:', '').toUpperCase()).join(', ') });
   }
 
   // Positives
   if (ingredients && reliable && !addedLabels.length && !honey && !sweeteners.length && (sugar100 === undefined || sugar100 < SUGAR_HIGH_100G)) {
-    points.push({ level: 'gut', title: 'Ohne Zuckerzusatz', text: 'Laut Zutatenliste.' });
+    points.push({ level: 'gut', title: t('Ohne Zuckerzusatz'), text: t('Laut Zutatenliste.') });
   } else if (ingredients && !reliable && !addedLabels.length) {
-    points.push({ level: 'achtung', title: 'Zutatenliste in anderer Sprache', text: 'Zucker konnte nicht sicher geprüft werden – bitte die Packung lesen.' });
+    points.push({ level: 'achtung', title: t('Zutatenliste in anderer Sprache'), text: t('Zucker konnte nicht sicher geprüft werden – bitte die Packung lesen.') });
   }
-  if (list.length > 0 && list.length <= 3) points.push({ level: 'gut', title: 'Kurze Zutatenliste', text: list.join(', ') });
-  if (/vollkorn/i.test(ingredients)) points.push({ level: 'gut', title: 'Mit Vollkorn', text: 'Liefert Ballaststoffe und Eisen.' });
-  if (ingredients && additives.length === 0 && (p.additives_tags ?? []).length === 0) points.push({ level: 'gut', title: 'Ohne Zusatzstoffe', text: 'Laut Angaben.' });
+  if (list.length > 0 && list.length <= 3) points.push({ level: 'gut', title: t('Kurze Zutatenliste'), text: list.join(', ') });
+  if (/vollkorn/i.test(ingredients)) points.push({ level: 'gut', title: t('Mit Vollkorn'), text: t('Liefert Ballaststoffe und Eisen.') });
+  if (ingredients && additives.length === 0 && (p.additives_tags ?? []).length === 0) points.push({ level: 'gut', title: t('Ohne Zusatzstoffe'), text: t('Laut Angaben.') });
 
   const verdict: Verdict = !ingredients && !declared.length
     ? 'unklar'
@@ -220,7 +221,7 @@ export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], age
     : 'gut';
 
   const order: Record<CheckLevel, number> = { nein: 0, achtung: 1, info: 2, gut: 3 };
-  if (!ingredients) points.push({ level: 'info', title: 'Keine Zutatenliste hinterlegt', text: 'Bitte die Angaben auf der Packung lesen.' });
+  if (!ingredients) points.push({ level: 'info', title: t('Keine Zutatenliste hinterlegt'), text: t('Bitte die Angaben auf der Packung lesen.') });
   return {
     name,
     brand: p.brands?.split(',')[0]?.trim() ?? '',
@@ -231,10 +232,10 @@ export function analyzeProduct(p: OffProduct, child: Child, logs: FoodLog[], age
 }
 
 export const VERDICT_TEXT: Record<Verdict, (name: string) => string> = {
-  gut: (n) => `Sieht gut aus für ${n}`,
-  bedacht: (n) => `Mit Bedacht für ${n}`,
-  lieber_nicht: (n) => `Lieber nicht für ${n}`,
-  unklar: () => 'Zu wenig Angaben',
+  gut: (n) => t('Sieht gut aus für {0}', { 0: n }),
+  bedacht: (n) => t('Mit Bedacht für {0}', { 0: n }),
+  lieber_nicht: (n) => t('Lieber nicht für {0}', { 0: n }),
+  unklar: () => t('Zu wenig Angaben'),
 };
 
 export const OFF_FIELDS = 'code,product_name,product_name_de,generic_name_de,brands,quantity,image_front_small_url,ingredients_text,ingredients_text_de,ingredients_text_en,ingredients_text_fr,ingredients_tags,allergens_tags,traces_tags,additives_tags,categories_tags,nutriments';
@@ -249,7 +250,7 @@ export async function fetchProduct(ean: string): Promise<OffProduct | null> {
   return data.status === 1 && data.product ? data.product : null;
 }
 
-export const PRODUCT_SOURCES = [
+export const PRODUCT_SOURCES = tr([
   { label: 'Produktdaten: Open Food Facts (ODbL)', url: 'https://world.openfoodfacts.org' },
   { label: 'WHO Europa: Nährwertprofil für Beikost-Fertigprodukte (2022)', url: 'https://www.who.int/europe/publications/i/item/WHO-EURO-2022-6681-46447-67287' },
-];
+]);

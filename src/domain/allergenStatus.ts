@@ -3,6 +3,7 @@ import { FOOD_BY_ID } from '@/data/foods';
 import { addDays } from './dates';
 import { buildSchedule, effectiveStartDate } from './planner';
 import type { Child, FoodLog } from './types';
+import { t } from '@/i18n';
 
 export type AllergenState = 'eingefuehrt' | 'reaktion' | 'geplant' | 'ausgeschlossen' | 'abklaeren';
 
@@ -29,18 +30,18 @@ export function allergenStatuses(child: Child, logs: FoodLog[]): AllergenStatus[
     const triedFoods = Array.from(new Set(own.filter((l) => withAllergen(l.foodId) && l.reaction === 'keine').map((l) => l.foodId)));
 
     if (child.exclusions.includes(guide.id)) {
-      return { guide, state: 'ausgeschlossen', label: 'Ärztlich bekannte Allergie', triedFoods };
+      return { guide, state: 'ausgeschlossen', label: t('Ärztlich bekannte Allergie'), triedFoods };
     }
-    if (reacted) return { guide, state: 'reaktion', label: 'Reaktion notiert – mit Kinderarztpraxis besprechen', triedFoods };
+    if (reacted) return { guide, state: 'reaktion', label: t('Reaktion notiert – mit Kinderarztpraxis besprechen'), triedFoods };
     if (triedFoods.length) {
       const lastDate = own.filter((l) => withAllergen(l.foodId)).map((l) => l.date).sort().pop();
-      return { guide, state: 'eingefuehrt', label: 'Schon angeboten', triedFoods, lastDate };
+      return { guide, state: 'eingefuehrt', label: t('Schon angeboten'), triedFoods, lastDate };
     }
     if (guide.id === 'erdnuss' && child.atopicDermatitis && !child.peanutCleared) {
-      return { guide, state: 'abklaeren', label: 'Vorher ärztlich abklären (Neurodermitis)', triedFoods };
+      return { guide, state: 'abklaeren', label: t('Vorher ärztlich abklären (Neurodermitis)'), triedFoods };
     }
     const intro = schedule.introductions.find((x) => withAllergen(x.food.id));
     const plannedDate = intro ? addDays(start, intro.fromDay) : undefined;
-    return { guide, state: 'geplant', label: plannedDate ? 'Im Plan' : 'Noch nicht im Plan', plannedDate, triedFoods };
+    return { guide, state: 'geplant', label: plannedDate ? t('Im Plan') : t('Noch nicht im Plan'), plannedDate, triedFoods };
   });
 }

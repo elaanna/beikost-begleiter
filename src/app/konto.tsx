@@ -9,6 +9,7 @@ import {
 import { isSyncConfigured } from '@/sync/supabase';
 import { Button, Card, Field, Hero, Important, P, Screen, Small } from '@/ui/components';
 import { space } from '@/ui/theme';
+import { t } from '@/i18n';
 
 type Mode = 'registrieren' | 'anmelden';
 type Step = 'email' | 'code' | 'sicherung' | 'fertig';
@@ -48,7 +49,7 @@ export default function Konto() {
     try {
       await fn();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Das hat nicht geklappt.');
+      setError(e instanceof Error ? e.message : t('Das hat nicht geklappt.'));
     } finally {
       setBusy(false);
     }
@@ -57,7 +58,7 @@ export default function Konto() {
   if (!isSyncConfigured) {
     return (
       <Screen edges={['left', 'right']}>
-        <Card tone="butter"><P>Konten sind in dieser Testversion noch nicht eingerichtet.</P></Card>
+        <Card tone="butter"><P>{t('Konten sind in dieser Testversion noch nicht eingerichtet.')}</P></Card>
       </Screen>
     );
   }
@@ -66,13 +67,13 @@ export default function Konto() {
   if (app.accountEmail && !params.mode && step !== 'fertig') {
     return (
       <Screen edges={['left', 'right']}>
-        <Hero style={{ marginBottom: space.lg }}>Dein Konto</Hero>
+        <Hero style={{ marginBottom: space.lg }}>{t('Dein Konto')}</Hero>
         <Card tone="sage">
-          <P bold>✓ Angemeldet als {app.accountEmail}</P>
-          <P style={{ marginTop: space.xs }}>Auf einem neuen Handy: App installieren, „Ich habe schon ein Konto“ wählen und mit dieser E-Mail anmelden.</P>
+          <P bold>{t('✓ Angemeldet als {0}', { 0: app.accountEmail })}</P>
+          <P style={{ marginTop: space.xs }}>{t('Auf einem neuen Handy: App installieren, „Ich habe schon ein Konto“ wählen und mit dieser E-Mail anmelden.')}</P>
         </Card>
         {backup ? (
-          <Card><P bold>☁️ Cloud-Sicherung ist an</P><Small soft={false}>Deine Einträge werden beim Handywechsel wiederhergestellt.</Small></Card>
+          <Card><P bold>{t('☁️ Cloud-Sicherung ist an')}</P><Small soft={false}>{t('Deine Einträge werden beim Handywechsel wiederhergestellt.')}</Small></Card>
         ) : (
           <BackupChoice busy={busy} onYes={() => run(async () => { await enableBackup(db); setBackup(true); })} />
         )}
@@ -85,36 +86,36 @@ export default function Konto() {
     <Screen edges={['left', 'right']}>
       {step === 'email' || step === 'code' ? (
         <>
-          <Hero style={{ marginBottom: space.sm }}>{mode === 'anmelden' ? 'Willkommen zurück' : 'Konto erstellen'}</Hero>
+          <Hero style={{ marginBottom: space.sm }}>{mode === 'anmelden' ? t('Willkommen zurück') : t('Konto erstellen')}</Hero>
           <P soft style={{ marginBottom: space.lg }}>
             {mode === 'anmelden'
-              ? 'Melde dich mit deiner E-Mail an. Wir schicken dir einen Code – ein Passwort brauchst du nicht.'
-              : 'Mit deiner E-Mail-Adresse. Wir schicken dir einen Code – ein Passwort brauchst du nicht.'}
+              ? t('Melde dich mit deiner E-Mail an. Wir schicken dir einen Code – ein Passwort brauchst du nicht.')
+              : t('Mit deiner E-Mail-Adresse. Wir schicken dir einen Code – ein Passwort brauchst du nicht.')}
           </P>
         </>
       ) : null}
 
       {step === 'email' ? (
         <>
-          <Field label="E-Mail" value={email} onChangeText={setEmail} placeholder="name@beispiel.de" keyboardType="email-address" autoCapitalize="none" autoComplete="email" maxLength={254} />
+          <Field label={t('E-Mail')} value={email} onChangeText={setEmail} placeholder={t('name@beispiel.de')} keyboardType="email-address" autoCapitalize="none" autoComplete="email" maxLength={254} />
           <Button
-            label="Code senden"
+            label={t('Code senden')}
             disabled={!isValidEmail(email) || busy}
             onPress={() => run(async () => {
               await (mode === 'anmelden' ? requestSignInCode(email) : requestLinkCode(email));
               setStep('code');
             })}
           />
-          <Small style={{ marginTop: space.md }}>Die E-Mail nutzen wir nur für die Anmeldung – keine Werbung, keine Weitergabe.</Small>
+          <Small style={{ marginTop: space.md }}>{t('Die E-Mail nutzen wir nur für die Anmeldung – keine Werbung, keine Weitergabe.')}</Small>
         </>
       ) : null}
 
       {step === 'code' ? (
         <>
-          <P style={{ marginBottom: space.md }}>Wir haben dir einen Code an <P bold>{email.trim()}</P> geschickt. Schau auch im Spam-Ordner nach.</P>
-          <Field label="Code aus der E-Mail" value={code} onChangeText={(v) => setCode(cleanOtp(v))} placeholder="123456" keyboardType="number-pad" autoComplete="one-time-code" maxLength={10} />
+          <P style={{ marginBottom: space.md }}>{t('Wir haben dir einen Code an')}{' '}<P bold>{email.trim()}</P> {' '}{t('geschickt. Schau auch im Spam-Ordner nach.')}</P>
+          <Field label={t('Code aus der E-Mail')} value={code} onChangeText={(v) => setCode(cleanOtp(v))} placeholder="123456" keyboardType="number-pad" autoComplete="one-time-code" maxLength={10} />
           <Button
-            label={mode === 'anmelden' ? 'Anmelden' : 'Konto bestätigen'}
+            label={mode === 'anmelden' ? t('Anmelden') : t('Konto bestätigen')}
             disabled={code.length < 6 || busy}
             onPress={() => run(async () => {
               if (mode === 'anmelden') {
@@ -129,13 +130,13 @@ export default function Konto() {
               }
             })}
           />
-          <Button label="Andere E-Mail oder neuen Code" variant="ghost" onPress={() => { setCode(''); setStep('email'); }} />
+          <Button label={t('Andere E-Mail oder neuen Code')} variant="ghost" onPress={() => { setCode(''); setStep('email'); }} />
         </>
       ) : null}
 
       {step === 'sicherung' ? (
         <>
-          <Hero style={{ marginBottom: space.lg }}>✓ Konto erstellt</Hero>
+          <Hero style={{ marginBottom: space.lg }}>{t('✓ Konto erstellt')}</Hero>
           <BackupChoice
             busy={busy}
             onYes={() => run(async () => { await enableBackup(db); setBackup(true); setStep('fertig'); })}
@@ -146,15 +147,15 @@ export default function Konto() {
 
       {step === 'fertig' ? (
         <Card tone="sage">
-          <P bold>✓ Alles bereit!</P>
+          <P bold>{t('✓ Alles bereit!')}</P>
           <P style={{ marginTop: space.xs }}>
-            {backup ? 'Deine Einträge sind gesichert.' : 'Deine Einträge bleiben auf diesem Handy. Die Sicherung kannst du jederzeit unter Familie → Konto einschalten.'}
+            {backup ? t('Deine Einträge sind gesichert.') : t('Deine Einträge bleiben auf diesem Handy. Die Sicherung kannst du jederzeit unter Familie → Konto einschalten.')}
           </P>
-          <Button label="Weiter" onPress={goOn} />
+          <Button label={t('Weiter')} onPress={goOn} />
         </Card>
       ) : null}
 
-      {busy ? <Small style={{ marginTop: space.md }}>Einen Moment …</Small> : null}
+      {busy ? <Small style={{ marginTop: space.md }}>{t('Einen Moment …')}</Small> : null}
       {error ? <Important>{error}</Important> : null}
     </Screen>
   );
@@ -164,13 +165,11 @@ export default function Konto() {
 function BackupChoice({ busy, onYes, onNo }: { busy: boolean; onYes: () => void; onNo?: () => void }) {
   return (
     <Card tone="butter">
-      <P bold>☁️ Einträge in der Cloud sichern?</P>
+      <P bold>{t('☁️ Einträge in der Cloud sichern?')}</P>
       <Small soft={false} style={{ marginTop: space.xs }}>
-        Empfohlen für den Handywechsel. Dafür werden deine Einträge – auch Allergien und Reaktionen – verschlüsselt übertragen
-        und bei Supabase in der EU (Frankfurt) gespeichert. Freiwillig und jederzeit unter Datenschutz löschbar.
-      </Small>
-      <Button label="Ja, sichern" disabled={busy} onPress={onYes} />
-      {onNo ? <Button label="Nein, nur auf diesem Handy" variant="ghost" onPress={onNo} /> : null}
+        {t('Empfohlen für den Handywechsel. Dafür werden deine Einträge – auch Allergien und Reaktionen – verschlüsselt übertragen und bei Supabase in der EU (Frankfurt) gespeichert. Freiwillig und jederzeit unter Datenschutz löschbar.')}</Small>
+      <Button label={t('Ja, sichern')} disabled={busy} onPress={onYes} />
+      {onNo ? <Button label={t('Nein, nur auf diesem Handy')} variant="ghost" onPress={onNo} /> : null}
     </Card>
   );
 }

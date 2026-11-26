@@ -4,6 +4,8 @@
  * Netzwerk Gesund ins Leben 2024, NHS. Eigene Formulierungen.
  */
 import type { Allergen } from '@/domain/types';
+import { tr } from '@/i18n';
+
 
 export interface AllergenSource {
   label: string;
@@ -31,7 +33,7 @@ export interface AllergenGuide {
   sources: (keyof typeof ALLERGEN_SOURCES)[];
 }
 
-export const ALLERGEN_GUIDES: AllergenGuide[] = [
+export const ALLERGEN_GUIDES: AllergenGuide[] = tr([
   {
     id: 'ei', name: 'Hühnerei', emoji: '🥚', starterFoods: ['ei'],
     firstServing: 'Etwa ¼ TL hart gekochtes Ei, fein zerdrückt unter den Gemüsebrei.',
@@ -94,17 +96,17 @@ export const ALLERGEN_GUIDES: AllergenGuide[] = [
     special: ['Hummus enthält oft Tahin – auf Salz achten.'],
     sources: ['ascia', 'schn'],
   },
-];
+]);
 
 /** Gilt für alle Allergene. */
-export const HOW_TO_INTRODUCE = [
+export const HOW_TO_INTRODUCE = tr([
   'Nur ein neues Allergen zur Zeit – so lässt sich eine Reaktion zuordnen.',
   'Mit einer kleinen Menge starten (etwa ¼ TL), untergemischt in gewohntes Essen; beim nächsten Mal steigern.',
   'Tagsüber anbieten, nicht kurz vor dem Schlafen – Reaktionen zeigen sich meist innerhalb von Minuten bis zwei Stunden.',
   'Die App bietet ein neues Allergen 3 Tage hintereinander an, danach bleibt es etwa 2× pro Woche im Plan.',
   'Nie Essen auf die Haut reiben, um zu „testen“ – das zeigt keine Allergie und kann das Risiko erhöhen.',
-];
+]);
 
-export const MILD_SIGNS = ['Schwellung von Lippen, Augen oder Gesicht', 'Quaddeln oder Nesselausschlag', 'Erbrechen', 'Plötzlich sehr unruhig'];
-export const SEVERE_SIGNS = ['Schwierige oder geräuschvolle Atmung', 'Schwellung der Zunge', 'Blass und schlapp'];
+export const MILD_SIGNS = tr(['Schwellung von Lippen, Augen oder Gesicht', 'Quaddeln oder Nesselausschlag', 'Erbrechen', 'Plötzlich sehr unruhig']);
+export const SEVERE_SIGNS = tr(['Schwierige oder geräuschvolle Atmung', 'Schwellung der Zunge', 'Blass und schlapp']);
 export const NOT_A_REACTION = 'Leichte Rötung rund um den Mund ist meist eine harmlose Hautreizung, keine Allergie.';

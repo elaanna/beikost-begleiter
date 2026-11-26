@@ -1,10 +1,11 @@
+import { tr } from '@/i18n';
 /**
  * Journal „Erste Male“: Vorschläge für Momente, die Eltern festhalten möchten.
  * Bewusst ohne Altersangaben, Zielzeiten oder Vergleiche – jedes Kind hat sein eigenes Tempo.
  */
 export interface JournalKind { id: string; emoji: string; label: string }
 
-export const JOURNAL_KINDS: JournalKind[] = [
+export const JOURNAL_KINDS: JournalKind[] = tr([
   { id: 'loeffel', emoji: '🥄', label: 'Erster Löffel' },
   { id: 'lieblingsessen', emoji: '😋', label: 'Erstes Lieblingsessen' },
   { id: 'selbst', emoji: '✋', label: 'Zum ersten Mal selbst gegessen' },
@@ -14,6 +15,6 @@ export const JOURNAL_KINDS: JournalKind[] = [
   { id: 'wort', emoji: '💬', label: 'Erstes Wort' },
   { id: 'schritte', emoji: '👣', label: 'Erste Schritte' },
   { id: 'eigenes', emoji: '⭐', label: 'Eigener Moment' },
-];
+]);
 
 export const JOURNAL_BY_ID: Record<string, JournalKind> = Object.fromEntries(JOURNAL_KINDS.map((k) => [k.id, k]));

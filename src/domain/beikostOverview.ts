@@ -10,10 +10,11 @@ import { NUTRIENTS_100G } from '@/data/nutrients';
 import { addDays, diffDays } from './dates';
 import { effectiveStartDate } from './planner';
 import type { Child, FoodCategory, FoodLog, PlannedMeal } from './types';
+import { tr } from '@/i18n';
 
 export type Group = 'gemuese' | 'staerke' | 'eiweiss' | 'huelsen' | 'obst' | 'milch' | 'fett' | 'nuesse';
 
-export const GROUP_INFO: Record<Group, { label: string; emoji: string }> = {
+export const GROUP_INFO: Record<Group, { label: string; emoji: string }> = tr({
   gemuese: { label: 'Gemüse', emoji: '🥕' },
   staerke: { label: 'Kartoffel & Getreide', emoji: '🌾' },
   eiweiss: { label: 'Fleisch, Fisch & Ei', emoji: '🍗' },
@@ -22,7 +23,7 @@ export const GROUP_INFO: Record<Group, { label: string; emoji: string }> = {
   milch: { label: 'Milchprodukte', emoji: '🥛' },
   fett: { label: 'Öl & Fett', emoji: '🫒' },
   nuesse: { label: 'Nüsse & Samen', emoji: '🥜' },
-};
+});
 
 export function groupOf(foodId: string): Group | null {
   const f = FOOD_BY_ID[foodId];

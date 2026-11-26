@@ -2,6 +2,7 @@ import { FOODS, FOOD_BY_ID } from '@/data/foods';
 import { addDays, diffDays } from './dates';
 import { computeStartWindow } from './startWindow';
 import type { Child, Food, FoodLog, MealSlot, PlanDay, PlannedMeal } from './types';
+import { t, tr } from '@/i18n';
 
 /**
  * Wie viele Tage ein neues Lebensmittel hintereinander angeboten wird.
@@ -46,14 +47,14 @@ export function effectiveStartDate(child: Child): string {
  * Leeres Ergebnis = darf eingeplant werden.
  */
 export function blockReason(food: Food, child: Child, logs: FoodLog[]): string | null {
-  if (child.excludedFoods.includes(food.id)) return 'Von euch ausgeschlossen';
+  if (child.excludedFoods.includes(food.id)) return t('Von euch ausgeschlossen');
   const allergen = food.allergens.find((a) => child.exclusions.includes(a));
-  if (allergen) return 'Enthält ein ausgeschlossenes Allergen';
+  if (allergen) return t('Enthält ein ausgeschlossenes Allergen');
   if (food.id === 'erdnuss' && child.atopicDermatitis && !child.peanutCleared) {
-    return 'Bei Neurodermitis erst ärztlich abklären';
+    return t('Bei Neurodermitis erst ärztlich abklären');
   }
   const reacted = logs.some((l) => l.childId === child.id && l.foodId === food.id && l.reaction !== 'keine');
-  if (reacted) return 'Reaktion notiert – pausiert, bitte ärztlich abklären';
+  if (reacted) return t('Reaktion notiert – pausiert, bitte ärztlich abklären');
   return null;
 }
 
@@ -268,7 +269,7 @@ export function planDays(child: Child, logs: FoodLog[], fromDate: string, days: 
 
 function mealTitle(slot: MealSlot, blw: boolean, foodIds: string[]): string {
   if (blw) {
-    return slot === 'mittag' ? 'Mittagessen (Fingerfood)' : slot === 'abend' ? 'Abendessen (Fingerfood)' : 'Snack am Nachmittag';
+    return slot === 'mittag' ? t('Mittagessen (Fingerfood)') : slot === 'abend' ? t('Abendessen (Fingerfood)') : t('Snack am Nachmittag');
   }
   if (slot === 'mittag') {
     const cats = foodIds.map((id) => FOOD_BY_ID[id]?.category);
@@ -281,15 +282,15 @@ function mealTitle(slot: MealSlot, blw: boolean, foodIds: string[]): string {
   return 'Getreide-Obst-Brei';
 }
 
-export const SLOT_LABEL: Record<MealSlot, string> = {
+export const SLOT_LABEL: Record<MealSlot, string> = tr({
   mittag: 'Mittag',
   nachmittag: 'Nachmittag',
   abend: 'Abend',
-};
+});
 
 /** Zubereitungstext passend zum Ansatz. */
 export function preparationFor(food: Food, child: Child): string {
   if (child.approach === 'blw') return food.finger;
   if (child.approach === 'brei') return food.brei;
-  return `Brei: ${food.brei}\nFingerfood: ${food.finger}`;
+  return t('Brei: {0} Fingerfood: {1}', { 0: food.brei, 1: food.finger });
 }

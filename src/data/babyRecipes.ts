@@ -5,12 +5,13 @@
  * Mengen sind Zubereitungsmengen, keine Verzehrvorgabe: Das Kind bestimmt, wie viel es isst.
  */
 import type { MealSlot } from '@/domain/types';
+import { tr } from '@/i18n';
 
 export type RecipeCategory =
   | 'gemuesebrei' | 'gemuese_kartoffel' | 'gemuese_fleisch' | 'vegetarisch'
   | 'milch_getreide' | 'getreide_obst' | 'fingerfood' | 'fruehstueck' | 'familie' | 'kleinkind';
 
-export const CATEGORY_INFO: Record<RecipeCategory, { label: string; emoji: string }> = {
+export const CATEGORY_INFO: Record<RecipeCategory, { label: string; emoji: string }> = tr({
   gemuesebrei: { label: 'Gemüsebrei', emoji: '🥕' },
   gemuese_kartoffel: { label: 'Gemüse-Kartoffel-Brei', emoji: '🥔' },
   gemuese_fleisch: { label: 'Gemüse-Fleisch-Brei', emoji: '🍗' },
@@ -21,7 +22,7 @@ export const CATEGORY_INFO: Record<RecipeCategory, { label: string; emoji: strin
   fruehstueck: { label: 'Frühstück & Snacks', emoji: '🥣' },
   familie: { label: 'Familienessen', emoji: '🍽️' },
   kleinkind: { label: 'Kleinkind ab 1 Jahr', emoji: '🧒' },
-};
+});
 
 export interface Storage {
   fridge: string;
@@ -50,15 +51,15 @@ export interface BabyRecipe {
   baby?: string;
 }
 
-const FREEZE_BREI: Storage = {
+const FREEZE_BREI: Storage = tr({
   fridge: 'Abgedeckt im Kühlschrank bis zum nächsten Tag.',
   freeze: 'Direkt nach dem Pürieren abkühlen lassen und portionsweise einfrieren; bei −18 °C bis zu 2 Monate.',
   thaw: 'Über Nacht im Kühlschrank oder direkt im Wasserbad auftauen, gut durcherhitzen. Öl erst nach dem Auftauen zugeben. Nicht wieder einfrieren.',
-};
-const FRESH_ONLY: Storage = {
+});
+const FRESH_ONLY: Storage = tr({
   fridge: 'Am besten frisch zubereiten. Reste nicht aufheben.',
   freeze: null,
-};
+});
 
 export const BABY_RECIPES: BabyRecipe[] = [
   {
@@ -197,7 +198,7 @@ export const STORAGE_SOURCES = [
 ];
 
 /** Allgemeine Regeln fürs Vorkochen – ohne Garantie für Haltbarkeit (Konzept F08). */
-export const MEAL_PREP_RULES = [
+export const MEAL_PREP_RULES = tr([
   'Brei direkt nach dem Pürieren abkühlen lassen und portionsweise einfrieren (z. B. Eiswürfelform).',
   'Bei −18 °C bis zu etwa 2 Monate aufbewahren; Datum notieren.',
   'Öl, Banane und Avocado erst nach dem Auftauen zugeben.',
@@ -205,4 +206,4 @@ export const MEAL_PREP_RULES = [
   'Milchbrei frisch zubereiten statt einfrieren.',
   'Aufgetauten Brei nicht wieder einfrieren und Reste vom Teller nicht aufheben.',
   'Spinat, Mangold und Rote Bete nicht für Brei zum Aufbewahren nutzen (Nitrat).',
-];
+]);

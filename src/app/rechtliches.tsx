@@ -10,6 +10,7 @@ import { deleteEverything } from '@/sync/sync';
 import { Button, Card, Heading, Important, P, Screen, Small, SourceLink, Title } from '@/ui/components';
 import { ConfirmButton } from '@/ui/ConfirmButton';
 import { color, space, type } from '@/ui/theme';
+import { t, tr } from '@/i18n';
 
 /**
  * Datenschutzhinweise (Art. 13 DSGVO), Impressum, medizinischer Hinweis,
@@ -23,7 +24,7 @@ const IMPRESSUM = {
   responsible: '[Name, Anschrift] (verantwortlich für Inhalte nach § 18 Abs. 2 MStV)',
 };
 
-const DATA_ITEMS = [
+const DATA_ITEMS = tr([
   {
     emoji: '📱',
     title: 'Auf deinem Gerät',
@@ -59,26 +60,26 @@ const DATA_ITEMS = [
     title: 'Kein Tracking',
     text: 'Keine Werbung, keine Analyse- oder Tracking-Tools, kein Verkauf von Daten. Schriften sind in der App enthalten und werden nicht nachgeladen.',
   },
-];
+]);
 
-const LEGAL_BASES = [
+const LEGAL_BASES = tr([
   'Gesundheitsangaben deines Kindes: deine ausdrückliche Einwilligung (Art. 9 Abs. 2 lit. a DSGVO), jederzeit widerrufbar.',
   'Übrige Angaben und Familienfreigabe: Bereitstellung der App auf deinen Wunsch (Art. 6 Abs. 1 lit. b DSGVO).',
   'Kauf: Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO).',
-];
+]);
 
-const RETENTION = [
+const RETENTION = tr([
   'Auf dem Gerät: bis du Einträge löschst, die App entfernst oder unten „Alle Daten löschen“ wählst.',
   'In der Cloud: E-Mail solange das Konto besteht, Einträge solange Sicherung oder Familienfreigabe bestehen. Gelöschte Einträge werden nach spätestens 30 Tagen endgültig entfernt, abgelaufene Einladungen sofort.',
-];
+]);
 
-const RIGHTS = [
+const RIGHTS = tr([
   'Auskunft und Kopie deiner Daten (Export unten)',
   'Berichtigung – direkt in der App',
   'Löschung und Widerruf der Einwilligung (unten)',
   'Einschränkung und Widerspruch – per E-Mail an die Adresse im Impressum',
   'Beschwerde bei einer Datenschutz-Aufsichtsbehörde, z. B. der deines Bundeslandes',
-];
+]);
 
 export default function Rechtliches() {
   const db = useSQLiteContext();
@@ -91,30 +92,25 @@ export default function Rechtliches() {
 
   return (
     <Screen edges={['left', 'right']}>
-      <Important title="Medizinischer Hinweis">
+      <Important title={t('Medizinischer Hinweis')}>
         <Text style={[type.body, { color: color.redDeep }]}>
-          nimou gibt allgemeine Informationen nach öffentlichen Empfehlungen (u. a. S3-Leitlinien,
-          Netzwerk Gesund ins Leben). Er stellt keine Diagnose und ersetzt keine kinderärztliche Beratung.
-          Bei Allergieverdacht, Gedeihstörungen oder Unsicherheit sprich bitte mit deiner Kinderarztpraxis.
-          Im Notfall 112.
-        </Text>
+          {t('nimou gibt allgemeine Informationen nach öffentlichen Empfehlungen (u. a. S3-Leitlinien, Netzwerk Gesund ins Leben). Er stellt keine Diagnose und ersetzt keine kinderärztliche Beratung. Bei Allergieverdacht, Gedeihstörungen oder Unsicherheit sprich bitte mit deiner Kinderarztpraxis. Im Notfall 112.')}</Text>
       </Important>
 
-      <Title>Deine Daten</Title>
+      <Title>{t('Deine Daten')}</Title>
       <Card>
-        <Button label="Meine Daten exportieren (JSON)" icon={Download} variant="soft" onPress={async () => {
+        <Button label={t('Meine Daten exportieren (JSON)')} icon={Download} variant="soft" onPress={async () => {
           try {
             await shareExport(db);
           } catch {
-            setMessage({ text: 'Export nicht möglich. Bitte noch einmal versuchen.', error: true });
+            setMessage({ text: t('Export nicht möglich. Bitte noch einmal versuchen.'), error: true });
           }
         }} />
         <Small style={{ marginTop: space.sm, marginBottom: space.lg }}>
-          Alle Einträge dieses Geräts als Datei – zum Aufheben oder für einen Wechsel.
-        </Small>
+          {t('Alle Einträge dieses Geräts als Datei – zum Aufheben oder für einen Wechsel.')}</Small>
         <ConfirmButton
-          label="Alle Daten löschen"
-          confirmLabel="Wirklich alles endgültig löschen"
+          label={t('Alle Daten löschen')}
+          confirmLabel={t('Wirklich alles endgültig löschen')}
           icon={Trash2}
           onConfirm={async () => {
             try {
@@ -122,55 +118,52 @@ export default function Rechtliches() {
               await app.resetApp();
               router.replace('/');
             } catch (e) {
-              setMessage({ text: e instanceof Error ? e.message : 'Löschen fehlgeschlagen.', error: true });
+              setMessage({ text: e instanceof Error ? e.message : t('Löschen fehlgeschlagen.'), error: true });
             }
           }}
         />
         <Small style={{ marginTop: space.sm }}>
-          Löscht alles auf diesem Gerät und dein Konto in der Cloud. Verwaltest du eine Familie allein, werden auch die
-          Familiendaten gelöscht; gibt es weitere Eintragende, übernimmt die erste Person die Verwaltung.
-          Das ist gleichzeitig der Widerruf deiner Einwilligung.
-        </Small>
-        {consent ? <Small style={{ marginTop: space.md }}>Einwilligung erteilt am {new Date(consent).toLocaleDateString('de-DE')}.</Small> : null}
-        {message ? <P style={{ marginTop: space.md, color: message.error ? color.red : color.sageDeep }}>{message.text}</P> : null}
+          {t('Löscht alles auf diesem Gerät und dein Konto in der Cloud. Verwaltest du eine Familie allein, werden auch die Familiendaten gelöscht; gibt es weitere Eintragende, übernimmt die erste Person die Verwaltung. Das ist gleichzeitig der Widerruf deiner Einwilligung.')}</Small>
+        {consent ? <Small style={{ marginTop: space.md }}>{t('Einwilligung erteilt am {0}.', { 0: new Date(consent).toLocaleDateString('de-DE') })}</Small> : null}
+        {message ? <P style={{ marginTop: space.md, color: message.error ? color.red : color.sageDeep }}>{t(message.text)}</P> : null}
       </Card>
 
-      <Title>Datenschutz in Kürze</Title>
+      <Title>{t('Datenschutz in Kürze')}</Title>
       <Card>
         {DATA_ITEMS.map((d) => (
           <View key={d.title} style={{ flexDirection: 'row', gap: space.md, marginBottom: space.lg }}>
             <Text style={{ fontSize: 24 }}>{d.emoji}</Text>
             <View style={{ flex: 1 }}>
-              <P bold>{d.title}</P>
-              <P style={{ marginTop: 2 }}>{d.text}</P>
+              <P bold>{t(d.title)}</P>
+              <P style={{ marginTop: 2 }}>{t(d.text)}</P>
             </View>
           </View>
         ))}
       </Card>
       <Card>
-        <Heading style={{ marginBottom: space.sm }}>Rechtsgrundlagen</Heading>
-        {LEGAL_BASES.map((t) => <P key={t} style={{ marginBottom: space.xs }}>• {t}</P>)}
-        <Heading style={{ marginTop: space.lg, marginBottom: space.sm }}>Speicherdauer</Heading>
-        {RETENTION.map((t) => <P key={t} style={{ marginBottom: space.xs }}>• {t}</P>)}
-        <Heading style={{ marginTop: space.lg, marginBottom: space.sm }}>Deine Rechte</Heading>
-        {RIGHTS.map((t) => <P key={t} style={{ marginBottom: space.xs }}>• {t}</P>)}
+        <Heading style={{ marginBottom: space.sm }}>{t('Rechtsgrundlagen')}</Heading>
+        {LEGAL_BASES.map((tx) => <P key={tx} style={{ marginBottom: space.xs }}>• {t(tx)}</P>)}
+        <Heading style={{ marginTop: space.lg, marginBottom: space.sm }}>{t('Speicherdauer')}</Heading>
+        {RETENTION.map((tx) => <P key={tx} style={{ marginBottom: space.xs }}>• {t(tx)}</P>)}
+        <Heading style={{ marginTop: space.lg, marginBottom: space.sm }}>{t('Deine Rechte')}</Heading>
+        {RIGHTS.map((tx) => <P key={tx} style={{ marginBottom: space.xs }}>• {t(tx)}</P>)}
       </Card>
 
-      <Title>Impressum</Title>
+      <Title>{t('Impressum')}</Title>
       <Card>
-        <Heading>Angaben nach § 5 DDG · Verantwortlicher nach Art. 4 Nr. 7 DSGVO</Heading>
+        <Heading>{t('Angaben nach § 5 DDG · Verantwortlicher nach Art. 4 Nr. 7 DSGVO')}</Heading>
         <P style={{ marginTop: space.sm }}>{IMPRESSUM.name}</P>
         <P>{IMPRESSUM.address}</P>
-        <P style={{ marginTop: space.sm }}>E-Mail: {IMPRESSUM.email}</P>
+        <P style={{ marginTop: space.sm }}>{t('E-Mail: {0}', { 0: IMPRESSUM.email })}</P>
         <P style={{ marginTop: space.sm }}>{IMPRESSUM.responsible}</P>
       </Card>
 
-      <Title>Quellen der Inhalte</Title>
+      <Title>{t('Quellen der Inhalte')}</Title>
       <Card>
-        <P style={{ marginBottom: space.sm }}>Alle Empfehlungen sind in der App direkt bei der Aussage verlinkt. Die wichtigsten:</P>
-        <SourceLink label="S3-Leitlinie Allergieprävention" url="https://register.awmf.org/assets/guidelines/061-016l_S3_Allergiepraevention_2022-11.pdf" />
+        <P style={{ marginBottom: space.sm }}>{t('Alle Empfehlungen sind in der App direkt bei der Aussage verlinkt. Die wichtigsten:')}</P>
+        <SourceLink label={t('S3-Leitlinie Allergieprävention')} url="https://register.awmf.org/assets/guidelines/061-016l_S3_Allergiepraevention_2022-11.pdf" />
         <View style={{ height: space.xs }} />
-        <SourceLink label="Netzwerk Gesund ins Leben" url="https://www.gesund-ins-leben.de/" />
+        <SourceLink label={t('Netzwerk Gesund ins Leben')} url="https://www.gesund-ins-leben.de/" />
       </Card>
     </Screen>
   );

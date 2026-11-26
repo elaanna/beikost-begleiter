@@ -6,6 +6,7 @@ import { useApp } from '@/state/AppContext';
 import { Heading, LockedNotice, Row, Screen, Small } from '@/ui/components';
 import { ShiftsView } from '@/ui/ShiftsView';
 import { color, space } from '@/ui/theme';
+import { t } from '@/i18n';
 
 /** Dienstplan als eigener Bereich: erreichbar über „Familie“ und die Kachel auf „Heute“. */
 export default function Dienste() {
@@ -18,18 +19,18 @@ export default function Dienste() {
     <Screen edges={['left', 'right']}>
       {!isPro ? (
         <LockedNotice
-          text="Mit dem Beikost-Paket plant ihr Dienste, Kita und Fütterzeiten gemeinsam – Lücken werden rot markiert."
+          text={t('Mit dem Beikost-Paket plant ihr Dienste, Kita und Fütterzeiten gemeinsam – Lücken werden rot markiert.')}
           onUnlock={() => router.push('/paywall')}
         />
       ) : (
         <>
           <Row style={{ justifyContent: 'space-between', marginBottom: space.lg }}>
-            <Arrow label="‹" a11y="Vorherige Woche" onPress={() => setOffset((o) => o - 1)} />
+            <Arrow label="‹" a11y={t('Vorherige Woche')} onPress={() => setOffset((o) => o - 1)} />
             <View style={{ alignItems: 'center' }}>
-              <Heading>{offset === 0 ? 'Diese Woche' : offset === 1 ? 'Nächste Woche' : offset === -1 ? 'Letzte Woche' : formatDay(from, false)}</Heading>
+              <Heading>{offset === 0 ? t('Diese Woche') : offset === 1 ? t('Nächste Woche') : offset === -1 ? t('Letzte Woche') : formatDay(from, false)}</Heading>
               <Small>{formatDay(from, false)} – {formatDay(addDays(from, 6), false)}</Small>
             </View>
-            <Arrow label="›" a11y="Nächste Woche" onPress={() => setOffset((o) => o + 1)} />
+            <Arrow label="›" a11y={t('Nächste Woche')} onPress={() => setOffset((o) => o + 1)} />
           </Row>
           <ShiftsView from={from} />
         </>

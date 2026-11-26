@@ -1,5 +1,6 @@
 import type { Food } from '@/domain/types';
 import { FOODS_EXTRA } from './foods-extra';
+import { tr } from '@/i18n';
 
 /**
  * Lebensmittel-Datenbank (Startumfang).
@@ -275,7 +276,7 @@ FOODS.push(...FOODS_EXTRA);
 
 export const FOOD_BY_ID: Record<string, Food> = Object.fromEntries(FOODS.map((f) => [f.id, f]));
 
-export const CATEGORY_LABEL: Record<Food['category'], string> = {
+export const CATEGORY_LABEL: Record<Food['category'], string> = tr({
   gemuese: 'Gemüse',
   obst: 'Obst',
   getreide: 'Getreide',
@@ -286,9 +287,9 @@ export const CATEGORY_LABEL: Record<Food['category'], string> = {
   huelsenfruechte: 'Hülsenfrüchte & Soja',
   nuesse_samen: 'Nüsse & Samen',
   fett: 'Fette & Öle',
-};
+});
 
-export const ALLERGEN_LABEL: Record<string, string> = {
+export const ALLERGEN_LABEL: Record<string, string> = tr({
   ei: 'Ei',
   milch: 'Milch',
   erdnuss: 'Erdnuss',
@@ -299,4 +300,4 @@ export const ALLERGEN_LABEL: Record<string, string> = {
   sesam: 'Sesam',
   sellerie: 'Sellerie',
   senf: 'Senf',
-};
+});

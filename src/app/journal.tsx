@@ -11,6 +11,7 @@ import { useChild } from '@/state/AppContext';
 import { Button, Card, Hero, P, Pill, PillRow, Row, Screen, Small, Title } from '@/ui/components';
 import { DateField } from '@/ui/DateField';
 import { brand, color, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 /** Journal „Erste Male“ – kleine Momente als Notiz, ohne Fotos, ohne Vergleich. */
 export default function Journal() {
@@ -28,7 +29,7 @@ export default function Journal() {
   // Erster Löffel ergibt sich aus dem ersten Eintrag im Tracker – nur anzeigen, wenn nicht selbst notiert
   const firstLog = logs.filter((l) => l.childId === child.id).map((l) => l.date).sort()[0];
   const auto: JournalEntry[] = firstLog && !entries.some((e) => e.kind === 'loeffel')
-    ? [{ id: 'auto-loeffel', childId: child.id, date: firstLog, kind: 'loeffel', text: 'Aus dem Tracker' }]
+    ? [{ id: 'auto-loeffel', childId: child.id, date: firstLog, kind: 'loeffel', text: t('Aus dem Tracker') }]
     : [];
   const all = [...entries, ...auto].sort((a, b) => b.date.localeCompare(a.date));
 
@@ -42,11 +43,11 @@ export default function Journal() {
 
   return (
     <Screen edges={['left', 'right']}>
-      <Hero style={{ marginBottom: space.xs }}>{genitive(child.name)} erste Male</Hero>
-      <P soft style={{ marginBottom: space.lg }}>Kleine Momente zum Erinnern – ohne Fotos, ohne Vergleich. Jedes Kind hat sein eigenes Tempo.</P>
+      <Hero style={{ marginBottom: space.xs }}>{t('{0} erste Male', { 0: genitive(child.name) })}</Hero>
+      <P soft style={{ marginBottom: space.lg }}>{t('Kleine Momente zum Erinnern – ohne Fotos, ohne Vergleich. Jedes Kind hat sein eigenes Tempo.')}</P>
 
       <Card tone="yellow">
-        <Text style={[type.cardTitle, { color: brand.blue, marginBottom: space.sm }]}>Neuer Moment</Text>
+        <Text style={[type.cardTitle, { color: brand.blue, marginBottom: space.sm }]}>{t('Neuer Moment')}</Text>
         <PillRow>
           {JOURNAL_KINDS.map((k) => (
             <Pill key={k.id} label={`${k.emoji} ${k.label}`} selected={kind === k.id} onPress={() => setKind(kind === k.id ? null : k.id)} />
@@ -54,23 +55,23 @@ export default function Journal() {
         </PillRow>
         {kind ? (
           <>
-            <DateField label="Wann?" value={date} onChange={setDate} maximum={todayIso()} />
+            <DateField label={t('Wann?')} value={date} onChange={setDate} maximum={todayIso()} />
             <TextInput
               value={text}
               onChangeText={setText}
-              placeholder={kind === 'eigenes' ? 'Was ist passiert?' : 'Kurze Notiz (freiwillig)'}
+              placeholder={kind === 'eigenes' ? t('Was ist passiert?') : t('Kurze Notiz (freiwillig)')}
               placeholderTextColor={color.inkSoft}
               maxLength={200}
               multiline
-              accessibilityLabel="Notiz"
+              accessibilityLabel={t('Notiz')}
               style={[type.body, { backgroundColor: color.surface, borderRadius: radius.sm, padding: space.md, minHeight: 72, color: color.ink, marginBottom: space.md }]}
             />
-            <Button label="Festhalten" disabled={kind === 'eigenes' && !text.trim()} onPress={add} />
+            <Button label={t('Festhalten')} disabled={kind === 'eigenes' && !text.trim()} onPress={add} />
           </>
         ) : null}
       </Card>
 
-      {all.length ? <Title>Eure Momente</Title> : null}
+      {all.length ? <Title>{t('Eure Momente')}</Title> : null}
       {all.map((e) => {
         const k = JOURNAL_BY_ID[e.kind] ?? JOURNAL_BY_ID.eigenes;
         return (
@@ -81,11 +82,11 @@ export default function Journal() {
               </View>
               <View style={{ flex: 1 }}>
                 <Small>{formatDayLong(e.date)}</Small>
-                <P bold>{k.label}</P>
-                {e.text ? <Small soft={false}>{e.text}</Small> : null}
+                <P bold>{t(k.label)}</P>
+                {e.text ? <Small soft={false}>{t(e.text)}</Small> : null}
               </View>
               {!e.id.startsWith('auto-') ? (
-                <Pressable onPress={async () => { await deleteJournal(db, e.id); await load(); void sync(); }} accessibilityLabel={`${k.label} löschen`} hitSlop={10}>
+                <Pressable onPress={async () => { await deleteJournal(db, e.id); await load(); void sync(); }} accessibilityLabel={t('{0} löschen', { 0: k.label })} hitSlop={10}>
                   <Trash2 size={18} color={color.inkSoft} />
                 </Pressable>
               ) : null}

@@ -29,6 +29,7 @@ import { QuickLog } from '@/ui/QuickLog';
 import { useToast } from '@/ui/Toast';
 import { openWissen } from '@/ui/nav';
 import { brand, color, ICON, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 
 export default function Heute() {
@@ -56,7 +57,7 @@ export default function Heute() {
     }
     const main = meal.newFoodId ? FOOD_BY_ID[meal.newFoodId] : null;
     const what = main ? main.name : meal.title;
-    const verdict = reaction !== 'keine' ? 'Reaktion notiert' : liking === 1 ? 'hat geschmeckt' : liking === -1 ? 'lieber nicht' : 'gegessen';
+    const verdict = reaction !== 'keine' ? t('Reaktion notiert') : liking === 1 ? t('hat geschmeckt') : liking === -1 ? t('lieber nicht') : t('gegessen');
     toast({
       emoji: reaction !== 'keine' ? '❗' : liking === 1 ? '♥' : '✓',
       text: `${what}: ${verdict}`,
@@ -79,7 +80,7 @@ export default function Heute() {
         </PillRow>
       ) : null}
 
-      <Small>{child.name} · {ageInMonths(child.birthDate, today)} Monate · {formatDayLong(today)}</Small>
+      <Small>{t('{0} · {1} Monate · {2}', { 0: child.name, 1: ageInMonths(child.birthDate, today), 2: formatDayLong(today) })}</Small>
       <Hero style={{ marginTop: 2 }}>{greetingTitle(new Date().getHours(), parentName)}</Hero>
       <DailyGreeting child={child} logs={logs} today={today} startDate={start} meal={isTablePhase(child) ? undefined : day.meals.find((m) => m.newFoodId)} />
 
@@ -87,7 +88,7 @@ export default function Heute() {
       <Pressable
         onPress={() => router.push('/suche')}
         accessibilityRole="search"
-        accessibilityLabel={`Darf ${child.name} schon … ? Suchen`}
+        accessibilityLabel={t('Darf {0} schon … ? Suchen', { 0: child.name })}
         style={({ pressed }) => ({
           flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 56, borderRadius: radius.pill,
           backgroundColor: color.surface, paddingHorizontal: space.xl, marginBottom: space.xl,
@@ -95,7 +96,7 @@ export default function Heute() {
         })}
       >
         <Search size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} />
-        <Text style={[type.body, { color: color.inkSoft }]}>Darf {child.name} schon …?</Text>
+        <Text style={[type.body, { color: color.inkSoft }]}>{t('Darf {0} schon …?', { 0: child.name })}</Text>
       </Pressable>
 
       {suggestTable(child, today) && (!tableLater || diffDays(tableLater, today) >= 30) ? (
@@ -106,7 +107,7 @@ export default function Heute() {
       ) : null}
 
       {isTablePhase(child) ? (isPro ? <TableToday /> : (
-        <LockedNotice text={`Der Familientisch ab 1 Jahr – Tagesplan mit 5 Mahlzeiten, Kleinkind-Rezepte und Kita-Brotdose – gehört zum Beikost-Paket. Unter Kind bearbeiten könnt ihr zurück zum Breiplan.`} onUnlock={() => router.push('/paywall')} />
+        <LockedNotice text={t('Der Familientisch ab 1 Jahr – Tagesplan mit 5 Mahlzeiten, Kleinkind-Rezepte und Kita-Brotdose – gehört zum Beikost-Paket. Unter Kind bearbeiten könnt ihr zurück zum Breiplan.')} onUnlock={() => router.push('/paywall')} />
       )) : null}
 
       {!isTablePhase(child) && daysToStart > 0 ? <ReadinessCard /> : null}
@@ -114,28 +115,28 @@ export default function Heute() {
       {isTablePhase(child) ? null : daysToStart > 0 ? (
         <Card tone="peach">
           <Text style={{ fontSize: 44 }}>🥄</Text>
-          <Heading style={{ marginTop: space.sm }}>Noch {daysToStart} {daysToStart === 1 ? 'Tag' : 'Tage'} bis zum ersten Löffel</Heading>
-          <P soft style={{ marginTop: space.xs }}>Geplant für {formatDayLong(start)}. Bis dahin kannst du die Reifezeichen beobachten.</P>
-          <Button label="Reifezeichen-Checkliste" style={{ marginTop: space.lg }} onPress={() => router.push('/reifecheck')} />
+          <Heading style={{ marginTop: space.sm }}>{t('Noch {0}', { 0: daysToStart })}{' '}{daysToStart === 1 ? t('Tag') : t('Tage')} {' '}{t('bis zum ersten Löffel')}</Heading>
+          <P soft style={{ marginTop: space.xs }}>{t('Geplant für {0}. Bis dahin kannst du die Reifezeichen beobachten.', { 0: formatDayLong(start) })}</P>
+          <Button label={t('Reifezeichen-Checkliste')} style={{ marginTop: space.lg }} onPress={() => router.push('/reifecheck')} />
         </Card>
       ) : day.meals.length > 0 ? (
         <>
           <Row style={{ gap: space.sm, marginBottom: space.md }}>
             <View style={{ flex: 1 }}><ProgressBar value={doneCount} max={day.meals.length} /></View>
-            <Small bold soft={false}>{doneCount}/{day.meals.length} Mahlzeiten</Small>
+            <Small bold soft={false}>{t('{0}/{1} Mahlzeiten', { 0: doneCount, 1: day.meals.length })}</Small>
           </Row>
           {current ? (
             <MealFocus meal={current} dayIndex={diffDays(start, today)} onLog={(l, r) => logMeal(current, l, r)} />
           ) : (
             <Card tone="sage" style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 48 }}>🎉</Text>
-              <Heading style={{ marginTop: space.sm, textAlign: 'center' }}>Alles notiert für heute</Heading>
-              <P soft style={{ textAlign: 'center' }}>Was morgen kommt, siehst du unter „Woche“.</P>
+              <Heading style={{ marginTop: space.sm, textAlign: 'center' }}>{t('Alles notiert für heute')}</Heading>
+              <P soft style={{ textAlign: 'center' }}>{t('Was morgen kommt, siehst du unter „Woche“.')}</P>
             </Card>
           )}
           {later.length ? (
             <Small style={{ marginBottom: space.lg, textAlign: 'center' }}>
-              Später: {later.map((m) => `${SLOT_LABEL[m.slot]} (${m.title})`).join(' · ')}
+              {t('Später:')}{' '}{later.map((m) => `${SLOT_LABEL[m.slot]} (${m.title})`).join(' · ')}
             </Small>
           ) : null}
         </>
@@ -147,7 +148,7 @@ export default function Heute() {
       <TipOfDayCard />
       <SeasonCard />
 
-      <Heading style={{ marginBottom: space.md }}>Heute auch</Heading>
+      <Heading style={{ marginBottom: space.md }}>{t('Heute auch')}</Heading>
       <Tiles />
     </Screen>
   );
@@ -157,15 +158,14 @@ export default function Heute() {
 function ReadinessCard() {
   const { activeChild: child } = useChild();
   return (
-    <Card tone="sage" onPress={() => router.push('/reifecheck')} accessibilityLabel="Reifezeichen-Checkliste öffnen">
+    <Card tone="sage" onPress={() => router.push('/reifecheck')} accessibilityLabel={t('Reifezeichen-Checkliste öffnen')}>
       <Row style={{ alignItems: 'flex-start' }}>
         <Text style={{ fontSize: 40 }}>🌱</Text>
         <View style={{ flex: 1 }}>
-          <Heading>Reifezeichen beobachten</Heading>
+          <Heading>{t('Reifezeichen beobachten')}</Heading>
           <Small soft={false} style={{ marginTop: space.xs }}>
-            Vier Zeichen, auf die du bei {child.name} achten kannst – als Checkliste zum Abhaken.
-          </Small>
-          <IconLabel label="Checkliste öffnen" chevron small={false} style={{ marginTop: space.sm }} />
+            {t('Vier Zeichen, auf die du bei {0} achten kannst – als Checkliste zum Abhaken.', { 0: child.name })}</Small>
+          <IconLabel label={t('Checkliste öffnen')} chevron small={false} style={{ marginTop: space.sm }} />
         </View>
       </Row>
     </Card>
@@ -184,35 +184,35 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
 
   return (
     <Card tone="yellow" hero>
-      <Small bold soft={false}>Jetzt dran · {SLOT_LABEL[meal.slot]}</Small>
+      <Small bold soft={false}>{t('Jetzt dran · {0}', { 0: SLOT_LABEL[meal.slot] })}</Small>
       {newFood ? (
         <>
           <Row style={{ marginTop: space.md, alignItems: 'flex-start' }}>
             <FoodBadge emoji={newFood.emoji} size={84} tone="white" />
             <View style={{ flex: 1 }}>
-              <Text style={[type.smallBold, { color: color.peachDeep }]}>Neu{newFood.allergens.length ? ' · Allergen' : ''}</Text>
+              <Text style={[type.smallBold, { color: color.peachDeep }]}>{t('Neu')}{newFood.allergens.length ? t(' · Allergen') : ''}</Text>
               <Text style={[type.title, { color: color.ink }]}>{newFood.name}</Text>
               <Row style={{ gap: space.sm, marginTop: space.xs }}>
                 <DayDots day={meal.newFoodDay ?? 1} total={introDays(newFood)} />
-                <Small soft={false}>Tag {meal.newFoodDay} von {introDays(newFood)}</Small>
+                <Small soft={false}>{t('Tag {0} von {1}', { 0: meal.newFoodDay, 1: introDays(newFood) })}</Small>
               </Row>
             </View>
           </Row>
           <P style={{ marginTop: space.lg }}>{preparationFor(newFood, child)}</P>
-          {newFood.hint ? <View style={{ marginTop: space.md }}><Important>{newFood.hint}</Important></View> : null}
-          {others.length ? <Small soft={false} style={{ marginBottom: space.sm }}>Dazu: {others.map((f) => f.name).join(', ')}</Small> : null}
+          {newFood.hint ? <View style={{ marginTop: space.md }}><Important>{t(newFood.hint)}</Important></View> : null}
+          {others.length ? <Small soft={false} style={{ marginBottom: space.sm }}>{t('Dazu:')}{' '}{others.map((f) => f.name).join(', ')}</Small> : null}
         </>
       ) : (
         <>
           <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start', marginTop: space.sm }}>
-            <Text style={[type.title, { color: color.ink, flex: 1 }]}>{meal.title}</Text>
-            <Pressable onPress={() => setSwapOpen(true)} accessibilityRole="button" accessibilityLabel="Mahlzeit tauschen" hitSlop={8} style={{ paddingTop: 6 }}>
-              <IconLabel icon={RefreshCw} label="Tauschen" />
+            <Text style={[type.title, { color: color.ink, flex: 1 }]}>{t(meal.title)}</Text>
+            <Pressable onPress={() => setSwapOpen(true)} accessibilityRole="button" accessibilityLabel={t('Mahlzeit tauschen')} hitSlop={8} style={{ paddingTop: 6 }}>
+              <IconLabel icon={RefreshCw} label={t('Tauschen')} />
             </Pressable>
           </Row>
           {meal.recipeId ? (
             <Pressable onPress={() => router.push(`/rezept/${meal.recipeId}`)} accessibilityRole="link">
-              <IconLabel icon={ChefHat} label="Zum Rezept" chevron style={{ marginTop: space.xs }} />
+              <IconLabel icon={ChefHat} label={t('Zum Rezept')} chevron style={{ marginTop: space.xs }} />
             </Pressable>
           ) : null}
           <Row style={{ flexWrap: 'wrap', gap: space.sm, marginVertical: space.md }}>
@@ -229,13 +229,13 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
       )}
 
       <Pressable onPress={() => setShowAmount((v) => !v)} accessibilityRole="button" style={{ paddingVertical: space.sm, marginBottom: space.sm }}>
-        <IconLabel icon={Scale} label={showAmount ? 'Menge ausblenden' : 'Wie viel?'} />
+        <IconLabel icon={Scale} label={showAmount ? t('Menge ausblenden') : t('Wie viel?')} />
       </Pressable>
       {showAmount ? (
         <View style={{ backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: radius.sm, padding: space.md, marginBottom: space.md }}>
           {portion.lines.map((l) => (
             <Row key={l.label} style={{ justifyContent: 'space-between', paddingVertical: 3 }}>
-              <Small soft={false} style={{ flex: 1 }}>{l.label}</Small>
+              <Small soft={false} style={{ flex: 1 }}>{t(l.label)}</Small>
               <Small bold soft={false}>{l.amount}</Small>
             </Row>
           ))}
@@ -245,21 +245,21 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
 
       {frozen ? (
         <View style={{ backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: radius.sm, padding: space.md, marginBottom: space.md }}>
-          <Small bold soft={false}>Im Gefrierfach: {frozen.portions} {frozen.portions === 1 ? 'Portion' : 'Portionen'} {frozen.name}</Small>
+          <Small bold soft={false}>{t('Im Gefrierfach: {0}', { 0: frozen.portions })}{' '}{frozen.portions === 1 ? t('Portion') : t('Portionen')} {frozen.name}</Small>
           <Pressable
             onPress={async () => {
               await saveStock({ ...frozen, portions: frozen.portions - 1 });
-              toast({ emoji: '❄️', text: '1 Portion aus dem Gefrierfach genommen', undo: () => saveStock(frozen) });
+              toast({ emoji: '❄️', text: t('1 Portion aus dem Gefrierfach genommen'), undo: () => saveStock(frozen) });
             }}
             accessibilityRole="button"
           >
-            <Text style={[type.smallBold, { color: color.sageDeep, marginTop: space.xs }]}>1 Portion nehmen</Text>
+            <Text style={[type.smallBold, { color: color.sageDeep, marginTop: space.xs }]}>{t('1 Portion nehmen')}</Text>
           </Pressable>
         </View>
       ) : null}
       <QuickLog onLog={onLog} />
       <SwapSheet date={todayIso()} meal={swapOpen ? meal : null} onClose={() => setSwapOpen(false)} />
-      {newFood ? <Button label="Mehr zu diesem Lebensmittel" variant="ghost" onPress={() => router.push(`/food/${newFood.id}`)} /> : null}
+      {newFood ? <Button label={t('Mehr zu diesem Lebensmittel')} variant="ghost" onPress={() => router.push(`/food/${newFood.id}`)} /> : null}
     </Card>
   );
 }
@@ -276,8 +276,8 @@ function Revisit() {
       <Row style={{ alignItems: 'flex-start' }}>
         <Text style={{ fontSize: 30 }}>🔁</Text>
         <View style={{ flex: 1 }}>
-          <P bold>Mal wieder anbieten?</P>
-          <Small soft={false}>Schon probiert, aber länger nicht dabei.</Small>
+          <P bold>{t('Mal wieder anbieten?')}</P>
+          <Small soft={false}>{t('Schon probiert, aber länger nicht dabei.')}</Small>
         </View>
       </Row>
       {items.map((r) => {
@@ -286,13 +286,13 @@ function Revisit() {
           <Row key={r.foodId} style={{ marginTop: space.md, justifyContent: 'space-between' }}>
             <Pressable style={{ flex: 1 }} onPress={() => router.push(`/food/${food.id}`)} accessibilityRole="link">
               <P bold>{food.emoji} {food.name}{r.liked ? ' ♥' : ''}</P>
-              <Small>zuletzt vor {r.daysSince} Tagen</Small>
+              <Small>{t('zuletzt vor {0} Tagen', { 0: r.daysSince })}</Small>
             </Pressable>
             <Pill
-              label="Heute gegeben"
+              label={t('Heute gegeben')}
               onPress={async () => {
                 const id = await addLog({ foodId: food.id, date: today, liking: 0, reaction: 'keine', note: '' });
-                toast({ emoji: '✓', text: `${food.name} notiert`, undo: id ? () => removeLog(id) : undefined });
+                toast({ emoji: '✓', text: t('{0} notiert', { 0: food.name }), undo: id ? () => removeLog(id) : undefined });
               }}
             />
           </Row>
@@ -314,10 +314,10 @@ function Tiles() {
 
   const meals = planDays(child, logs, today, 1)[0].meals.map((m) => m.slot);
   const tasks = caregivers.length ? planDayTasks({ date: today, caregivers, shifts, settings: familySettings, meals }) : [];
-  const gaps = tasks.filter((t) => !t.caregiverId).length;
+  const gaps = tasks.filter((tx) => !tx.caregiverId).length;
   const now = new Date();
   const nowHm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-  const nextTask = tasks.find((t) => t.time >= nowHm) ?? tasks[0];
+  const nextTask = tasks.find((tx) => tx.time >= nowHm) ?? tasks[0];
   const nextWho = nextTask ? caregivers.find((c) => c.id === nextTask.caregiverId) : undefined;
 
   const stoolToday = digestion.filter((d) => d.date === today).length;
@@ -333,60 +333,60 @@ function Tiles() {
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
       <Tile
         emoji={Baby}
-        title="Windel"
-        sub={stoolToday ? `${stoolToday}× notiert` : 'Noch nichts notiert'}
+        title={t('Windel')}
+        sub={stoolToday ? t('{0}× notiert', { 0: stoolToday }) : t('Noch nichts notiert')}
         onPress={() => router.push('/verdauung')}
       />
       <Tile
         emoji={Users}
-        title="Wer ist dran?"
-        sub={!caregivers.length ? 'Dienste planen' : nextTask ? `${nextTask.time} ${nextTask.label}: ${nextWho ? nextWho.name : '–'}` : 'Heute nichts'}
+        title={t('Wer ist dran?')}
+        sub={!caregivers.length ? t('Dienste planen') : nextTask ? `${nextTask.time} ${nextTask.label}: ${nextWho ? nextWho.name : '–'}` : t('Heute nichts')}
         alert={gaps ? `${gaps} ${gaps === 1 ? 'Lücke' : 'Lücken'}` : undefined}
         onPress={() => router.push('/dienste')}
       />
       {isTablePhase(child) ? (
         <>
-          <Tile emoji={Sandwich} title="Kita-Brotdose" sub="Ideen für die Woche" onPress={() => router.push('/brotdose')} />
-          <Tile emoji={RotateCcw} title="Noch mal anbieten" sub="Ohne Druck, im eigenen Tempo" onPress={() => router.push('/wiederanbieten')} />
+          <Tile emoji={Sandwich} title={t('Kita-Brotdose')} sub={t('Ideen für die Woche')} onPress={() => router.push('/brotdose')} />
+          <Tile emoji={RotateCcw} title={t('Noch mal anbieten')} sub={t('Ohne Druck, im eigenen Tempo')} onPress={() => router.push('/wiederanbieten')} />
         </>
       ) : null}
       {!isTablePhase(child) && reofferCount ? (
-        <Tile emoji={RotateCcw} title="Noch mal anbieten" sub={`${reofferCount} Lebensmittel, ohne Druck`} onPress={() => router.push('/wiederanbieten')} />
+        <Tile emoji={RotateCcw} title={t('Noch mal anbieten')} sub={t('{0} Lebensmittel, ohne Druck', { 0: reofferCount })} onPress={() => router.push('/wiederanbieten')} />
       ) : null}
       {!isTablePhase(child) && age >= 10 ? (
-        <Tile emoji={Sandwich} title="Kita-Brotdose" sub="Ideen für die Woche" onPress={() => router.push('/brotdose')} />
+        <Tile emoji={Sandwich} title={t('Kita-Brotdose')} sub={t('Ideen für die Woche')} onPress={() => router.push('/brotdose')} />
       ) : null}
       {isTablePhase(child) ? null : recipe ? (
-        <Tile emoji={recipe.recipe.emoji} title="Familienessen" sub={recipe.recipe.name} onPress={() => router.push(`/rezept/${recipe.recipe.id}`)} />
+        <Tile emoji={recipe.recipe.emoji} title={t('Familienessen')} sub={recipe.recipe.name} onPress={() => router.push(`/rezept/${recipe.recipe.id}`)} />
       ) : (
-        <Tile emoji={Scale} title="Mengen" sub="Wie viel Brei?" onPress={() => openWissen('portionen', 'brei')} />
+        <Tile emoji={Scale} title={t('Mengen')} sub={t('Wie viel Brei?')} onPress={() => openWissen('portionen', 'brei')} />
       )}
-      <Tile emoji={Sparkles} title="Erste Male" sub="Kleine Momente festhalten" onPress={() => router.push('/journal')} />
+      <Tile emoji={Sparkles} title={t('Erste Male')} sub={t('Kleine Momente festhalten')} onPress={() => router.push('/journal')} />
       {!isTablePhase(child) && daysToStartLocal <= 0 ? (
-        <Tile emoji={CookingPot} title="Vorkoch-Sonntag" sub="Geführt kochen & einfrieren" onPress={() => router.push('/vorkochen')} />
+        <Tile emoji={CookingPot} title={t('Vorkoch-Sonntag')} sub={t('Geführt kochen & einfrieren')} onPress={() => router.push('/vorkochen')} />
       ) : null}
-      <Tile emoji={Luggage} title="Unterwegs" sub="Packliste, Restaurant, Kühlung" onPress={() => router.push('/unterwegs')} />
-      <Tile emoji={ScanBarcode} title="Im Regal scannen" sub="Was steckt drin?" onPress={() => router.push('/scanner')} />
+      <Tile emoji={Luggage} title={t('Unterwegs')} sub={t('Packliste, Restaurant, Kühlung')} onPress={() => router.push('/unterwegs')} />
+      <Tile emoji={ScanBarcode} title={t('Im Regal scannen')} sub={t('Was steckt drin?')} onPress={() => router.push('/scanner')} />
       <Tile
         emoji={Snowflake}
-        title="Gefrierfach"
-        sub={frozenCount ? `${frozenCount} ${frozenCount === 1 ? 'Portion' : 'Portionen'} vorgekocht` : 'Vorkochen & Vorrat'}
+        title={t('Gefrierfach')}
+        sub={frozenCount ? t('{0} {1} vorgekocht', { 0: frozenCount, 1: frozenCount === 1 ? 'Portion' : 'Portionen' }) : t('Vorkochen & Vorrat')}
         onPress={() => router.push('/vorrat')}
       />
-      <Tile emoji={Ban} title="Tabu im 1. Jahr" sub="Honig, Nüsse, Salz …" red onPress={() => openWissen('sicherheit')} />
+      <Tile emoji={Ban} title={t('Tabu im 1. Jahr')} sub={t('Honig, Nüsse, Salz …')} red onPress={() => openWissen('sicherheit')} />
       {logs.some((l) => l.childId === child.id) ? (
         <Tile
           emoji={ChartColumn}
-          title={`${genitive(child.name)} Beikost`}
-          sub="Heute & Woche im Überblick"
+          title={t('{0} Beikost', { 0: genitive(child.name) })}
+          sub={t('Heute & Woche im Überblick')}
           onPress={() => router.push('/uebersicht')}
         />
       ) : null}
       {drink !== 'noch_nicht' ? (
         <Tile
           emoji={drink === 'kuhmilch' ? Milk : GlassWater}
-          title="Trinken"
-          sub={drink === 'kuhmilch' ? 'Milch aus dem Becher' : 'Wasser zu jedem Brei'}
+          title={t('Trinken')}
+          sub={drink === 'kuhmilch' ? t('Milch aus dem Becher') : t('Wasser zu jedem Brei')}
           onPress={() => openWissen('portionen', 'trinken')}
         />
       ) : null}
@@ -431,7 +431,7 @@ function DailyGreeting({ child, logs, today, startDate, meal }: {
   return (
     <Row style={{ backgroundColor: color.sageSoft, borderRadius: radius.lg, padding: space.md, marginTop: space.md, marginBottom: space.lg, alignItems: 'center' }}>
       <Text style={{ fontSize: 26 }}>{line.emoji}</Text>
-      <P style={{ flex: 1 }}>{line.text}</P>
+      <P style={{ flex: 1 }}>{t(line.text)}</P>
     </Row>
   );
 }
@@ -439,9 +439,9 @@ function DailyGreeting({ child, logs, today, startDate, meal }: {
 /** Drei Einstiege wie im Mockup – Farben nach Rolle: Gelb = Planung, Peach = Rezepte, Lilac = Wissen. */
 function BrandTiles() {
   const tiles: { label: string; Icon: LucideIcon; bg: string; href: '/woche' | '/rezepte' | '/wissen' }[] = [
-    { label: 'Wochenplan', Icon: CalendarDays, bg: brand.yellowSoft, href: '/woche' },
-    { label: 'Rezepte', Icon: ChefHat, bg: brand.peachSoft, href: '/rezepte' },
-    { label: 'Wissen', Icon: Lightbulb, bg: brand.lilacSoft, href: '/wissen' },
+    { label: t('Wochenplan'), Icon: CalendarDays, bg: brand.yellowSoft, href: '/woche' },
+    { label: t('Rezepte'), Icon: ChefHat, bg: brand.peachSoft, href: '/rezepte' },
+    { label: t('Wissen'), Icon: Lightbulb, bg: brand.lilacSoft, href: '/wissen' },
   ];
   return (
     <Row style={{ gap: space.md, marginBottom: space.xl }}>

@@ -8,6 +8,7 @@ import { diffDays, formatDayLong, todayIso } from '@/domain/dates';
 import { useApp } from '@/state/AppContext';
 import { Card, Heading, Important, P, Row, Segmented, Small, SourceLink, Title } from './components';
 import { color, radius, space, type } from './theme';
+import { t } from '@/i18n';
 
 const STATE_STYLE: Record<AllergenState, { bg: string; fg: string; icon: string }> = {
   eingefuehrt: { bg: color.sageSoft, fg: color.sageDeep, icon: '✓' },
@@ -64,11 +65,9 @@ export function AllergenGuide() {
   return (
     <>
       <P soft style={{ marginBottom: space.lg }}>
-        Allgemeines Wissen zu den häufigsten Allergenen nach Leitlinien und Fachstellen. Die S3-Leitlinie rät, sie nicht vorbeugend wegzulassen.
-        {' '}{done} von {statuses.length} Gruppen habt ihr schon angeboten.
-      </P>
+        {t('Allgemeines Wissen zu den häufigsten Allergenen nach Leitlinien und Fachstellen. Die S3-Leitlinie rät, sie nicht vorbeugend wegzulassen. {0} von {1} Gruppen habt ihr schon angeboten.', { 0: done, 1: statuses.length })}</P>
       <Segmented<'karten' | 'uebersicht'>
-        options={[{ id: 'karten', label: '🃏 Karten' }, { id: 'uebersicht', label: '📋 Übersicht' }]}
+        options={[{ id: 'karten', label: t('🃏 Karten') }, { id: 'uebersicht', label: t('📋 Übersicht') }]}
         value={mode}
         onChange={setMode}
       />
@@ -92,7 +91,7 @@ export function AllergenGuide() {
               <View style={{ flex: 1 }}>
                 <P bold>{s.guide.name}</P>
                 <Text style={[type.small, { color: STATE_STYLE[s.state].fg }]}>
-                  {STATE_STYLE[s.state].icon} {s.label}{s.plannedDate ? ` ab ${formatDayLong(s.plannedDate)}` : ''}
+                  {STATE_STYLE[s.state].icon} {t(s.label)}{s.plannedDate ? t(' ab {0}', { 0: formatDayLong(s.plannedDate) }) : ''}
                 </Text>
               </View>
               <Text style={{ fontSize: 22, color: color.inkSoft }}>›</Text>
@@ -107,7 +106,7 @@ export function AllergenGuide() {
           </Animated.View>
 
           <Row style={{ justifyContent: 'space-between', marginBottom: space.lg }}>
-            <NavButton label="‹" a11y="Vorheriges Allergen" disabled={index === 0} onPress={() => go(-1)} />
+            <NavButton label="‹" a11y={t('Vorheriges Allergen')} disabled={index === 0} onPress={() => go(-1)} />
             <Row style={{ gap: 6 }}>
               {statuses.map((s, i) => (
                 <View key={s.guide.id} style={{
@@ -116,39 +115,39 @@ export function AllergenGuide() {
                 }} />
               ))}
             </Row>
-            <NavButton label="›" a11y="Nächstes Allergen" disabled={index === statuses.length - 1} onPress={() => go(1)} />
+            <NavButton label="›" a11y={t('Nächstes Allergen')} disabled={index === statuses.length - 1} onPress={() => go(1)} />
           </Row>
-          <Small style={{ textAlign: 'center', marginBottom: space.lg }}>Wische nach links oder rechts für das nächste Allergen</Small>
+          <Small style={{ textAlign: 'center', marginBottom: space.lg }}>{t('Wische nach links oder rechts für das nächste Allergen')}</Small>
 
           {/* Erklärungen darunter */}
           <AllergenDetails status={current} />
         </>
       )}
 
-      <Title>So führst du Allergene ein</Title>
+      <Title>{t('So führst du Allergene ein')}</Title>
       <Card>
-        {HOW_TO_INTRODUCE.map((t, i) => (
-          <Row key={t} style={{ alignItems: 'flex-start', marginBottom: space.md }}>
+        {HOW_TO_INTRODUCE.map((tx, i) => (
+          <Row key={tx} style={{ alignItems: 'flex-start', marginBottom: space.md }}>
             <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: color.peach, alignItems: 'center', justifyContent: 'center' }}>
               <Text style={[type.smallBold, { color: '#fff' }]}>{i + 1}</Text>
             </View>
-            <P style={{ flex: 1 }}>{t}</P>
+            <P style={{ flex: 1 }}>{t(tx)}</P>
           </Row>
         ))}
       </Card>
 
-      <Title>Woran erkenne ich eine Reaktion?</Title>
+      <Title>{t('Woran erkenne ich eine Reaktion?')}</Title>
       <Card tone="butter">
-        <P bold>Leichte bis mittlere Reaktion</P>
+        <P bold>{t('Leichte bis mittlere Reaktion')}</P>
         {MILD_SIGNS.map((s) => <P key={s}>• {s}</P>)}
-        <P style={{ marginTop: space.sm }}>Das Lebensmittel nicht weiter geben und ärztlichen Rat holen.</P>
-        <Small soft={false} style={{ marginTop: space.sm }}>{NOT_A_REACTION}</Small>
+        <P style={{ marginTop: space.sm }}>{t('Das Lebensmittel nicht weiter geben und ärztlichen Rat holen.')}</P>
+        <Small soft={false} style={{ marginTop: space.sm }}>{t(NOT_A_REACTION)}</Small>
       </Card>
-      <Important title="Notfall – sofort 112">
+      <Important title={t('Notfall – sofort 112')}>
         {SEVERE_SIGNS.map((s) => <Text key={s} style={[type.body, { color: color.redDeep }]}>• {s}</Text>)}
       </Important>
 
-      <Title>Quellen</Title>
+      <Title>{t('Quellen')}</Title>
       {Object.values(ALLERGEN_SOURCES).map((s) => (
         <View key={s.url} style={{ marginBottom: space.sm }}><SourceLink label={s.label} url={s.url} /></View>
       ))}
@@ -169,7 +168,7 @@ function AllergenCard({ status }: { status: AllergenStatus }) {
     >
       <View style={{ alignSelf: 'flex-start', backgroundColor: st.bg, borderRadius: radius.pill, paddingHorizontal: space.md, paddingVertical: 4 }}>
         <Text style={[type.smallBold, { color: st.fg }]}>
-          {st.icon} {status.label}{status.plannedDate ? ` ab ${formatDayLong(status.plannedDate)}` : ''}
+          {st.icon} {t(status.label)}{status.plannedDate ? t(' ab {0}', { 0: formatDayLong(status.plannedDate) }) : ''}
         </Text>
       </View>
       <View style={{ alignItems: 'center', marginVertical: space.lg }}>
@@ -181,9 +180,9 @@ function AllergenCard({ status }: { status: AllergenStatus }) {
       {status.lastDate ? (
         <LastGiven date={status.lastDate} />
       ) : null}
-      <Small bold soft={false}>Erste Portion</Small>
+      <Small bold soft={false}>{t('Erste Portion')}</Small>
       <P style={{ marginBottom: space.md }}>{g.firstServing}</P>
-      <Small bold soft={false}>Allgemeine Empfehlung danach</Small>
+      <Small bold soft={false}>{t('Allgemeine Empfehlung danach')}</Small>
       <P>{g.keepUp}</P>
     </View>
   );
@@ -195,14 +194,13 @@ function AllergenDetails({ status }: { status: AllergenStatus }) {
     <>
       {g.important ? <Important>{g.important}</Important> : null}
       {status.state === 'reaktion' ? (
-        <Important title="Reaktion notiert">
-          Bitte nicht erneut anbieten, bevor ihr mit der Kinderärztin gesprochen habt.
-        </Important>
+        <Important title={t('Reaktion notiert')}>
+          {t('Bitte nicht erneut anbieten, bevor ihr mit der Kinderärztin gesprochen habt.')}</Important>
       ) : null}
       <Card>
-        <Heading style={{ marginBottom: space.sm }}>Gut zu wissen</Heading>
-        {g.special.map((t) => <P key={t} style={{ marginBottom: space.xs }}>• {t}</P>)}
-        <Heading style={{ marginTop: space.lg, marginBottom: space.sm }}>Passende Lebensmittel</Heading>
+        <Heading style={{ marginBottom: space.sm }}>{t('Gut zu wissen')}</Heading>
+        {g.special.map((tx) => <P key={tx} style={{ marginBottom: space.xs }}>• {t(tx)}</P>)}
+        <Heading style={{ marginTop: space.lg, marginBottom: space.sm }}>{t('Passende Lebensmittel')}</Heading>
         <Row style={{ flexWrap: 'wrap', gap: space.sm }}>
           {g.starterFoods.map((id) => {
             const f = FOOD_BY_ID[id];
@@ -236,7 +234,7 @@ function LastGiven({ date }: { date: string }) {
   return (
     <View style={{ backgroundColor: color.sageSoft, borderRadius: radius.sm, padding: space.md, marginBottom: space.md }}>
       <Text style={[type.smallBold, { color: color.sageDeep }]}>
-        {days === 0 ? 'Heute angeboten' : days === 1 ? 'Zuletzt gestern angeboten' : `Zuletzt vor ${days} Tagen angeboten`}
+        {days === 0 ? t('Heute angeboten') : days === 1 ? t('Zuletzt gestern angeboten') : t('Zuletzt vor {0} Tagen angeboten', { 0: days })}
       </Text>
     </View>
   );

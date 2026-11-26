@@ -1,3 +1,4 @@
+import { getLang } from '@/i18n';
 // Datumsfunktionen auf Basis von ISO-Tagen (yyyy-mm-dd), zeitzonenstabil über UTC.
 
 const DAY_MS = 86_400_000;
@@ -51,26 +52,36 @@ export function ageInMonths(birthIso: string, onIso: string): number {
   return Math.max(0, months);
 }
 
-const WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-const MONTHS = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
+const WEEKDAYS = { de: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'], en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] };
+const MONTHS = {
+  de: ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'],
+  en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+};
 
+/** „Mo, 23. Nov.“ bzw. „Mon, 23 Nov“ */
 export function formatDay(iso: string, withWeekday = true): string {
   const d = parseDay(iso);
-  const base = `${d.getUTCDate()}. ${MONTHS[d.getUTCMonth()]}`;
-  return withWeekday ? `${WEEKDAYS[d.getUTCDay()]}, ${base}` : base;
+  const l = getLang();
+  const base = l === 'en' ? `${d.getUTCDate()} ${MONTHS.en[d.getUTCMonth()]}` : `${d.getUTCDate()}. ${MONTHS.de[d.getUTCMonth()]}`;
+  return withWeekday ? `${WEEKDAYS[l][d.getUTCDay()]}, ${base}` : base;
 }
 
 export function formatDayLong(iso: string): string {
   const d = parseDay(iso);
-  return `${d.getUTCDate()}. ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  return getLang() === 'en'
+    ? `${d.getUTCDate()} ${MONTHS.en[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+    : `${d.getUTCDate()}. ${MONTHS.de[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
-const MONTHS_LONG = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+const MONTHS_LONG = {
+  de: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+};
 
 /** „Juni 2026“ – für den Geburtsmonat (die App speichert keinen genauen Geburtstag). */
 export function formatMonth(iso: string): string {
   const d = parseDay(iso);
-  return `${MONTHS_LONG[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  return `${MONTHS_LONG[getLang()][d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
 /**

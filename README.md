@@ -145,6 +145,14 @@ Beikost-Paket: weitere Wochen, Einkauf/Vorkochen, Familienfreigabe, Geschwister,
 Die KI wählt nur IDs aus geprüften Rezepten und Begründungen aus einer festen Liste; es wird kein KI-Text angezeigt.
 Medizinische Anfragen werden in App und Server abgefangen (`src/ai/guard.ts`, Kopie im Function-Ordner, Test prüft Gleichheit).
 
+## Sprachen (Deutsch / Englisch)
+
+- Die App folgt der Handysprache: Englisch bei englischem Handy, sonst Deutsch. Umschalten im Menü (☰ → Sprache); die Wahl liegt nur lokal auf dem Gerät (meta `lang`).
+- Technik: `src/i18n` – der deutsche Text ist der Schlüssel (`t('Darf {0} schon …?', { 0: name })`), `src/i18n/en.ts` enthält die Übersetzungen. Tabellen mit Texten werden mit `tr(...)` umschlossen und beim Lesen übersetzt. Fehlt eine Übersetzung, erscheint Deutsch.
+- `tests/i18n.test.ts` prüft, dass jeder feste Text und jede `tr()`-Tabelle eine englische Übersetzung hat und Platzhalter erhalten bleiben.
+- **Etappe 1 (fertig):** alle Bildschirme, Hinweise, Sicherheits- und Allergenhinweise, Notfallzeichen, Datenschutztexte.
+- **Etappe 2 (offen):** Inhalte – Lebensmittelnamen und Zubereitung, Rezepte, Tipps des Tages, PDF-Berichte (Wochenplan, Arztbericht, Notfallblatt). Quellentitel bleiben im Original.
+
 ## Zweckbestimmung & Konzept
 
 Abgleich mit dem Projektkonzept (MDR-Abgrenzung, Datensparsamkeit): [KONZEPT-ABGLEICH.md](KONZEPT-ABGLEICH.md).

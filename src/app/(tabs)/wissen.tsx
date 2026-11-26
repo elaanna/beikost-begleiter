@@ -15,6 +15,7 @@ import {
   Button, Card, Heading, Hero, Important, P, Row, Screen, Segmented, Small, SourceLink, Title,
 } from '@/ui/components';
 import { color, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 type Section = WissenSection;
 
@@ -29,13 +30,13 @@ export default function Wissen() {
   }, [params.section, params.topic, params.t]);
   return (
     <Screen>
-      <Hero style={{ marginBottom: space.lg }}>Wissen</Hero>
+      <Hero style={{ marginBottom: space.lg }}>{t('Wissen')}</Hero>
       <Segmented<Section>
         options={[
-          { id: 'sicherheit', label: 'Sicherheit' },
-          { id: 'allergene', label: 'Allergene' },
-          { id: 'portionen', label: 'Mengen' },
-          { id: 'leitlinien', label: 'Leitlinien' },
+          { id: 'sicherheit', label: t('Sicherheit') },
+          { id: 'allergene', label: t('Allergene') },
+          { id: 'portionen', label: t('Mengen') },
+          { id: 'leitlinien', label: t('Leitlinien') },
         ]}
         value={section}
         onChange={setSection}
@@ -48,20 +49,20 @@ export default function Wissen() {
 function Sicherheit() {
   return (
     <>
-      <Important title="Notfall: sofort 112 anrufen bei" action={
-        <Button label="Notruf 112" variant="danger" style={{ marginTop: space.md }} onPress={() => Linking.openURL('tel:112')} />
+      <Important title={t('Notfall: sofort 112 anrufen bei')} action={
+        <Button label={t('Notruf 112')} variant="danger" style={{ marginTop: space.md }} onPress={() => Linking.openURL('tel:112')} />
       }>
         {EMERGENCY_SIGNS.map((s) => <Text key={s} style={[type.body, { color: color.redDeep }]}>• {s}</Text>)}
       </Important>
 
-      <Title>Würgen oder Verschlucken?</Title>
+      <Title>{t('Würgen oder Verschlucken?')}</Title>
       <Card tone="lilac">
-        <P bold>😮‍💨 Würgen ist normal</P>
+        <P bold>{t('😮‍💨 Würgen ist normal')}</P>
         <P style={{ marginTop: space.xs }}>{GAG_VS_CHOKE.gag}</P>
       </Card>
-      <Important title="Verschlucken ist ein Notfall">{GAG_VS_CHOKE.choke}</Important>
+      <Important title={t('Verschlucken ist ein Notfall')}>{GAG_VS_CHOKE.choke}</Important>
 
-      <Title>Im ersten Jahr nicht geben</Title>
+      <Title>{t('Im ersten Jahr nicht geben')}</Title>
       {AVOID_FIRST_YEAR.map((a) => (
         <Important key={a.name} title={a.name}>
           <Row style={{ alignItems: 'flex-start' }}>
@@ -71,15 +72,15 @@ function Sicherheit() {
         </Important>
       ))}
 
-      <Title>Sicher essen</Title>
+      <Title>{t('Sicher essen')}</Title>
       <Card>
         {SAFE_EATING.map((s) => <P key={s} style={{ marginBottom: space.xs }}>✓ {s}</P>)}
       </Card>
 
-      <Title>Reifezeichen</Title>
+      <Title>{t('Reifezeichen')}</Title>
       <Card tone="peach">
         {READINESS_SIGNS.map((s) => <P key={s} style={{ marginBottom: space.xs }}>🌱 {s}</P>)}
-        <Button label="Reifezeichen-Checkliste" style={{ marginTop: space.md }} onPress={() => router.push('/reifecheck')} />
+        <Button label={t('Reifezeichen-Checkliste')} style={{ marginTop: space.md }} onPress={() => router.push('/reifecheck')} />
       </Card>
     </>
   );
@@ -90,25 +91,23 @@ function Leitlinien() {
   return (
     <>
       <P soft style={{ marginBottom: space.lg }}>
-        Der Plan folgt den deutschen S3-Leitlinien und den Empfehlungen des Netzwerks Gesund ins Leben.
-        Jede Aussage ist verlinkt. Die App ersetzt keine kinderärztliche Beratung.
-      </P>
-      {topics.map((t) => {
-        const items = STATEMENTS.filter((s) => s.topic === t);
+        {t('Der Plan folgt den deutschen S3-Leitlinien und den Empfehlungen des Netzwerks Gesund ins Leben. Jede Aussage ist verlinkt. Die App ersetzt keine kinderärztliche Beratung.')}</P>
+      {topics.map((tx) => {
+        const items = STATEMENTS.filter((s) => s.topic === tx);
         return (
-          <View key={t}>
-            <Title>{TOPIC_LABEL[t].emoji} {TOPIC_LABEL[t].title}</Title>
+          <View key={tx}>
+            <Title>{TOPIC_LABEL[tx].emoji} {t(TOPIC_LABEL[tx].title)}</Title>
             {items.map((s) =>
               s.important ? (
-                <Important key={s.id} title="Wichtig">
-                  <Text style={[type.body, { color: color.redDeep }]}>{s.text}</Text>
+                <Important key={s.id} title={t('Wichtig')}>
+                  <Text style={[type.body, { color: color.redDeep }]}>{t(s.text)}</Text>
                   <View style={{ marginTop: space.sm }}>
                     <SourceLink label={`${SOURCES[s.source].short}${s.strength ? ` · ${s.strength}` : ''}`} url={SOURCES[s.source].url} />
                   </View>
                 </Important>
               ) : (
                 <Card key={s.id} style={{ paddingVertical: space.lg }}>
-                  <P>{s.text}</P>
+                  <P>{t(s.text)}</P>
                   <View style={{ marginTop: space.sm }}>
                     <SourceLink label={`${SOURCES[s.source].short}${s.strength ? ` · ${s.strength}` : ''}`} url={SOURCES[s.source].url} />
                   </View>
@@ -119,7 +118,7 @@ function Leitlinien() {
         );
       })}
 
-      <Title>Quellen</Title>
+      <Title>{t('Quellen')}</Title>
       <Card>
         {Object.values(SOURCES).map((s) => (
           <View key={s.id} style={{ marginBottom: space.md }}>
@@ -127,17 +126,17 @@ function Leitlinien() {
             <Small>{s.status}</Small>
           </View>
         ))}
-        <Small>Stand der Recherche: 25. November 2026</Small>
+        <Small>{t('Stand der Recherche: 25. November 2026')}</Small>
       </Card>
     </>
   );
 }
 
-function Mengen({ topic, onTopic }: { topic: MengenTopic; onTopic: (t: MengenTopic) => void }) {
+function Mengen({ topic, onTopic }: { topic: MengenTopic; onTopic: (tx: MengenTopic) => void }) {
   return (
     <>
       <Segmented<MengenTopic>
-        options={[{ id: 'brei', label: '🥣 Brei' }, { id: 'eisen', label: '🥩 Eisen' }, { id: 'trinken', label: '💧 Trinken' }]}
+        options={[{ id: 'brei', label: t('🥣 Brei') }, { id: 'eisen', label: t('🥩 Eisen') }, { id: 'trinken', label: t('💧 Trinken') }]}
         value={topic}
         onChange={onTopic}
       />
@@ -153,8 +152,8 @@ function Eisen() {
     <>
       {week && week.active ? (
         <Card>
-          <Small bold soft={false}>Eisenreiche Lebensmittel · letzte 7 Tage</Small>
-          <Heading style={{ marginTop: space.xs }}>An {week.days} von 7 Tagen eingetragen</Heading>
+          <Small bold soft={false}>{t('Eisenreiche Lebensmittel · letzte 7 Tage')}</Small>
+          <Heading style={{ marginTop: space.xs }}>{t('An {0} von 7 Tagen eingetragen', { 0: week.days })}</Heading>
           <Row style={{ gap: 6, marginTop: space.md }}>
             {week.perDay.map((d) => (
               <View key={d.date} style={{ flex: 1, alignItems: 'center' }}>
@@ -163,17 +162,17 @@ function Eisen() {
               </View>
             ))}
           </Row>
-          <Small style={{ marginTop: space.md }}>Eine Übersicht deiner Einträge – keine Bewertung der Versorgung.</Small>
+          <Small style={{ marginTop: space.md }}>{t('Eine Übersicht deiner Einträge – keine Bewertung der Versorgung.')}</Small>
         </Card>
       ) : (
-        <Card tone="butter"><P>Hier siehst du, an welchen Tagen eisenreiche Lebensmittel eingetragen wurden – sobald das erste dabei ist.</P></Card>
+        <Card tone="butter"><P>{t('Hier siehst du, an welchen Tagen eisenreiche Lebensmittel eingetragen wurden – sobald das erste dabei ist.')}</P></Card>
       )}
       <Card>
         <P>{IRON_TEXT.why}</P>
-        {IRON_TEXT.how.map((t) => <P key={t} style={{ marginTop: space.sm }}>• {t}</P>)}
+        {IRON_TEXT.how.map((tx) => <P key={tx} style={{ marginTop: space.sm }}>• {t(tx)}</P>)}
         <Small style={{ marginTop: space.md }}>{IRON_TEXT.app}</Small>
       </Card>
-      <Title>Quellen</Title>
+      <Title>{t('Quellen')}</Title>
       {[PORTION_SOURCES[0], DRINK_SOURCES[2]].map((s) => (
         <View key={s.url} style={{ marginBottom: space.sm }}><SourceLink label={s.label} url={s.url} /></View>
       ))}
@@ -190,29 +189,28 @@ function Trinken() {
             <Text style={{ fontSize: 32 }}>{s.emoji}</Text>
             <View style={{ flex: 1 }}>
               <P bold>{s.when}</P>
-              <P style={{ marginTop: space.xs }}>{s.text}</P>
+              <P style={{ marginTop: space.xs }}>{t(s.text)}</P>
             </View>
           </Row>
         </Card>
       ))}
-      <Title>Welches Wasser?</Title>
+      <Title>{t('Welches Wasser?')}</Title>
       <Card>
-        {WATER_TIPS.map((t) => <P key={t} style={{ marginBottom: space.sm }}>💧 {t}</P>)}
+        {WATER_TIPS.map((tx) => <P key={tx} style={{ marginBottom: space.sm }}>💧 {t(tx)}</P>)}
       </Card>
-      <Important title="Dann besser abgepacktes Babywasser">
-        {WATER_EXCEPTIONS.map((t) => <Text key={t} style={[type.body, { color: color.redDeep }]}>• {t}</Text>)}
+      <Important title={t('Dann besser abgepacktes Babywasser')}>
+        {WATER_EXCEPTIONS.map((tx) => <Text key={tx} style={[type.body, { color: color.redDeep }]}>• {t(tx)}</Text>)}
         <Text style={[type.body, { color: color.redDeep, marginTop: space.xs }]}>
-          Infos zu deinem Leitungswasser gibt dein Wasserversorger oder das Gesundheitsamt.
-        </Text>
+          {t('Infos zu deinem Leitungswasser gibt dein Wasserversorger oder das Gesundheitsamt.')}</Text>
       </Important>
-      <Title>Der richtige Becher</Title>
+      <Title>{t('Der richtige Becher')}</Title>
       <Card tone="lilac">
-        {CUP_TIPS.map((t) => <P key={t} style={{ marginBottom: space.xs }}>✓ {t}</P>)}
+        {CUP_TIPS.map((tx) => <P key={tx} style={{ marginBottom: space.xs }}>✓ {t(tx)}</P>)}
       </Card>
-      <Important title="Im ersten Jahr nicht als Getränk">
-        {DRINK_AVOID.map((t) => <Text key={t} style={[type.body, { color: color.redDeep }]}>• {t}</Text>)}
+      <Important title={t('Im ersten Jahr nicht als Getränk')}>
+        {DRINK_AVOID.map((tx) => <Text key={tx} style={[type.body, { color: color.redDeep }]}>• {t(tx)}</Text>)}
       </Important>
-      <Title>Quellen</Title>
+      <Title>{t('Quellen')}</Title>
       {DRINK_SOURCES.map((s) => (
         <View key={s.url} style={{ marginBottom: space.sm }}><SourceLink label={s.label} url={s.url} /></View>
       ))}
@@ -224,18 +222,16 @@ function Portionen() {
   return (
     <>
       <P soft style={{ marginBottom: space.lg }}>
-        So viel ist eine volle Breimahlzeit. Am Anfang reichen wenige Löffel – dein Kind bestimmt die Menge.
-        Was es nicht isst, trinkt es weiter als Milch.
-      </P>
+        {t('So viel ist eine volle Breimahlzeit. Am Anfang reichen wenige Löffel – dein Kind bestimmt die Menge. Was es nicht isst, trinkt es weiter als Milch.')}</P>
       {(['mittag', 'abend', 'nachmittag'] as const).map((slot) => {
         const p = FULL_PORTIONS[slot];
         return (
           <Card key={slot}>
             <Small bold soft={false}>{{ mittag: '🕛 Mittag', abend: '🌙 Abend', nachmittag: '☕ Nachmittag' }[slot]}</Small>
-            <Heading style={{ marginBottom: space.md }}>{p.title}</Heading>
+            <Heading style={{ marginBottom: space.md }}>{t(p.title)}</Heading>
             {p.lines.map((l) => (
               <Row key={l.label} style={{ justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: color.line }}>
-                <P style={{ flex: 1 }}>{l.label}</P>
+                <P style={{ flex: 1 }}>{t(l.label)}</P>
                 <P bold>{l.amount}</P>
               </Row>
             ))}
@@ -244,13 +240,11 @@ function Portionen() {
         );
       })}
       <Card tone="butter">
-        <P bold>Satt oder hungrig?</P>
+        <P bold>{t('Satt oder hungrig?')}</P>
         <P style={{ marginTop: space.xs }}>
-          Wendet dein Kind den Kopf ab, presst den Mund zu oder spielt nur noch, ist es satt. Nicht nachschieben –
-          lieber zur nächsten Mahlzeit wieder anbieten.
-        </P>
+          {t('Wendet dein Kind den Kopf ab, presst den Mund zu oder spielt nur noch, ist es satt. Nicht nachschieben – lieber zur nächsten Mahlzeit wieder anbieten.')}</P>
       </Card>
-      <Title>Quellen</Title>
+      <Title>{t('Quellen')}</Title>
       {PORTION_SOURCES.map((s) => (
         <View key={s.url} style={{ marginBottom: space.sm }}><SourceLink label={s.label} url={s.url} /></View>
       ))}

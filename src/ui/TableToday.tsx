@@ -12,6 +12,7 @@ import { Card, IconLabel, P, Row, Small, SourceLink } from './components';
 import { QuickLog } from './QuickLog';
 import { useToast } from './Toast';
 import { brand, color, ICON, radius, space, type } from './theme';
+import { t } from '@/i18n';
 
 /** „Heute“ in der Kleinkind-Phase: 5 Mahlzeiten am Familientisch, die aktuelle hervorgehoben. */
 export function TableToday() {
@@ -45,14 +46,14 @@ export function TableToday() {
     <>
       <Row style={{ gap: space.sm, marginBottom: space.md }}>
         <Utensils size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} />
-        <Text style={[type.cardTitle, { color: brand.blue, flex: 1 }]}>Heute am Familientisch</Text>
+        <Text style={[type.cardTitle, { color: brand.blue, flex: 1 }]}>{t('Heute am Familientisch')}</Text>
         <Small bold soft={false}>{day.meals.filter(done).length}/{day.meals.length}</Small>
       </Row>
 
       {current ? (
         <Card tone="yellow" hero>
-          <Small bold soft={false}>Jetzt dran · {TABLE_SLOT_INFO[current.slot].label}</Small>
-          <Text style={[type.title, { color: color.ink, marginTop: space.xs }]}>{current.title}</Text>
+          <Small bold soft={false}>{t('Jetzt dran · {0}', { 0: t(TABLE_SLOT_INFO[current.slot].label) })}</Small>
+          <Text style={[type.title, { color: color.ink, marginTop: space.xs }]}>{t(current.title)}</Text>
           <Row style={{ flexWrap: 'wrap', gap: space.sm, marginVertical: space.md }}>
             {current.foods.map((id) => FOOD_BY_ID[id] ? (
               <Pressable key={id} onPress={() => router.push(`/food/${id}`)} accessibilityRole="link"
@@ -62,10 +63,10 @@ export function TableToday() {
               </Pressable>
             ) : null)}
           </Row>
-          {current.hint ? <Small soft={false} style={{ marginBottom: space.sm }}>{current.hint}</Small> : null}
+          {current.hint ? <Small soft={false} style={{ marginBottom: space.sm }}>{t(current.hint)}</Small> : null}
           {current.recipeId ? (
             <Pressable onPress={() => router.push(`/rezept/${current.recipeId}`)} accessibilityRole="link" style={{ marginBottom: space.md }}>
-              <IconLabel icon={ChefHat} label="Zum Rezept mit Kinderportion" chevron />
+              <IconLabel icon={ChefHat} label={t('Zum Rezept mit Kinderportion')} chevron />
             </Pressable>
           ) : null}
           <QuickLog compact onLog={(l, r) => logMeal(current, l, r)} />
@@ -73,7 +74,7 @@ export function TableToday() {
       ) : (
         <Card tone="lilac" style={{ alignItems: 'center' }}>
           <Check size={36} strokeWidth={ICON.stroke} color={brand.success} />
-          <Text style={[type.cardTitle, { color: color.ink, marginTop: space.sm }]}>Alles notiert für heute</Text>
+          <Text style={[type.cardTitle, { color: color.ink, marginTop: space.sm }]}>{t('Alles notiert für heute')}</Text>
         </Card>
       )}
 
@@ -86,8 +87,8 @@ export function TableToday() {
               {done(m) ? <Check size={16} strokeWidth={2.2} color={brand.success} /> : <Text style={[type.caption, { color: brand.blue }]}>{TABLE_SLOT_INFO[m.slot].time.slice(0, 2)}</Text>}
             </View>
             <View style={{ flex: 1 }}>
-              <Small soft>{TABLE_SLOT_INFO[m.slot].label}</Small>
-              <P bold={TABLE_SLOT_INFO[m.slot].main}>{m.title}</P>
+              <Small soft>{t(TABLE_SLOT_INFO[m.slot].label)}</Small>
+              <P bold={TABLE_SLOT_INFO[m.slot].main}>{t(m.title)}</P>
             </View>
           </Pressable>
         ))}
@@ -97,13 +98,13 @@ export function TableToday() {
         style={{ backgroundColor: brand.lilacSoft, borderRadius: radius.lg, padding: space.lg, marginBottom: space.lg }}>
         <Row style={{ gap: space.sm }}>
           <Hand size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} />
-          <P bold style={{ flex: 1 }}>Wie viel? Die Hand eures Kindes als Maß</P>
+          <P bold style={{ flex: 1 }}>{t('Wie viel? Die Hand eures Kindes als Maß')}</P>
           {showBasics ? <ChevronUp size={20} color={brand.blue} /> : <ChevronDown size={20} color={brand.blue} />}
         </Row>
         {showBasics ? (
           <View style={{ marginTop: space.md, gap: space.sm }}>
-            {TABLE_BASICS.map((t) => <Small key={t} soft={false}>• {t}</Small>)}
-            <Small soft={false}>Ihr bestimmt, was und wann es etwas gibt – {child.name} bestimmt, wie viel.</Small>
+            {TABLE_BASICS.map((tx) => <Small key={tx} soft={false}>• {t(tx)}</Small>)}
+            <Small soft={false}>{t('Ihr bestimmt, was und wann es etwas gibt – {0} bestimmt, wie viel.', { 0: child.name })}</Small>
             {TABLE_SOURCES.map((s) => <SourceLink key={s.url} label={s.label} url={s.url} />)}
           </View>
         ) : null}
@@ -120,19 +121,17 @@ export function TableSwitchCard({ onYes, onLater }: { onYes: () => void; onLater
       <Row style={{ alignItems: 'flex-start' }}>
         <Text style={{ fontSize: 36 }}>🎂</Text>
         <View style={{ flex: 1 }}>
-          <Text style={[type.cardTitle, { color: brand.blue }]}>{child.name} ist ein Jahr alt</Text>
+          <Text style={[type.cardTitle, { color: brand.blue }]}>{t('{0} ist ein Jahr alt', { 0: child.name })}</Text>
           <Small soft={false} style={{ marginTop: space.xs }}>
-            Bereit für den Familientisch? Statt Breiplan zeigt die App dann 5 Mahlzeiten am Tag mit Kinderportionen, Brotdose und
-            Familienrezepten. Alles Bisherige bleibt erhalten, und ihr könnt jederzeit zurück.
-          </Small>
+            {t('Bereit für den Familientisch? Statt Breiplan zeigt die App dann 5 Mahlzeiten am Tag mit Kinderportionen, Brotdose und Familienrezepten. Alles Bisherige bleibt erhalten, und ihr könnt jederzeit zurück.')}</Small>
         </View>
       </Row>
       <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.md }}>
         <Pressable onPress={onYes} accessibilityRole="button" style={{ flex: 1, backgroundColor: brand.blue, borderRadius: radius.pill, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={[type.bodyBold, { color: '#fff' }]}>Ja, umstellen</Text>
+          <Text style={[type.bodyBold, { color: '#fff' }]}>{t('Ja, umstellen')}</Text>
         </Pressable>
         <Pressable onPress={onLater} accessibilityRole="button" style={{ flex: 1, borderRadius: radius.pill, minHeight: 48, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={[type.bodyBold, { color: brand.blue }]}>Noch Beikost</Text>
+          <Text style={[type.bodyBold, { color: brand.blue }]}>{t('Noch Beikost')}</Text>
         </Pressable>
       </View>
     </Card>

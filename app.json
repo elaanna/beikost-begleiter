@@ -47,7 +47,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#F8F6EE"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "scheme": "beikost",
     "experiments": {

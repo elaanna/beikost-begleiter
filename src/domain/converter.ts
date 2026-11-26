@@ -1,4 +1,5 @@
 import { DISH_TYPES, FIRST_STEP, INGREDIENT_RULES, STAGE_INFO, type IngredientRule, type Stage } from '@/data/familyConverter';
+import { t } from '@/i18n';
 
 export interface Conversion {
   steps: string[];
@@ -13,7 +14,7 @@ export function convertDish(dishId: string, stage: Stage, ruleIds: string[]): Co
   if (!dish) return null;
   const rules = INGREDIENT_RULES.filter((r) => ruleIds.includes(r.id));
   return {
-    steps: [FIRST_STEP, ...dish.steps[stage], STAGE_INFO[stage].text, 'Lauwarm servieren und nur im Sitzen und unter Aufsicht essen lassen.'],
+    steps: [t(FIRST_STEP), ...dish.steps[stage], STAGE_INFO[stage].text, t('Lauwarm servieren und nur im Sitzen und unter Aufsicht essen lassen.')],
     never: rules.filter((r) => r.level === 'nie'),
     adapt: rules.filter((r) => r.level === 'anpassen'),
     notes: rules.filter((r) => r.level === 'hinweis'),

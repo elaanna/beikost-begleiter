@@ -10,6 +10,7 @@ import { ageInMonths, todayIso } from '@/domain/dates';
 import { useChild } from '@/state/AppContext';
 import { Card, Heading, Hero, Important, P, Pill, PillRow, Row, Screen, Small, SourceLink, Title } from '@/ui/components';
 import { color, radius, space, type } from '@/ui/theme';
+import { t } from '@/i18n';
 
 /** Familienessen-Konverter: Familiengericht wählen → Babyvariante nach festen Regeln (Konzept F09). */
 export default function Konverter() {
@@ -26,12 +27,11 @@ export default function Konverter() {
 
   return (
     <Screen edges={['left', 'right']}>
-      <Hero style={{ marginBottom: space.xs }}>Einmal kochen, alle essen mit</Hero>
+      <Hero style={{ marginBottom: space.xs }}>{t('Einmal kochen, alle essen mit')}</Hero>
       <P soft style={{ marginBottom: space.lg }}>
-        {recipe ? `Für „${recipe.name}“: ` : ''}Wähle, was es gibt – die App zeigt, wie die Babyportion gelingt. Feste Regeln, keine KI.
-      </P>
+        {recipe ? t('Für „{0}“: ', { 0: recipe.name }) : ''}{t('Wähle, was es gibt – die App zeigt, wie die Babyportion gelingt. Feste Regeln, keine KI.')}</P>
 
-      <Title>1. Was gibt es?</Title>
+      <Title>{t('1. Was gibt es?')}</Title>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
         {DISH_TYPES.map((d) => {
           const on = dish === d.id;
@@ -54,15 +54,15 @@ export default function Konverter() {
         })}
       </View>
 
-      <Title>2. Wie isst {child.name} gerade?</Title>
+      <Title>{t('2. Wie isst {0} gerade?', { 0: child.name })}</Title>
       <PillRow>
         {(Object.keys(STAGE_INFO) as Stage[]).map((s) => (
           <Pill key={s} label={`${STAGE_INFO[s].emoji} ${STAGE_INFO[s].label}`} selected={stage === s} onPress={() => setStage(s)} />
         ))}
       </PillRow>
-      <Small style={{ marginBottom: space.md }}>Vorauswahl nach Alter und gewählter Methode – du kannst jederzeit umstellen.</Small>
+      <Small style={{ marginBottom: space.md }}>{t('Vorauswahl nach Alter und gewählter Methode – du kannst jederzeit umstellen.')}</Small>
 
-      <Title>3. Was ist im Familienessen drin?</Title>
+      <Title>{t('3. Was ist im Familienessen drin?')}</Title>
       <PillRow>
         {INGREDIENT_RULES.map((r) => (
           <Pill key={r.id} label={`${r.emoji} ${r.name}`} selected={rules.includes(r.id)} onPress={() => toggle(r.id)} />
@@ -71,7 +71,7 @@ export default function Konverter() {
 
       {result ? (
         <>
-          <Title>So geht die Babyportion</Title>
+          <Title>{t('So geht die Babyportion')}</Title>
           {result.never.map((r) => <Important key={r.id} title={`${r.emoji} ${r.name}`}>{r.action}</Important>)}
           <Card tone="sage">
             {result.steps.map((s, i) => (
@@ -85,23 +85,22 @@ export default function Konverter() {
           </Card>
           {result.adapt.length ? (
             <Card tone="butter">
-              <Heading style={{ marginBottom: space.sm }}>Anpassen</Heading>
+              <Heading style={{ marginBottom: space.sm }}>{t('Anpassen')}</Heading>
               {result.adapt.map((r) => <P key={r.id} style={{ marginBottom: space.xs }}>{r.emoji} <Text style={type.bodyBold}>{r.name}:</Text> {r.action}</P>)}
             </Card>
           ) : null}
           {result.notes.map((r) => <Card key={r.id}><P>{r.emoji} {r.action}</P></Card>)}
           <Small style={{ marginBottom: space.md }}>
-            Allgemeine Hinweise für gesunde Babys. Neue Lebensmittel einzeln einführen; bei bekannten Allergien gilt immer die ärztliche Empfehlung.
-          </Small>
+            {t('Allgemeine Hinweise für gesunde Babys. Neue Lebensmittel einzeln einführen; bei bekannten Allergien gilt immer die ärztliche Empfehlung.')}</Small>
           <Pressable onPress={() => router.push('/vorrat')} accessibilityRole="link">
-            <Text style={[type.bodyBold, { color: color.sageDeep, marginBottom: space.md }]}>❄️ Babyportionen einfrieren ›</Text>
+            <Text style={[type.bodyBold, { color: color.sageDeep, marginBottom: space.md }]}>{t('❄️ Babyportionen einfrieren ›')}</Text>
           </Pressable>
         </>
       ) : (
-        <Card tone="butter"><P>Wähle oben ein Gericht.</P></Card>
+        <Card tone="butter"><P>{t('Wähle oben ein Gericht.')}</P></Card>
       )}
 
-      <Title>Quelle</Title>
+      <Title>{t('Quelle')}</Title>
       {CONVERTER_SOURCES.map((s) => <SourceLink key={s.url} label={s.label} url={s.url} />)}
     </Screen>
   );

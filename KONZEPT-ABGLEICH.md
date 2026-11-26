@@ -76,3 +76,8 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 | Unterwegs | Packliste zum Abhaken (gespeichert), Restaurant-Tipps, „ohne Kühlung / kühl halten“ nach BfR und KKH |
 | Vorkoch-Sonntag | Einfrierbare Breie passend zum Plan wählen, Portionen, geführter Ablauf (vorbereiten → kochen → abkühlen/einfrieren) mit Timern, Öl wird beim Vorkochen weggelassen, am Ende automatisch ins Gefrierfach |
 | Journal „Erste Male“ | Tabelle `journal_entries` (lokal, Sync, Supabase mit RLS, im Datenexport), Vorschläge ohne Altersangaben oder Vergleich, erster Löffel automatisch aus dem Tracker |
+
+## Nachtrag 26.11.2026 – Englisch, Etappe 1
+
+- Sprache folgt dem Handy, Umschalter im Menü. Alle Bildschirme, Sicherheits-, Allergen- und Notfallhinweise sowie die Datenschutzseite sind übersetzt (rund 1.500 Texte).
+- Noch Deutsch (Etappe 2): Lebensmittelnamen und Zubereitung, Rezepte, Tipps, PDF-Berichte inkl. Notfallblatt. Vor einem englischen Launch: Übersetzung der Gesundheitstexte fachlich gegenlesen lassen; Leitlinien bleiben die deutschen (für UK/US-Markt eigene Quellen nötig).

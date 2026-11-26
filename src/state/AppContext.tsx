@@ -6,6 +6,8 @@ import type { Child, FoodLog, MealSlot } from '@/domain/types';
 import type { DigestionLog, StoolKind } from '@/domain/digestion';
 import type { Caregiver, FamilySettings, ShiftKind } from '@/domain/shifts';
 import { DEFAULT_SETTINGS } from '@/domain/shifts';
+import { getLocales } from 'expo-localization';
+import { getLang, langFromLocale, setLang, type Lang } from '@/i18n';
 import { DEFAULT_REMINDERS, rescheduleReminders, type ReminderSettings } from '@/notifications/reminders';
 import * as repo from '@/db/repo';
 import { syncNow } from '@/sync/sync';
@@ -16,6 +18,15 @@ import {
   hasEntitlement,
   isPurchasesConfigured,
 } from '@/purchases/revenuecat';
+
+/** Sprache des Handys (z. B. „en“); fällt auf Deutsch zurück, wenn nichts ermittelt werden kann. */
+function deviceLanguage(): string | null {
+  try {
+    return getLocales()[0]?.languageCode ?? null;
+  } catch {
+    return null;
+  }
+}
 
 interface AppState {
   ready: boolean;
@@ -42,6 +53,9 @@ interface AppState {
   finishTutorial: () => Promise<void>;
   /** Geführte Tour erneut zeigen (startet auf „Heute“). */
   restartTutorial: () => Promise<void>;
+  /** Sprache der Oberfläche: Handysprache, bis jemand im Menü umstellt. */
+  lang: Lang;
+  setLanguage: (lang: Lang) => Promise<void>;
   syncState: 'aus' | 'bereit' | 'läuft' | 'fehler';
   lastSyncError: string | null;
   selectChild: (id: string) => Promise<void>;
@@ -85,6 +99,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [epoch, setEpoch] = useState(0);
   const [parentName, setParentName] = useState('');
+  const [lang, setLangState] = useState<Lang>(getLang());
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
   const [accountSkipped, setAccountSkipped] = useState(false);
   const [familyId, setFamilyId] = useState('');
@@ -108,6 +123,10 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
     const list = await repo.listChildren(db);
     const stored = await repo.getMeta(db, 'active_child');
     const active = list.find((c) => c.id === stored) ?? list[0] ?? null;
+    const storedLang = await repo.getMeta(db, 'lang');
+    const nextLang: Lang = storedLang === 'de' || storedLang === 'en' ? storedLang : langFromLocale(deviceLanguage());
+    setLang(nextLang);
+    setLangState(nextLang);
     setTutorialDone((await repo.getMeta(db, 'tour_done')) === '1');
     setParentName((await repo.getMeta(db, 'parent_name')) ?? '');
     setAccountSkipped((await repo.getMeta(db, 'account_skipped')) === '1');
@@ -165,7 +184,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
       rescheduleReminders(activeChild, logs, reminders).catch(() => undefined);
     }, 800);
     return () => clearTimeout(t);
-  }, [ready, activeChild, logs, reminders]);
+  }, [ready, activeChild, logs, reminders, lang]);
 
   const value = useMemo<AppState>(
     () => ({
@@ -196,6 +215,12 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
       finishTutorial: async () => {
         await repo.setMeta(db, 'tour_done', '1');
         setTutorialDone(true);
+      },
+      lang,
+      setLanguage: async (next) => {
+        await repo.setMeta(db, 'lang', next);
+        setLang(next);
+        setLangState(next);
       },
       restartTutorial: async () => {
         await repo.setMeta(db, 'tour_done', '0');
@@ -301,7 +326,7 @@ export function AppProvider({ children: content }: { children: ReactNode }) {
         void sync();
       },
     }),
-    [stock, swaps, ready, epoch, familyId, kids, activeChild, logs, customerInfo, tutorialDone, parentName, accountEmail, accountSkipped, syncState, lastSyncError, db, reload, sync,
+    [lang, stock, swaps, ready, epoch, familyId, kids, activeChild, logs, customerInfo, tutorialDone, parentName, accountEmail, accountSkipped, syncState, lastSyncError, db, reload, sync,
       digestion, caregivers, familySettings, shiftsVersion, reminders],
   );
 
