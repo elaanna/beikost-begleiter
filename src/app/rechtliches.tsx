@@ -44,6 +44,11 @@ const DATA_ITEMS = [
     text: 'Nur wenn du ihn antippst: Die gewählten Zutaten, dein kurzer Wunschtext und eine Liste geprüfter Rezepte gehen über unsere Server-Funktion (Supabase, EU) an Anthropic (USA) als Auftragsverarbeiter. Keine Angaben zu deinem Kind, keine Speicherung der Inhalte. Medizinische Fragen werden vorher abgefangen. Grundlage der Übermittlung: [DPF / Standardvertragsklauseln – vor Launch prüfen].',
   },
   {
+    emoji: '📷',
+    title: 'Supermarkt-Scanner',
+    text: 'Die Kamera liest nur den Barcode, es werden keine Fotos gespeichert. Zum Nachschlagen wird ausschließlich die Barcode-Nummer an Open Food Facts (gemeinnützige Datenbank, Frankreich) gesendet – keine Angaben zu dir oder deinem Kind. Die Einordnung passiert auf deinem Gerät.',
+  },
+  {
     emoji: '🔔',
     title: 'Erinnerungen',
     text: 'Werden nur auf deinem Gerät geplant, ohne Push-Server. Sie können den Namen des Lebensmittels auf dem Sperrbildschirm zeigen.',

@@ -136,7 +136,10 @@ export default function Plan() {
       ) : (
         <>
           {items.length === 0 ? <P soft>In dieser Woche ist noch keine Beikost geplant.</P> : null}
-          <Button label="Vorrat & Gefrierfach" icon="🧺" variant="soft" style={{ marginBottom: space.md }} onPress={() => router.push('/vorrat')} />
+          <Row style={{ gap: space.sm, marginBottom: space.md }}>
+            <Button label="Vorrat" icon="🧺" variant="soft" style={{ flex: 1 }} onPress={() => router.push('/vorrat')} />
+            <Button label="Scannen" icon="📷" variant="soft" style={{ flex: 1 }} onPress={() => router.push('/scanner')} />
+          </Row>
           {groupByCategory(items).map(([cat, list]) => (
             <Card key={cat} style={{ paddingVertical: space.lg }}>
               <Heading style={{ marginBottom: space.sm }}>{CATEGORY_LABEL[cat as keyof typeof CATEGORY_LABEL]}</Heading>

@@ -47,3 +47,12 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 - AVV mit Anthropic (KI) zusätzlich zu Supabase und RevenueCat; Drittlandtransfer prüfen.
 - Kühlschrank-/Zutatenlisten-Scanner (F10/F11) und KI-Wissensassistent (F13): nicht umgesetzt (Phase 3).
 - Navigation laut Konzept (Heute · Wochenplan · Rezepte · Lebensmittel · Assistent) weicht ab; Rezepte liegen unter „Woche“.
+
+## Nachtrag 26.11.2026 (Abend)
+
+| Konzept | Umsetzung | Abgrenzung |
+|---|---|---|
+| F11 Zutatenlisten-Scanner | „Im Regal scannen“: Barcode → Open Food Facts → Einordnung nach WHO-Europa-Nährwertprofil (Zuckerzusätze, Süßstoffe, Salz, Honig < 1 Jahr, Packungsalter, Allergene vs. Profil, Zusatzstoffe) | Nur Barcode wird gesendet; Hinweis „keine Garantie für Allergenfreiheit oder Eignung, Packung prüfen“; Urteil sprachlich weich („Sieht gut aus / Mit Bedacht / Lieber nicht für …“) |
+| Nährwertübersichten (erhöhter Prüfungsbedarf) | „Mias Beikost“: Plan-Bausteine heute, Lebensmittelgruppen der Woche, aufklappbar grob geschätzte Nährwerte | Nur Beikost, ohne Milch; keine Zielwerte, keine Bewertung, Hinweis auf Kinderarztpraxis – juristisch mitprüfen lassen |
+| F12 Wissensbibliothek | Lebensmittel-Steckbrief (Kategorie, „ab Beikost-Woche“, Saison, Status beim Kind, nummerierte Zubereitung, passende Rezepte); Tipp des Tages; Saison-Karte | – |
+| F03 Rezepte | Filter nach Alter („Für Mia“, 5–6, 7–9, ab 10 Monaten) | Allgemeine Orientierung, keine individuelle Empfehlung |

@@ -30,7 +30,14 @@
       "expo-sqlite",
       "expo-sharing",
       "@react-native-community/datetimepicker",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Die Kamera wird nur zum Scannen von Barcodes im Supermarkt genutzt. Es werden keine Fotos gespeichert.",
+          "recordAudioAndroid": false
+        }
+      ]
     ],
     "scheme": "beikost",
     "experiments": {

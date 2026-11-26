@@ -3,19 +3,28 @@ import { Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { CATEGORY_INFO, type RecipeCategory } from '@/data/babyRecipes';
 import { FOOD_BY_ID } from '@/data/foods';
-import { todayIso } from '@/domain/dates';
+import { ageInMonths, todayIso } from '@/domain/dates';
 import { recipeFits } from '@/domain/recipes';
 import { useChild } from '@/state/AppContext';
-import { Card, P, Pill, PillRow, Row, Small } from './components';
+import { Card, P, Pill, PillRow, Row, Segmented, Small } from './components';
 import { color, space, type } from './theme';
 
 type Filter = RecipeCategory | 'alle';
+type AgeFilter = 'jetzt' | 'a5' | 'a7' | 'a10';
+
+const AGE_RANGES: Record<Exclude<AgeFilter, 'jetzt'>, [number, number]> = { a5: [0, 6], a7: [7, 9], a10: [10, 99] };
 
 /** Rezeptbibliothek mit Kategorien, Zutaten-Suche und Familienessen-Konverter. */
 export function RecipesView() {
   const { activeChild: child, logs } = useChild();
   const [filter, setFilter] = useState<Filter>('alle');
-  const fits = recipeFits(child, logs, { category: filter === 'alle' ? undefined : filter, today: todayIso() });
+  const [age, setAge] = useState<AgeFilter>('jetzt');
+  const months = ageInMonths(child.birthDate, todayIso());
+  const fits = recipeFits(child, logs, { category: filter === 'alle' ? undefined : filter, today: todayIso() }).filter(({ recipe }) => {
+    if (age === 'jetzt') return recipe.fromMonth <= months;
+    const [from, to] = AGE_RANGES[age];
+    return recipe.fromMonth >= from && recipe.fromMonth <= to;
+  });
 
   return (
     <>
@@ -36,6 +45,17 @@ export function RecipesView() {
         </View>
       </Row>
 
+      <Segmented<AgeFilter>
+        options={[
+          { id: 'jetzt', label: `Für ${child.name}` },
+          { id: 'a5', label: '5–6 M.' },
+          { id: 'a7', label: '7–9 M.' },
+          { id: 'a10', label: 'ab 10 M.' },
+        ]}
+        value={age}
+        onChange={setAge}
+      />
+      {age === 'jetzt' ? <Small style={{ marginBottom: space.sm }}>Rezepte, die allgemein zum Alter von {child.name} ({months} Monate) passen.</Small> : null}
       <PillRow>
         <Pill label="Alle" selected={filter === 'alle'} onPress={() => setFilter('alle')} />
         {(Object.keys(CATEGORY_INFO) as RecipeCategory[]).map((c) => (
@@ -43,14 +63,14 @@ export function RecipesView() {
         ))}
       </PillRow>
 
-      {fits.length === 0 ? <Card><P>In dieser Kategorie gibt es noch keine Rezepte.</P></Card> : null}
+      {fits.length === 0 ? <Card><P>Für diese Auswahl gibt es noch keine Rezepte.</P></Card> : null}
       {fits.map(({ recipe, blocked, untried, tooEarly }) => (
         <Card key={recipe.id} onPress={() => router.push(`/rezept/${recipe.id}`)} accessibilityLabel={recipe.name} style={{ paddingVertical: space.lg }}>
           <Row style={{ alignItems: 'flex-start' }}>
             <Text style={{ fontSize: 40 }}>{recipe.emoji}</Text>
             <View style={{ flex: 1 }}>
               <P bold>{recipe.name}</P>
-              <Small>{CATEGORY_INFO[recipe.category].label} · {recipe.minutes} Min.{recipe.storage.freeze ? ' · ❄️ einfrierbar' : ''}</Small>
+              <Small>ab {recipe.fromMonth} Monaten · {CATEGORY_INFO[recipe.category].label} · {recipe.minutes} Min.{recipe.storage.freeze ? ' · ❄️' : ''}</Small>
               {blocked ? (
                 <Text style={[type.smallBold, { color: color.red, marginTop: space.xs }]}>Passt nicht: {blocked}</Text>
               ) : tooEarly ? (

@@ -63,6 +63,8 @@ function Navigation() {
             <Stack.Screen name="dienste" options={{ title: 'Dienstplan' }} />
             <Stack.Screen name="reifecheck" options={{ title: 'Reifezeichen-Checkliste' }} />
             <Stack.Screen name="rechtliches" options={{ title: 'Datenschutz & Impressum' }} />
+            <Stack.Screen name="uebersicht" options={{ title: 'Beikost-Übersicht' }} />
+            <Stack.Screen name="scanner" options={{ title: 'Im Regal scannen' }} />
             <Stack.Screen name="mahlzeit" options={{ title: 'Mahlzeit' }} />
             <Stack.Screen name="vorrat" options={{ title: 'Vorrat & Gefrierfach' }} />
             <Stack.Screen name="konverter" options={{ title: 'Familienessen umwandeln' }} />

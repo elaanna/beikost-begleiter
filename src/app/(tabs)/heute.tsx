@@ -6,6 +6,7 @@ import { FOOD_BY_ID } from '@/data/foods';
 import { FAMILY_FROM_MONTHS } from '@/data/recipes';
 import { addDays, ageInMonths, diffDays, formatDayLong, todayIso } from '@/domain/dates';
 import { drinkStage, ironWeek, revisitFoods } from '@/domain/care';
+import { genitive } from '@/domain/beikostOverview';
 import { effectiveStartDate, introDays, planDays, preparationFor, SLOT_LABEL } from '@/domain/planner';
 import { matchingFrozen } from '@/domain/stock';
 import { usePlanDays } from '@/state/usePlan';
@@ -324,6 +325,7 @@ function Tiles() {
       ) : (
         <Tile emoji="⚖️" title="Mengen" sub="Wie viel Brei?" onPress={() => openWissen('portionen', 'brei')} />
       )}
+      <Tile emoji="📷" title="Im Regal scannen" sub="Was steckt drin?" onPress={() => router.push('/scanner')} />
       <Tile
         emoji="❄️"
         title="Gefrierfach"
@@ -331,12 +333,12 @@ function Tiles() {
         onPress={() => router.push('/vorrat')}
       />
       <Tile emoji="🚫" title="Tabu im 1. Jahr" sub="Honig, Nüsse, Salz …" red onPress={() => openWissen('sicherheit')} />
-      {iron.active ? (
+      {logs.some((l) => l.childId === child.id) ? (
         <Tile
-          emoji="💪"
-          title="Eisenreich"
-          sub={`${iron.days} von 7 Tagen mit Fleisch, Fisch & Co.`}
-          onPress={() => openWissen('portionen', 'eisen')}
+          emoji="📊"
+          title={`${genitive(child.name)} Beikost`}
+          sub="Heute & Woche im Überblick"
+          onPress={() => router.push('/uebersicht')}
         />
       ) : null}
       {drink !== 'noch_nicht' ? (
