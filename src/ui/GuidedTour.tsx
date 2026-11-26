@@ -29,7 +29,7 @@ export function tourSteps(parentName: string, childName: string): Step[] {
     { tab: 'rezepte', emoji: '🍲', title: 'Rezepte nach Alter', text: `Gefiltert für ${childName} oder nach Alter und Kategorie. Mit „Was habe ich da?“ findest du Rezepte zu dem, was im Kühlschrank ist.`, mark: 'tab' },
     { tab: 'lebensmittel', emoji: '🥕', title: `${genitive(childName)} Probier-Pass`, text: 'Alle Lebensmittel auf einen Blick: was schon probiert ist, was geschmeckt hat und was als Nächstes kommt.', mark: 'tab' },
     { tab: 'wissen', emoji: '📖', title: 'Wissen mit Quellen', text: 'Mengen, Trinken, Allergene und Leitlinien – alles mit Quellen. Rot markiert heißt immer: wichtig.', mark: 'tab' },
-    { tab: 'heute', emoji: '👪', title: 'Familie & Einstellungen', text: 'Oben rechts auf „Heute“: Partner und Kita einladen, Erinnerungen, Bericht für die Kinderarztpraxis – und diese Tour noch einmal starten.', mark: 'familie' },
+    { tab: 'heute', emoji: '☰', title: 'Das Menü', text: 'Oben rechts auf „Heute“: Familie und Einstellungen, Partner und Kita einladen, Konto, Erinnerungen, Bericht für die Kinderarztpraxis – und diese Tour noch einmal starten.', mark: 'familie' },
   ];
 }
 

@@ -12,6 +12,7 @@ import { effectiveStartDate, introDays, planDays, preparationFor, SLOT_LABEL } f
 import { matchingFrozen } from '@/domain/stock';
 import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
+import { MainMenu } from '@/ui/MainMenu';
 import { SeasonCard, TipOfDayCard } from '@/ui/DailyCards';
 import { portionFor } from '@/domain/portions';
 import { recipeFits } from '@/domain/recipes';
@@ -71,10 +72,7 @@ export default function Heute() {
           <Small>{child.name} · {ageInMonths(child.birthDate, today)} Monate · {formatDayLong(today)}</Small>
           <Hero style={{ marginTop: 2 }}>{greetingTitle(new Date().getHours(), parentName)}</Hero>
         </View>
-        <Pressable onPress={() => router.push('/familie')} accessibilityRole="button" accessibilityLabel="Familie und Einstellungen" hitSlop={10}
-          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: color.surface, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 22 }}>👪</Text>
-        </Pressable>
+        <MainMenu />
       </Row>
       <DailyGreeting child={child} logs={logs} today={today} startDate={start} meal={day.meals.find((m) => m.newFoodId)} />
 

@@ -11,7 +11,7 @@ function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
 
 /**
  * Fünf Bereiche wie im Konzept: Heute · Wochenplan · Rezepte · Lebensmittel · Wissen.
- * Familie & Einstellungen liegen oben rechts auf „Heute“ (👪).
+ * Familie & Einstellungen liegen im Menü (☰) oben rechts auf „Heute“.
  */
 export default function TabsLayout() {
   const { ready, activeChild, needsAccount } = useApp();

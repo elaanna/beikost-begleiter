@@ -46,7 +46,7 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 - EU AI Act: Rolle (Anbieter/Betreiber) und Dokumentation der KI-Funktion; Kennzeichnung ist umgesetzt („KI-Auswahl aus geprüften Rezepten“).
 - AVV mit Anthropic (KI) zusätzlich zu Supabase und RevenueCat; Drittlandtransfer prüfen.
 - Kühlschrank-Scanner (F10) und KI-Wissensassistent (F13): nicht umgesetzt (Phase 3). Zutatenlisten-Scanner (F11) siehe Nachtrag.
-- Navigation jetzt wie im Konzept: Heute · Woche · Rezepte · Lebensmittel · Wissen (statt „Assistent“, der ist Phase 3). Familie & Einstellungen oben rechts auf „Heute“.
+- Navigation jetzt wie im Konzept: Heute · Woche · Rezepte · Lebensmittel · Wissen (statt „Assistent“, der ist Phase 3). Familie & Einstellungen im Menü (☰) oben rechts auf „Heute“.
 
 ## Nachtrag 26.11.2026 (Abend)
 
