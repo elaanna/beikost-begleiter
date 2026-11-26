@@ -10,6 +10,7 @@ import { genitive } from '@/domain/beikostOverview';
 import { dailyLine, greetingTitle } from '@/domain/greeting';
 import { effectiveStartDate, introDays, planDays, preparationFor, SLOT_LABEL } from '@/domain/planner';
 import { matchingFrozen } from '@/domain/stock';
+import { morningInfo } from '@/domain/morning';
 import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { MainMenu } from '@/ui/MainMenu';
@@ -139,6 +140,7 @@ export default function Heute() {
               {t('Später:')}{' '}{later.map((m) => `${SLOT_LABEL[m.slot]} (${m.title})`).join(' · ')}
             </Small>
           ) : null}
+          <MorningCard />
         </>
       ) : null}
 
@@ -151,6 +153,23 @@ export default function Heute() {
       <Heading style={{ marginBottom: space.md }}>{t('Heute auch')}</Heading>
       <Tiles />
     </Screen>
+  );
+}
+
+/** Frühstück im Breiplan: morgens Milch, ab etwa 10 Monaten Übergang zum Familienfrühstück. */
+function MorningCard() {
+  const { activeChild: child } = useChild();
+  const info = morningInfo(child, todayIso());
+  return (
+    <Card tone={info.stage === 'uebergang' ? 'yellow' : undefined}>
+      <Row style={{ alignItems: 'flex-start' }}>
+        <Glyph icon={info.stage === 'uebergang' ? Sandwich : Milk} />
+        <View style={{ flex: 1 }}>
+          <Text style={[type.bodyBold, { color: brand.blue }]}>{info.title}</Text>
+          <Small soft={false} style={{ marginTop: space.xs }}>{info.text}</Small>
+        </View>
+      </Row>
+    </Card>
   );
 }
 

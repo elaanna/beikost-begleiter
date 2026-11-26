@@ -13,6 +13,7 @@ import { QuickLog } from './QuickLog';
 import { useToast } from './Toast';
 import { brand, color, ICON, radius, space, type } from './theme';
 import { t } from '@/i18n';
+import { firstBirthdayChanges } from '@/domain/morning';
 
 /** „Heute“ in der Kleinkind-Phase: 5 Mahlzeiten am Familientisch, die aktuelle hervorgehoben. */
 export function TableToday() {
@@ -124,6 +125,10 @@ export function TableSwitchCard({ onYes, onLater }: { onYes: () => void; onLater
           <Text style={[type.cardTitle, { color: brand.blue }]}>{t('{0} ist ein Jahr alt', { 0: child.name })}</Text>
           <Small soft={false} style={{ marginTop: space.xs }}>
             {t('Bereit für den Familientisch? Statt Breiplan zeigt die App dann 5 Mahlzeiten am Tag mit Kinderportionen, Brotdose und Familienrezepten. Alles Bisherige bleibt erhalten, und ihr könnt jederzeit zurück.')}</Small>
+          <Text style={[type.smallBold, { color: brand.blue, marginTop: space.md }]}>{t('Was sich ab jetzt ändert')}</Text>
+          {firstBirthdayChanges().map((line) => (
+            <Small key={line} soft={false} style={{ marginTop: space.xs }}>{`• ${line}`}</Small>
+          ))}
         </View>
       </Row>
       <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.md }}>
