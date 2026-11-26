@@ -276,3 +276,35 @@ export async function setSwap(db: SQLiteDatabase, familyId: string, childId: str
     id, familyId, childId, date, slot, recipeId, now(),
   );
 }
+
+// ---------- Journal „Erste Male“ ----------
+
+export interface JournalEntry {
+  id: string;
+  childId: string;
+  date: string;
+  kind: string;
+  text: string;
+}
+
+export async function listJournal(db: SQLiteDatabase, childId: string): Promise<JournalEntry[]> {
+  const rows = await db.getAllAsync<{ id: string; child_id: string; date: string; kind: string; text: string }>(
+    'SELECT id, child_id, date, kind, text FROM journal_entries WHERE child_id = ? AND deleted = 0 ORDER BY date DESC',
+    childId,
+  );
+  return rows.map((r) => ({ id: r.id, childId: r.child_id, date: r.date, kind: r.kind, text: r.text }));
+}
+
+export async function saveJournal(db: SQLiteDatabase, familyId: string, e: JournalEntry): Promise<void> {
+  await db.runAsync(
+    `INSERT INTO journal_entries (id, family_id, child_id, date, kind, text, updated_at, deleted, dirty)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 0, 1)
+     ON CONFLICT(id) DO UPDATE SET date = excluded.date, kind = excluded.kind, text = excluded.text,
+       updated_at = excluded.updated_at, deleted = 0, dirty = 1`,
+    e.id, familyId, e.childId, e.date, e.kind.slice(0, 30), e.text.slice(0, 200), now(),
+  );
+}
+
+export async function deleteJournal(db: SQLiteDatabase, id: string): Promise<void> {
+  await db.runAsync('UPDATE journal_entries SET deleted = 1, dirty = 1, updated_at = ? WHERE id = ?', now(), id);
+}

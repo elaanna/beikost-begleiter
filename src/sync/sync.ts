@@ -9,10 +9,10 @@ import { ensureSession, supabase } from './supabase';
  * Konflikte löst der Server per Last-Write-Wins (Trigger lww_guard).
  */
 
-type Table = 'children' | 'food_logs' | 'digestion_logs' | 'caregivers' | 'shift_entries' | 'family_settings' | 'stock_items' | 'plan_swaps';
+type Table = 'children' | 'food_logs' | 'digestion_logs' | 'caregivers' | 'shift_entries' | 'family_settings' | 'stock_items' | 'plan_swaps' | 'journal_entries';
 
 /** Reihenfolge wichtig: Elterntabellen vor abhängigen (Fremdschlüssel). */
-const TABLES: Table[] = ['children', 'food_logs', 'digestion_logs', 'caregivers', 'shift_entries', 'family_settings', 'stock_items', 'plan_swaps'];
+const TABLES: Table[] = ['children', 'food_logs', 'digestion_logs', 'caregivers', 'shift_entries', 'family_settings', 'stock_items', 'plan_swaps', 'journal_entries'];
 
 const COLUMNS: Record<Table, string[]> = {
   children: [
@@ -26,6 +26,7 @@ const COLUMNS: Record<Table, string[]> = {
   family_settings: ['id', 'family_id', 'data', 'updated_at', 'deleted'],
   stock_items: ['id', 'family_id', 'kind', 'name', 'recipe_id', 'food_id', 'portions', 'made_on', 'updated_at', 'deleted'],
   plan_swaps: ['id', 'family_id', 'child_id', 'date', 'slot', 'recipe_id', 'updated_at', 'deleted'],
+  journal_entries: ['id', 'family_id', 'child_id', 'date', 'kind', 'text', 'updated_at', 'deleted'],
 };
 
 const BOOL_COLS = new Set(['atopic_dermatitis', 'peanut_cleared', 'deleted']);
@@ -200,7 +201,7 @@ export async function adoptFamily(db: SQLiteDatabase, familyId: string, role: Fa
       for (const t of SYNC_TABLES) await db.runAsync(`UPDATE ${t} SET dirty = 0`);
     } else {
       await db.runAsync('UPDATE children SET family_id = ?, dirty = 1', familyId);
-      for (const t of ['food_logs', 'digestion_logs', 'caregivers', 'shift_entries', 'stock_items', 'plan_swaps'] as const) {
+      for (const t of ['food_logs', 'digestion_logs', 'caregivers', 'shift_entries', 'stock_items', 'plan_swaps', 'journal_entries'] as const) {
         await db.runAsync(`UPDATE ${t} SET family_id = ?, dirty = 1`, familyId);
       }
     }

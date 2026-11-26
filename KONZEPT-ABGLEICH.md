@@ -66,3 +66,13 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 | Kleinkind-Rezepte | Kategorie „Kleinkind ab 1 Jahr“ mit Kinderportion („vor dem Würzen abnehmen“), Sicherheitshinweisen (Gräten, Kichererbsen, Hack/Geflügel durchgaren) | Rezepte eigene, einfache Grundrezepte – fachlich prüfen lassen |
 | Kita-Brotdose | Mo–Fr aus Bekanntem (sonst Hinweis „erst zu Hause probieren“), neu mischen, Einkaufsliste, Tipps nach Verbraucherzentrale | Ausschlüsse/Allergene werden nie vorgeschlagen |
 | Wählerische Esser | „Noch mal anbieten“: zuletzt Abgelehntes mit Anzahl der Angebote, ohne Zielzahl; Tipps (Eltern was/wann, Kind wie viel; kein Druck, keine Belohnung) | Hinweis auf Kinderarztpraxis bei Warnzeichen; keine Diagnose |
+
+## Nachtrag 26.11.2026 (spät) – Ideen 5–9
+
+| Idee | Umsetzung |
+|---|---|
+| Preisstruktur | Kostenlos: Tagesplan, Notieren, Entdecken, Scanner, Wissen & Sicherheit, Notfallblatt, Noch mal anbieten, Unterwegs, Journal. Paket: Planung im Voraus, Einkauf + Vorkoch-Sonntag, Vorrat, Familientisch ab 1 Jahr (Tagesplan, Kleinkind-Rezepte, Brotdose), Konverter, Familienfreigabe, Geschwister, PDF. Preis/Laufzeit für die längere Nutzung bis 3 Jahre noch offen |
+| Einkaufsliste weitergeben | „Liste teilen“ (Text) in Woche → Einkauf und Brotdose; Lieferdienst-Anbindung erst mit Partner |
+| Unterwegs | Packliste zum Abhaken (gespeichert), Restaurant-Tipps, „ohne Kühlung / kühl halten“ nach BfR und KKH |
+| Vorkoch-Sonntag | Einfrierbare Breie passend zum Plan wählen, Portionen, geführter Ablauf (vorbereiten → kochen → abkühlen/einfrieren) mit Timern, Öl wird beim Vorkochen weggelassen, am Ende automatisch ins Gefrierfach |
+| Journal „Erste Male“ | Tabelle `journal_entries` (lokal, Sync, Supabase mit RLS, im Datenexport), Vorschläge ohne Altersangaben oder Vergleich, erster Löffel automatisch aus dem Tracker |

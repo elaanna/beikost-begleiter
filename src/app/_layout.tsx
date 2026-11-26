@@ -76,6 +76,9 @@ function Navigation() {
             <Stack.Screen name="familie" options={{ title: 'Familie & Einstellungen' }} />
             <Stack.Screen name="brotdose" options={{ title: 'Kita-Brotdose' }} />
             <Stack.Screen name="wiederanbieten" options={{ title: 'Noch mal anbieten' }} />
+            <Stack.Screen name="unterwegs" options={{ title: 'Unterwegs' }} />
+            <Stack.Screen name="vorkochen" options={{ title: 'Vorkoch-Sonntag' }} />
+            <Stack.Screen name="journal" options={{ title: 'Erste Male' }} />
             <Stack.Screen name="konto" options={{ title: 'Konto & Handywechsel' }} />
             <Stack.Screen name="willkommen" options={{ headerShown: false }} />
             <Stack.Screen name="vorrat" options={{ title: 'Vorrat & Gefrierfach' }} />

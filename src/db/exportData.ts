@@ -2,8 +2,8 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import { Platform, Share } from 'react-native';
 
 /** Tabellen mit personenbezogenen Daten (Art. 15/20 DSGVO: Auskunft und Datenübertragbarkeit). */
-const EXPORT_TABLES = ['children', 'food_logs', 'digestion_logs', 'caregivers', 'shift_entries', 'family_settings', 'stock_items', 'plan_swaps', 'shopping_checks'] as const;
-const EXPORT_META = ['consent_health', 'reminders', 'family_role', 'sharing'];
+const EXPORT_TABLES = ['children', 'food_logs', 'digestion_logs', 'caregivers', 'shift_entries', 'family_settings', 'stock_items', 'plan_swaps', 'journal_entries', 'shopping_checks'] as const;
+const EXPORT_META = ['consent_health', 'reminders', 'family_role', 'sharing', 'parent_name', 'packliste'];
 
 export async function collectExport(db: SQLiteDatabase): Promise<Record<string, unknown>> {
   const out: Record<string, unknown> = {
@@ -27,7 +27,7 @@ export async function collectExport(db: SQLiteDatabase): Promise<Record<string, 
 /** Export teilen: auf dem Handy über das Teilen-Menü, im Browser als Datei-Download. */
 export async function shareExport(db: SQLiteDatabase): Promise<void> {
   const json = JSON.stringify(await collectExport(db), null, 2);
-  const name = `beikost-daten-${new Date().toISOString().slice(0, 10)}.json`;
+  const name = `nimou-daten-${new Date().toISOString().slice(0, 10)}.json`;
   if (Platform.OS === 'web') {
     const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
     const a = document.createElement('a');

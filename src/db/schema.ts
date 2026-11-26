@@ -120,6 +120,21 @@ const MIGRATIONS: string[] = [
   `,
   // 4: Kleinkind-Phase („nimou table“)
   `ALTER TABLE children ADD COLUMN table_since TEXT;`,
+  // 5: Journal „Erste Male“
+  `
+  CREATE TABLE IF NOT EXISTS journal_entries (
+    id TEXT PRIMARY KEY NOT NULL,
+    family_id TEXT NOT NULL,
+    child_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    text TEXT NOT NULL DEFAULT '',
+    updated_at TEXT NOT NULL,
+    deleted INTEGER NOT NULL DEFAULT 0,
+    dirty INTEGER NOT NULL DEFAULT 1
+  );
+  CREATE INDEX IF NOT EXISTS idx_journal_child ON journal_entries (child_id, date);
+  `,
 ];
 
 export async function migrateDb(db: SQLiteDatabase): Promise<void> {

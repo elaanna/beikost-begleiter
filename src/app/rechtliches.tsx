@@ -27,7 +27,7 @@ const DATA_ITEMS = [
   {
     emoji: '📱',
     title: 'Auf deinem Gerät',
-    text: 'Kind (optionaler Spitzname, Geburtsmonat), Plan, Protokoll mit Reaktionen, Verdauung, Vorrat, Dienstplan und Einstellungen werden lokal gespeichert. Ohne Familienfreigabe oder Cloud-Sicherung verlässt nichts davon das Gerät. Dein Vorname für die Begrüßung bleibt immer nur auf dem Gerät.',
+    text: 'Kind (optionaler Spitzname, Geburtsmonat), Plan, Protokoll mit Reaktionen, Verdauung, Vorrat, Journal „Erste Male“, Dienstplan und Einstellungen werden lokal gespeichert. Ohne Familienfreigabe oder Cloud-Sicherung verlässt nichts davon das Gerät. Dein Vorname für die Begrüßung bleibt immer nur auf dem Gerät.',
   },
   {
     emoji: '👪',

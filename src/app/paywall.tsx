@@ -7,10 +7,15 @@ import { useApp } from '@/state/AppContext';
 import { Button, Card, Hero, P, Screen, Small } from '@/ui/components';
 import { color, space } from '@/ui/theme';
 
+/**
+ * Preisstruktur: Der Planer für heute bleibt kostenlos. Das Paket bringt Planung, Familie und die Kleinkind-Phase.
+ * Kostenlos bleiben außerdem alles zur Sicherheit, der Scanner, „Noch mal anbieten“, Unterwegs und das Journal.
+ */
 const INCLUDED = [
   { emoji: '🗓️', text: 'Plan beliebig weit im Voraus' },
-  { emoji: '🛒', text: 'Einkaufs- und Vorkochliste' },
+  { emoji: '🛒', text: 'Einkaufsliste und Vorkoch-Sonntag' },
   { emoji: '❄️', text: 'Vorrat & Gefrierfach' },
+  { emoji: '🍽️', text: 'Familientisch ab 1 Jahr: Tagesplan, Kleinkind-Rezepte, Kita-Brotdose' },
   { emoji: '🔄', text: 'Familienessen-Konverter' },
   { emoji: '👪', text: 'Gemeinsam planen mit Partner, Großeltern, Kita' },
   { emoji: '👶', text: 'Geschwisterkinder' },
@@ -30,7 +35,7 @@ export default function Paywall() {
   return (
     <Screen edges={['left', 'right', 'bottom']}>
       <Text style={{ fontSize: 56, textAlign: 'center' }}>⭐</Text>
-      <Hero style={{ textAlign: 'center', marginTop: space.md }}>Die ganze Beikostzeit begleitet</Hero>
+      <Hero style={{ textAlign: 'center', marginTop: space.md }}>Vom ersten Löffel bis zum Familientisch</Hero>
       <P soft style={{ textAlign: 'center', marginTop: space.sm, marginBottom: space.xl }}>
         Einmal zahlen, 12 Monate nutzen. Kein Abo, das sich still verlängert.
       </P>
@@ -42,7 +47,7 @@ export default function Paywall() {
             <P style={{ flex: 1 }}>{x.text}</P>
           </View>
         ))}
-        <Small>Immer kostenlos: Tagesplan, Notieren mit Reaktionen, Wissen & Sicherheit, Notfallblatt.</Small>
+        <Small>Immer kostenlos: Tagesplan, Notieren mit Reaktionen, Lebensmittel entdecken, Scanner, Wissen & Sicherheit, Notfallblatt, Noch mal anbieten, Unterwegs und das Journal „Erste Male“.</Small>
       </Card>
 
       {previewMode ? (

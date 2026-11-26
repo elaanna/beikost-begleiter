@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Plus } from 'lucide-react-native';
+import { Plus, CookingPot } from 'lucide-react-native';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { ALL_RECIPES, RECIPE_BY_ID } from '@/data/allRecipes';
 import { MEAL_PREP_RULES, STORAGE_SOURCES } from '@/data/babyRecipes';
 import { FOOD_BY_ID, FOODS } from '@/data/foods';
@@ -94,6 +94,7 @@ export default function Vorrat() {
           )}
 
           <Title>Vorkochen & Einfrieren</Title>
+          <Button label="Vorkoch-Sonntag: geführt mit Timern" icon={CookingPot} variant="soft" style={{ marginBottom: space.md }} onPress={() => router.push('/vorkochen')} />
           <Card tone="butter">
             {MEAL_PREP_RULES.map((r) => <P key={r} style={{ marginBottom: space.xs }}>• {r}</P>)}
             <Small style={{ marginTop: space.sm }}>Allgemeine Hinweise – die App kann Haltbarkeit und Frische im Einzelfall nicht beurteilen.</Small>

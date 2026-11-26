@@ -58,3 +58,9 @@ test('Konto: E-Mail, Code und verständliche Fehler', () => {
   assert.match(accountError('A user with this email address has already been registered'), /schon zu einem Konto/);
   assert.match(accountError('For security purposes, you can only request this after 42 seconds.'), /warte kurz/);
 });
+
+import { shoppingText } from '../src/domain/shareText';
+test('Einkaufsliste als Text', () => {
+  const t = shoppingText('Einkauf 23.–29. Nov.', [{ name: 'Karotte', detail: '500 g' }, { name: 'Hafer' }]);
+  assert.equal(t, 'Einkauf 23.–29. Nov.\n\n• Karotte (500 g)\n• Hafer\n\nErstellt mit nimou');
+});

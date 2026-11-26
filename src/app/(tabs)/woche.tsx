@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Share, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { CATEGORY_LABEL, FOOD_BY_ID } from '@/data/foods';
@@ -14,7 +14,8 @@ import { pantryFoodIds } from '@/domain/stock';
 import { listChecks, toggleCheck } from '@/db/repo';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, FoodBadge, Heading, Hero, IconLabel, LockedNotice, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
-import { ChevronLeft, ChevronRight, FileText, RefreshCw, Sandwich, Scale, ScanBarcode, ShoppingBasket } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, CookingPot, FileText, RefreshCw, Sandwich, Scale, ScanBarcode, Share2, ShoppingBasket } from 'lucide-react-native';
+import { shoppingText } from '@/domain/shareText';
 import { isTablePhase, tableDays, type TableDay } from '@/domain/toddler';
 import { TABLE_SLOT_INFO } from '@/data/toddler';
 import { shareHtmlAsPdf } from '@/ui/exportPdf';
@@ -80,7 +81,7 @@ export default function Plan() {
           onUnlock={() => router.push('/paywall')}
         />
       ) : mode === 'woche' && table ? (
-        <TableWeek days={tDays} today={today} />
+        isPro ? <TableWeek days={tDays} today={today} /> : <LockedNotice text="Der Familien-Wochenplan ab 1 Jahr gehört zum Beikost-Paket." onUnlock={() => router.push('/paywall')} />
       ) : mode === 'woche' ? (
         <>
           {days.map((d) => {
@@ -162,6 +163,12 @@ export default function Plan() {
           {table ? (
             <Button label="Kita-Brotdose planen" icon={Sandwich} variant="soft" style={{ marginBottom: space.md }} onPress={() => router.push('/brotdose')} />
           ) : null}
+          {items.length ? (
+            <Button label="Liste teilen" icon={Share2} variant="soft" style={{ marginBottom: space.sm }} onPress={() => Share.share({
+              message: shoppingText(`Einkauf ${formatDay(from, false)} – ${formatDay(addDays(from, 6), false)}`,
+                items.filter(({ food }) => !checked.has(food.id) && !inPantry.has(food.id)).map(({ food }) => ({ name: food.name, detail: food.shopUnit }))),
+            })} />
+          ) : null}
           <Row style={{ gap: space.sm, marginBottom: space.md }}>
             <Button label="Vorrat" icon={ShoppingBasket} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/vorrat')} />
             <Button label="Scannen" icon={ScanBarcode} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/scanner')} />
@@ -201,6 +208,7 @@ export default function Plan() {
           {tasks.length ? (
             <>
               <Title>Vorkochen</Title>
+              <Button label="Vorkoch-Sonntag starten" icon={CookingPot} style={{ marginBottom: space.md }} onPress={() => router.push('/vorkochen')} />
               {tasks.map((t) => (
                 <Card key={t.title} tone="sage">
                   <P bold>🧊 {t.title}</P>

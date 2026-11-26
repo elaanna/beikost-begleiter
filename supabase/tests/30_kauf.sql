@@ -27,3 +27,12 @@ select 'K7 my_family: ' || family_id || ' ' || role from public.my_family();
 set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000022';
 select 'K8 my_family Fremder: ' || count(*) from public.my_family();
 select 'K9 Fremder family_has_access: ' || public.family_has_access('33333333-0000-0000-0000-000000000000');
+-- Journal: Mitglied schreibt, Fremder sieht nichts, Text-Limit
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000021';
+insert into children (id, family_id, name, birth_date, approach, milk, updated_at) values ('cccccccc-0000-0000-0000-000000000021','33333333-0000-0000-0000-000000000000','Ben','2026-06-15','brei','flasche', now());
+insert into journal_entries (id, family_id, child_id, date, kind, text, updated_at) values (gen_random_uuid(),'33333333-0000-0000-0000-000000000000','cccccccc-0000-0000-0000-000000000021','2026-11-26','zahn','Unten links', now());
+select 'JO1 Mitglied sieht Journal: ' || count(*) from journal_entries;
+select 'JO2 zu langer Text:'; insert into journal_entries (id, family_id, child_id, date, kind, text, updated_at) values (gen_random_uuid(),'33333333-0000-0000-0000-000000000000','cccccccc-0000-0000-0000-000000000021','2026-11-26','x', repeat('a', 201), now());
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000022';
+select 'JO3 Fremder sieht Journal: ' || count(*) from journal_entries;

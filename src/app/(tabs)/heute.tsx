@@ -14,7 +14,7 @@ import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { MainMenu } from '@/ui/MainMenu';
 import { Wordmark } from '@/ui/Wordmark';
-import { RotateCcw, Sandwich, Ban, Baby, CalendarDays, ChartColumn, ChefHat, GlassWater, Lightbulb, Milk, RefreshCw, Scale, ScanBarcode, Search, Snowflake, Users, type LucideIcon } from 'lucide-react-native';
+import { CookingPot, Luggage, Sparkles, RotateCcw, Sandwich, Ban, Baby, CalendarDays, ChartColumn, ChefHat, GlassWater, Lightbulb, Milk, RefreshCw, Scale, ScanBarcode, Search, Snowflake, Users, type LucideIcon } from 'lucide-react-native';
 import { SeasonCard, TipOfDayCard } from '@/ui/DailyCards';
 import { portionFor } from '@/domain/portions';
 import { recipeFits } from '@/domain/recipes';
@@ -24,7 +24,7 @@ import { getMeta, listShifts, setMeta } from '@/db/repo';
 import { isTablePhase, reofferList, suggestTable } from '@/domain/toddler';
 import { TableSwitchCard, TableToday } from '@/ui/TableToday';
 import { useChild } from '@/state/AppContext';
-import { Button, Card, DayDots, FoodBadge, Glyph, Heading, Hero, IconLabel, type IconLike, Important, P, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
+import { Button, Card, DayDots, FoodBadge, Glyph, Heading, Hero, IconLabel, type IconLike, Important, LockedNotice, P, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
 import { QuickLog } from '@/ui/QuickLog';
 import { useToast } from '@/ui/Toast';
 import { openWissen } from '@/ui/nav';
@@ -32,7 +32,7 @@ import { brand, color, ICON, radius, space, type } from '@/ui/theme';
 
 
 export default function Heute() {
-  const { activeChild: child, children, logs, addLog, removeLog, selectChild, parentName, saveChild } = useChild();
+  const { activeChild: child, children, logs, addLog, removeLog, selectChild, parentName, saveChild, isPro } = useChild();
   const db = useSQLiteContext();
   const [tableLater, setTableLater] = useState<string | null>(null);
   useEffect(() => { getMeta(db, `table_later:${child.id}`).then(setTableLater); }, [db, child.id]);
@@ -105,7 +105,9 @@ export default function Heute() {
         />
       ) : null}
 
-      {isTablePhase(child) ? <TableToday /> : null}
+      {isTablePhase(child) ? (isPro ? <TableToday /> : (
+        <LockedNotice text={`Der Familientisch ab 1 Jahr – Tagesplan mit 5 Mahlzeiten, Kleinkind-Rezepte und Kita-Brotdose – gehört zum Beikost-Paket. Unter Kind bearbeiten könnt ihr zurück zum Breiplan.`} onUnlock={() => router.push('/paywall')} />
+      )) : null}
 
       {!isTablePhase(child) && daysToStart > 0 ? <ReadinessCard /> : null}
 
@@ -325,6 +327,7 @@ function Tiles() {
   const frozenCount = stock.filter((x) => x.kind === 'gefroren').reduce((n, x) => n + x.portions, 0);
   const drink = drinkStage(child, today);
   const reofferCount = reofferList(child, logs, today).length;
+  const daysToStartLocal = diffDays(today, effectiveStartDate(child));
 
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
@@ -358,6 +361,11 @@ function Tiles() {
       ) : (
         <Tile emoji={Scale} title="Mengen" sub="Wie viel Brei?" onPress={() => openWissen('portionen', 'brei')} />
       )}
+      <Tile emoji={Sparkles} title="Erste Male" sub="Kleine Momente festhalten" onPress={() => router.push('/journal')} />
+      {!isTablePhase(child) && daysToStartLocal <= 0 ? (
+        <Tile emoji={CookingPot} title="Vorkoch-Sonntag" sub="Geführt kochen & einfrieren" onPress={() => router.push('/vorkochen')} />
+      ) : null}
+      <Tile emoji={Luggage} title="Unterwegs" sub="Packliste, Restaurant, Kühlung" onPress={() => router.push('/unterwegs')} />
       <Tile emoji={ScanBarcode} title="Im Regal scannen" sub="Was steckt drin?" onPress={() => router.push('/scanner')} />
       <Tile
         emoji={Snowflake}
