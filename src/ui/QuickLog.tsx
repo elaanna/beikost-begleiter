@@ -1,0 +1,61 @@
+import { useState } from 'react';
+import { Alert, Linking, Platform, Text, View } from 'react-native';
+import { EMERGENCY_SIGNS } from '@/data/guidelines';
+import type { Liking, Reaction } from '@/domain/types';
+import { Button, Important, Pill, PillRow } from './components';
+import { color, space, type } from './theme';
+
+const REACTIONS: { id: Reaction; label: string }[] = [
+  { id: 'haut', label: 'Haut: Rötung, Quaddeln' },
+  { id: 'verdauung', label: 'Bauch, Durchfall' },
+  { id: 'erbrechen', label: 'Erbrechen' },
+  { id: 'atemwege', label: 'Atmung oder Schwellung' },
+];
+
+/**
+ * Notieren mit einem Tipp: „Hat geschmeckt“ oder „Lieber nicht“.
+ * Eine Reaktion ist ein bewusster zweiter Schritt.
+ */
+export function QuickLog({ onLog, compact }: { onLog: (liking: Liking, reaction: Reaction) => void; compact?: boolean }) {
+  const [showReaction, setShowReaction] = useState(false);
+
+  const logReaction = (r: Reaction) => {
+    onLog(0, r);
+    setShowReaction(false);
+    if (r === 'atemwege') {
+      const msg = `Bei ${EMERGENCY_SIGNS.join(', ')}: sofort den Notruf 112 wählen.`;
+      if (Platform.OS === 'web') window.alert(msg);
+      else
+        Alert.alert('Ist es ein Notfall?', msg, [
+          { text: '112 anrufen', style: 'destructive', onPress: () => Linking.openURL('tel:112') },
+          { text: 'Schließen', style: 'cancel' },
+        ]);
+    }
+  };
+
+  return (
+    <View style={{ gap: space.sm }}>
+      <View style={{ flexDirection: compact ? 'row' : 'column', gap: space.sm }}>
+        <Button label="Hat geschmeckt" icon="♥" onPress={() => onLog(1, 'keine')} style={compact ? { flex: 1 } : undefined} />
+        <Button label="Lieber nicht" variant="soft" onPress={() => onLog(-1, 'keine')} style={compact ? { flex: 1 } : undefined} />
+      </View>
+      <Button
+        label={showReaction ? 'Doch keine Reaktion' : 'Reaktion bemerkt?'}
+        variant="ghost"
+        onPress={() => setShowReaction((v) => !v)}
+        style={{ alignSelf: 'center' }}
+      />
+      {showReaction ? (
+        <Important title="Was ist dir aufgefallen?">
+          <PillRow>
+            {REACTIONS.map((r) => <Pill key={r.id} label={r.label} onPress={() => logReaction(r.id)} />)}
+          </PillRow>
+          <Text style={[type.small, { color: color.redDeep }]}>
+            Das Lebensmittel wird danach im Plan pausiert. Sprich mit eurer Kinderärztin, bevor ihr es wieder anbietet.
+          </Text>
+          <Button label="Notruf 112" variant="danger" style={{ marginTop: space.md }} onPress={() => Linking.openURL('tel:112')} />
+        </Important>
+      ) : null}
+    </View>
+  );
+}
