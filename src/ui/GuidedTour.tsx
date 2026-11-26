@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { genitive } from '@/domain/beikostOverview';
 import { useApp } from '@/state/AppContext';
 import { color, font, radius, space, type } from './theme';
 
@@ -27,7 +26,7 @@ export function tourSteps(parentName: string, childName: string): Step[] {
     { tab: 'heute', emoji: '🔍', title: `„Darf ${childName} schon …?“`, text: 'Ganz oben fragst du nach jedem Lebensmittel und siehst sofort, ob und wie es geht. Neues kommt immer einzeln: 2 Tage, Allergene 3 Tage.', mark: 'tab' },
     { tab: 'woche', emoji: '🗓️', title: 'Der Wochenplan', text: 'Tippe auf einen Tag oder eine Mahlzeit, um Mengen und Zubereitung zu sehen. „Tauschen“ ersetzt eine Mahlzeit, unter „Einkauf“ entsteht die Einkaufsliste.', mark: 'tab' },
     { tab: 'rezepte', emoji: '🍲', title: 'Rezepte nach Alter', text: `Gefiltert für ${childName} oder nach Alter und Kategorie. Mit „Was habe ich da?“ findest du Rezepte zu dem, was im Kühlschrank ist.`, mark: 'tab' },
-    { tab: 'lebensmittel', emoji: '🥕', title: `${genitive(childName)} Probier-Pass`, text: 'Alle Lebensmittel auf einen Blick: was schon probiert ist, was geschmeckt hat und was als Nächstes kommt.', mark: 'tab' },
+    { tab: 'lebensmittel', emoji: '🥕', title: 'Lebensmittel entdecken', text: `Alle Lebensmittel auf einen Blick: was ${childName} schon entdeckt hat, was geschmeckt hat und was als Nächstes kommt – ganz im eigenen Tempo.`, mark: 'tab' },
     { tab: 'wissen', emoji: '📖', title: 'Wissen mit Quellen', text: 'Mengen, Trinken, Allergene und Leitlinien – alles mit Quellen. Rot markiert heißt immer: wichtig.', mark: 'tab' },
     { tab: 'heute', emoji: '☰', title: 'Das Menü', text: 'Oben rechts auf „Heute“: Familie und Einstellungen, Partner und Kita einladen, Konto, Erinnerungen, Bericht für die Kinderarztpraxis – und diese Tour noch einmal starten.', mark: 'familie' },
   ];

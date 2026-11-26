@@ -7,7 +7,7 @@ import { ageInMonths, todayIso } from '@/domain/dates';
 import { recipeFits } from '@/domain/recipes';
 import { useChild } from '@/state/AppContext';
 import { Card, P, Pill, Row, Segmented, Small } from './components';
-import { color, space, type } from './theme';
+import { brand, color, space, type } from './theme';
 
 type Filter = RecipeCategory | 'alle';
 type AgeFilter = 'jetzt' | 'a5' | 'a7' | 'a10';
@@ -30,7 +30,7 @@ export function RecipesView() {
     <>
       <Row style={{ gap: space.md, marginBottom: space.md }}>
         <View style={{ flex: 1 }}>
-        <Card tone="sage" onPress={() => router.push('/rezeptsuche')} accessibilityLabel="Was habe ich da? Rezepte nach Zutaten finden" style={{ marginBottom: 0, padding: space.lg }}>
+        <Card tone="yellow" onPress={() => router.push('/rezeptsuche')} accessibilityLabel="Was habe ich da? Rezepte nach Zutaten finden" style={{ marginBottom: 0, padding: space.lg }}>
           <Text style={{ fontSize: 28 }}>🧺</Text>
           <P bold>Was habe ich da?</P>
           <Small soft={false}>Rezepte nach Zutaten</Small>
@@ -82,7 +82,7 @@ export function RecipesView() {
                   Noch nicht probiert: {untried.map((id) => FOOD_BY_ID[id].name).join(', ')}
                 </Text>
               ) : (
-                <Text style={[type.smallBold, { color: color.sageDeep, marginTop: space.xs }]}>✓ Alle Zutaten schon probiert</Text>
+                <Text style={[type.smallBold, { color: brand.success, marginTop: space.xs }]}>✓ Alle Zutaten schon probiert</Text>
               )}
             </View>
             <Text style={{ fontSize: 22, color: color.inkSoft }}>›</Text>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Plus } from 'lucide-react-native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { ALL_RECIPES, RECIPE_BY_ID } from '@/data/allRecipes';
@@ -89,7 +90,7 @@ export default function Vorrat() {
               <Button label="Abbrechen" variant="ghost" onPress={() => setAdding(false)} />
             </Card>
           ) : (
-            <Button label="Portionen einfrieren" icon="➕" onPress={() => setAdding(true)} />
+            <Button label="Portionen einfrieren" icon={Plus} onPress={() => setAdding(true)} />
           )}
 
           <Title>Vorkochen & Einfrieren</Title>

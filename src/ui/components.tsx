@@ -1,7 +1,30 @@
 import type { ReactNode } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { brand, color, font, radius, space, TOUCH, type } from './theme';
+import { ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { brand, color, font, ICON, radius, space, TOUCH, type } from './theme';
+
+/** Symbol: Emoji (Lebensmittel, Illustration) oder Lucide-Icon (Bedienelemente, laut Guidelines 24 px / 1.75). */
+export type IconLike = string | LucideIcon;
+
+/** Link-artiger Text mit Icon davor und optional Pfeil dahinter, z. B. „⟳ Tauschen“ oder „Zum Rezept ›“. */
+export function IconLabel({ icon, label, chevron, color: c = brand.blue, small = true, style }: {
+  icon?: IconLike; label: string; chevron?: boolean; color?: string; small?: boolean; style?: object;
+}) {
+  return (
+    <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 6 }, style]}>
+      {icon ? <Glyph icon={icon} size={small ? 18 : 20} color={c} /> : null}
+      <Text style={[small ? type.smallBold : type.bodyBold, { color: c }]}>{label}</Text>
+      {chevron ? <ChevronRight size={small ? 16 : 18} strokeWidth={2} color={c} /> : null}
+    </View>
+  );
+}
+
+export function Glyph({ icon, size = ICON.size, color: c = brand.blue }: { icon: IconLike; size?: number; color?: string }) {
+  if (typeof icon === 'string') return <Text style={{ fontSize: size }}>{icon}</Text>;
+  const Icon = icon;
+  return <Icon size={size} strokeWidth={ICON.stroke} color={c} />;
+}
 
 export function Screen({ children, scroll = true, edges = ['top', 'left', 'right'] }: {
   children: ReactNode;
@@ -82,7 +105,7 @@ export function Button({ label, onPress, variant = 'primary', disabled, style, i
   variant?: 'primary' | 'peach' | 'soft' | 'ghost' | 'danger';
   disabled?: boolean;
   style?: ViewStyle;
-  icon?: string;
+  icon?: IconLike;
 }) {
   const bg = { primary: color.sageDeep, peach: color.peach, soft: color.sageSoft, ghost: 'transparent', danger: color.red }[variant];
   const fg = { primary: '#fff', peach: '#fff', soft: color.sageDeep, ghost: color.sageDeep, danger: '#fff' }[variant];
@@ -99,9 +122,10 @@ export function Button({ label, onPress, variant = 'primary', disabled, style, i
         style,
       ]}
     >
-      <Text style={[type.bodyBold, { color: fg, textAlign: 'center' }]}>
-        {icon ? `${icon}  ` : ''}{label}
-      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm }}>
+        {icon ? <Glyph icon={icon} size={20} color={fg} /> : null}
+        <Text style={[type.bodyBold, { color: fg, textAlign: 'center' }]}>{label}</Text>
+      </View>
     </Pressable>
   );
 }
@@ -240,7 +264,7 @@ export function Row({ children, style }: { children: ReactNode; style?: ViewStyl
 
 /** Listeneintrag mit Pfeil – für Navigation zu Unterseiten. */
 export function ListItem({ title, subtitle, emoji, onPress, right }: {
-  title: string; subtitle?: string; emoji?: string; onPress?: () => void; right?: ReactNode;
+  title: string; subtitle?: string; emoji?: IconLike; onPress?: () => void; right?: ReactNode;
 }) {
   return (
     <Pressable
@@ -249,12 +273,16 @@ export function ListItem({ title, subtitle, emoji, onPress, right }: {
       accessibilityRole={onPress ? 'button' : undefined}
       style={({ pressed }) => [s.listItem, pressed && { backgroundColor: color.creme }]}
     >
-      {emoji ? <FoodBadge emoji={emoji} size={44} tone="sage" /> : null}
+      {typeof emoji === 'string' ? <FoodBadge emoji={emoji} size={44} tone="sage" /> : emoji ? (
+        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: color.sageSoft, alignItems: 'center', justifyContent: 'center' }}>
+          <Glyph icon={emoji} size={22} />
+        </View>
+      ) : null}
       <View style={{ flex: 1 }}>
         <Text style={[type.bodyBold, { color: color.ink }]}>{title}</Text>
         {subtitle ? <Text style={[type.small, { color: color.inkSoft }]}>{subtitle}</Text> : null}
       </View>
-      {right ?? (onPress ? <Text style={{ fontSize: 22, color: color.inkSoft }}>›</Text> : null)}
+      {right ?? (onPress ? <ChevronRight size={20} strokeWidth={ICON.stroke} color={color.inkSoft} /> : null)}
     </Pressable>
   );
 }

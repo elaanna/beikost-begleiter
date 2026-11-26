@@ -7,7 +7,7 @@ const EXPORT_META = ['consent_health', 'reminders', 'family_role', 'sharing'];
 
 export async function collectExport(db: SQLiteDatabase): Promise<Record<string, unknown>> {
   const out: Record<string, unknown> = {
-    app: 'Beikost-Begleiter',
+    app: 'nimou',
     exportedAt: new Date().toISOString(),
     hinweis: 'Alle auf diesem Gerät gespeicherten Daten im JSON-Format.',
   };

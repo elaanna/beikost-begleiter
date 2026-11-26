@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Download, Trash2 } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -92,7 +93,7 @@ export default function Rechtliches() {
     <Screen edges={['left', 'right']}>
       <Important title="Medizinischer Hinweis">
         <Text style={[type.body, { color: color.redDeep }]}>
-          Der Beikost-Begleiter gibt allgemeine Informationen nach öffentlichen Empfehlungen (u. a. S3-Leitlinien,
+          nimou gibt allgemeine Informationen nach öffentlichen Empfehlungen (u. a. S3-Leitlinien,
           Netzwerk Gesund ins Leben). Er stellt keine Diagnose und ersetzt keine kinderärztliche Beratung.
           Bei Allergieverdacht, Gedeihstörungen oder Unsicherheit sprich bitte mit deiner Kinderarztpraxis.
           Im Notfall 112.
@@ -101,7 +102,7 @@ export default function Rechtliches() {
 
       <Title>Deine Daten</Title>
       <Card>
-        <Button label="Meine Daten exportieren (JSON)" icon="📦" variant="soft" onPress={async () => {
+        <Button label="Meine Daten exportieren (JSON)" icon={Download} variant="soft" onPress={async () => {
           try {
             await shareExport(db);
           } catch {
@@ -114,7 +115,7 @@ export default function Rechtliches() {
         <ConfirmButton
           label="Alle Daten löschen"
           confirmLabel="Wirklich alles endgültig löschen"
-          icon="🗑️"
+          icon={Trash2}
           onConfirm={async () => {
             try {
               await deleteEverything(db);

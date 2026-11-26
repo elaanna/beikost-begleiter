@@ -75,7 +75,7 @@ export function dailyLine({ child, logs, today, startDate, newFoodId, newFoodDay
   const nowCount = countUntil(today);
   const yesterdayCount = countUntil(addDays(today, -1));
   const reached = MILESTONE_FOODS.filter((m) => m <= nowCount && m > yesterdayCount).pop();
-  if (reached) return { emoji: '🏅', text: `${name} hat schon ${reached} verschiedene Lebensmittel probiert!` };
+  if (reached) return { emoji: '🏅', text: `${reached} Lebensmittel hat ${name} schon entdeckt – schön!` };
 
   if (MILESTONE_DAYS[dayNo - 1]) return { emoji: '🌟', text: `${MILESTONE_DAYS[dayNo - 1]} mit ${name} – schön, dass ihr dabei seid!` };
 

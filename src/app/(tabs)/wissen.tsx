@@ -55,7 +55,7 @@ function Sicherheit() {
       </Important>
 
       <Title>Würgen oder Verschlucken?</Title>
-      <Card tone="sage">
+      <Card tone="lilac">
         <P bold>😮‍💨 Würgen ist normal</P>
         <P style={{ marginTop: space.xs }}>{GAG_VS_CHOKE.gag}</P>
       </Card>
@@ -206,7 +206,7 @@ function Trinken() {
         </Text>
       </Important>
       <Title>Der richtige Becher</Title>
-      <Card tone="sage">
+      <Card tone="lilac">
         {CUP_TIPS.map((t) => <P key={t} style={{ marginBottom: space.xs }}>✓ {t}</P>)}
       </Card>
       <Important title="Im ersten Jahr nicht als Getränk">

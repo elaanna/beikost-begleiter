@@ -5,11 +5,11 @@ import { ageInMonths, todayIso } from '@/domain/dates';
 import { analyzeProduct, fetchProduct, PRODUCT_SOURCES, VERDICT_TEXT, type CheckLevel, type ProductCheck } from '@/domain/productCheck';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, P, Row, Screen, Small, SourceLink } from '@/ui/components';
-import { color, radius, space, type } from '@/ui/theme';
+import { brand, color, radius, space, type } from '@/ui/theme';
 
 const LEVEL_ICON: Record<CheckLevel, { icon: string; bg: string }> = {
-  gut: { icon: '✓', bg: color.sageDeep },
-  achtung: { icon: '!', bg: color.peachDeep },
+  gut: { icon: '✓', bg: brand.success },
+  achtung: { icon: '!', bg: brand.warning },
   nein: { icon: '✕', bg: color.red },
   info: { icon: 'i', bg: color.inkSoft },
 };
@@ -111,8 +111,8 @@ export default function Scanner() {
 }
 
 function ResultCard({ result, childName, onAgain }: { result: ProductCheck; childName: string; onAgain: () => void }) {
-  const tone = result.verdict === 'gut' ? color.sageSoft : result.verdict === 'lieber_nicht' ? color.redSoft : color.peachSoft;
-  const dot = result.verdict === 'gut' ? color.sageDeep : result.verdict === 'lieber_nicht' ? color.red : color.peachDeep;
+  const tone = result.verdict === 'gut' ? brand.successBg : result.verdict === 'lieber_nicht' ? color.redSoft : brand.warningBg;
+  const dot = result.verdict === 'gut' ? brand.success : result.verdict === 'lieber_nicht' ? color.red : brand.warning;
   return (
     <>
       <View style={{ backgroundColor: color.surface, borderRadius: radius.lg, padding: space.md, marginBottom: space.lg }}>

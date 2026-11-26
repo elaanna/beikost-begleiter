@@ -1,4 +1,6 @@
-# Beikost-Begleiter
+# nimou – Beikost-App
+
+*For every little first.* Arbeitsname der Marke: nimou (Markenrechte und Domains noch nicht abschließend geklärt). Design: [DESIGN-NIMOU.md](DESIGN-NIMOU.md).
 
 Deutscher Beikostplaner nach den S3-Leitlinien Allergieprävention und Stilldauer.
 Expo (React Native) + TypeScript, offline-first mit SQLite, Sync über Supabase (EU), Käufe über RevenueCat.

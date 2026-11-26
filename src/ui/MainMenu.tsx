@@ -4,7 +4,7 @@ import { router, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/state/AppContext';
 import { openWissen } from './nav';
-import { Menu, X } from 'lucide-react-native';
+import { BookOpen, ChevronRight, GraduationCap, Lock, Mail, Menu, Settings, Star, Users, X, type LucideIcon } from 'lucide-react-native';
 import { brand, color, font, ICON, radius, space, type } from './theme';
 
 
@@ -15,14 +15,14 @@ export function MainMenu() {
   const [open, setOpen] = useState(false);
 
   const go = (href: Href) => { setOpen(false); router.push(href); };
-  const items: { emoji: string; label: string; sub?: string; onPress: () => void }[] = [
-    { emoji: '👪', label: 'Familie & Einstellungen', sub: 'Kinder, Einladen, Erinnerungen, Berichte', onPress: () => go('/familie') },
-    { emoji: '👥', label: 'Dienstplan & Kita', sub: 'Wer füttert, bringt, holt ab', onPress: () => go('/dienste') },
-    { emoji: '📧', label: 'Konto & Handywechsel', sub: app.accountEmail ?? 'Noch kein Konto', onPress: () => go('/konto') },
-    { emoji: '⭐', label: 'Beikost-Paket', onPress: () => go('/paywall') },
-    { emoji: '🎓', label: 'Geführte Tour starten', onPress: () => { setOpen(false); void app.restartTutorial(); } },
-    { emoji: '📖', label: 'Leitlinien & Quellen', onPress: () => { setOpen(false); openWissen('leitlinien'); } },
-    { emoji: '🔒', label: 'Datenschutz & Impressum', onPress: () => go('/rechtliches') },
+  const items: { emoji: LucideIcon; label: string; sub?: string; onPress: () => void }[] = [
+    { emoji: Settings, label: 'Familie & Einstellungen', sub: 'Kinder, Einladen, Erinnerungen, Berichte', onPress: () => go('/familie') },
+    { emoji: Users, label: 'Dienstplan & Kita', sub: 'Wer füttert, bringt, holt ab', onPress: () => go('/dienste') },
+    { emoji: Mail, label: 'Konto & Handywechsel', sub: app.accountEmail ?? 'Noch kein Konto', onPress: () => go('/konto') },
+    { emoji: Star, label: 'Beikost-Paket', onPress: () => go('/paywall') },
+    { emoji: GraduationCap, label: 'Geführte Tour starten', onPress: () => { setOpen(false); void app.restartTutorial(); } },
+    { emoji: BookOpen, label: 'Leitlinien & Quellen', onPress: () => { setOpen(false); openWissen('leitlinien'); } },
+    { emoji: Lock, label: 'Datenschutz & Impressum', onPress: () => go('/rechtliches') },
   ];
 
   return (
@@ -48,12 +48,12 @@ export function MainMenu() {
               {items.map((it, k) => (
                 <Pressable key={it.label} onPress={it.onPress} accessibilityRole="button"
                   style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, paddingHorizontal: space.md, borderTopWidth: k ? 1 : 0, borderTopColor: color.line, opacity: pressed ? 0.6 : 1 })}>
-                  <Text style={{ fontSize: 22, width: 30, textAlign: 'center' }}>{it.emoji}</Text>
+                  <View style={{ width: 30, alignItems: 'center' }}><it.emoji size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} /></View>
                   <View style={{ flex: 1 }}>
                     <Text style={[type.bodyBold, { color: color.ink }]}>{it.label}</Text>
                     {it.sub ? <Text style={[type.small, { color: color.inkSoft }]} numberOfLines={1}>{it.sub}</Text> : null}
                   </View>
-                  <Text style={{ fontSize: 20, color: color.inkSoft }}>›</Text>
+                  <ChevronRight size={20} strokeWidth={ICON.stroke} color={color.inkSoft} />
                 </Pressable>
               ))}
             </View>

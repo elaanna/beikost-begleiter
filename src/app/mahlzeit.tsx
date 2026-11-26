@@ -10,7 +10,8 @@ import { matchingFrozen } from '@/domain/stock';
 import type { MealSlot } from '@/domain/types';
 import { useChild } from '@/state/AppContext';
 import { usePlanDays } from '@/state/usePlan';
-import { Button, Card, DayDots, Heading, Hero, Important, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
+import { Button, Card, DayDots, Heading, Hero, IconLabel, Important, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
+import { ChefHat, RefreshCw } from 'lucide-react-native';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { color, radius, space, type } from '@/ui/theme';
 
@@ -58,7 +59,7 @@ export default function Mahlzeit() {
       <Hero style={{ marginTop: space.xs, marginBottom: space.lg }}>{meal.title}</Hero>
 
       {newFood ? (
-        <Card tone="peach">
+        <Card tone="yellow" hero>
           <Row>
             <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{ fontSize: 36 }}>{newFood.emoji}</Text>
@@ -68,7 +69,7 @@ export default function Mahlzeit() {
               <Heading>{newFood.name}</Heading>
               <Row style={{ marginTop: space.xs }}>
                 <DayDots day={meal.newFoodDay ?? 1} total={introDays(newFood)} />
-                <Small>Tag {meal.newFoodDay} von {introDays(newFood)}</Small>
+                <Small soft={false}>Tag {meal.newFoodDay} von {introDays(newFood)}</Small>
               </Row>
             </View>
           </Row>
@@ -82,7 +83,7 @@ export default function Mahlzeit() {
         <Important key={f.id} title={`${f.emoji} ${f.name}`}>{f.hint}</Important>
       ))}
 
-      <Title>⚖️ Wie viel?</Title>
+      <Title>Wie viel?</Title>
       <Card>
         {portion.lines.map((l) => (
           <Row key={l.label} style={{ justifyContent: 'space-between', paddingVertical: space.xs }}>
@@ -95,7 +96,7 @@ export default function Mahlzeit() {
 
       {frozen ? (
         <Card tone="sage">
-          <P bold>❄️ Im Gefrierfach: {frozen.portions} {frozen.portions === 1 ? 'Portion' : 'Portionen'} {frozen.name}</P>
+          <P bold>Im Gefrierfach: {frozen.portions} {frozen.portions === 1 ? 'Portion' : 'Portionen'} {frozen.name}</P>
           <Small soft={false}>Am Vorabend in den Kühlschrank legen, dann gut erwärmen. Öl erst danach zugeben.</Small>
         </Card>
       ) : null}
@@ -106,7 +107,7 @@ export default function Mahlzeit() {
           <P bold>{recipe.emoji} Rezept: {recipe.name}</P>
           {recipe.steps.map((s, i) => <P key={s} style={{ marginTop: space.xs }}>{i + 1}. {s}</P>)}
           <Pressable onPress={() => router.push(`/rezept/${recipe.id}`)} accessibilityRole="link">
-            <Text style={[type.bodyBold, { color: color.sageDeep, marginTop: space.md }]}>Ganzes Rezept mit Zutaten & Einfrieren ›</Text>
+            <IconLabel icon={ChefHat} label="Ganzes Rezept mit Zutaten & Einfrieren" chevron small={false} style={{ marginTop: space.md }} />
           </Pressable>
         </Card>
       ) : null}
@@ -142,7 +143,7 @@ export default function Mahlzeit() {
       </Small>
 
       {!meal.newFoodId && date >= today ? (
-        <Button label="Diese Mahlzeit tauschen" icon="🔄" variant="soft" onPress={() => setSwapOpen(true)} />
+        <Button label="Diese Mahlzeit tauschen" icon={RefreshCw} variant="soft" onPress={() => setSwapOpen(true)} />
       ) : null}
       <SwapSheet date={date} meal={swapOpen ? meal : null} onClose={() => setSwapOpen(false)} />
     </Screen>

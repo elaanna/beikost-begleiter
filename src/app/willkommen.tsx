@@ -4,12 +4,13 @@ import { useApp } from '@/state/AppContext';
 import { isSyncConfigured } from '@/sync/supabase';
 import { Button, P, Screen, Small } from '@/ui/components';
 import { Wordmark } from '@/ui/Wordmark';
-import { color, radius, space, type } from '@/ui/theme';
+import { CalendarDays, Egg, Users, type LucideIcon } from 'lucide-react-native';
+import { brand, color, ICON, radius, space, type } from '@/ui/theme';
 
-const BENEFITS: [string, string][] = [
-  ['🗓️', 'Ein Plan, der mitwächst – Tag für Tag, nach Gesund ins Leben'],
-  ['🥚', 'Neue Lebensmittel und Allergene einzeln und in Ruhe einführen'],
-  ['👪', 'Gemeinsam planen mit Partner, Großeltern oder Kita'],
+const BENEFITS: [LucideIcon, string, string][] = [
+  [CalendarDays, brand.yellowSoft, 'Ein Plan, der mitwächst – Tag für Tag, nach Gesund ins Leben'],
+  [Egg, brand.peachSoft, 'Neue Lebensmittel und Allergene einzeln und in Ruhe einführen'],
+  [Users, brand.lilacSoft, 'Gemeinsam planen mit Partner, Großeltern oder Kita'],
 ];
 
 /** Startseite beim ersten Öffnen: neu starten oder mit bestehendem Konto anmelden. */
@@ -25,9 +26,11 @@ export default function Willkommen() {
       </View>
 
       <View style={{ backgroundColor: color.surface, borderRadius: radius.lg, padding: space.lg, marginTop: space.xl, gap: space.md }}>
-        {BENEFITS.map(([emoji, text]) => (
+        {BENEFITS.map(([Icon, bg, text]) => (
           <View key={text} style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-            <Text style={{ fontSize: 24 }}>{emoji}</Text>
+            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} />
+            </View>
             <Text style={[type.body, { color: color.ink, flex: 1 }]}>{text}</Text>
           </View>
         ))}

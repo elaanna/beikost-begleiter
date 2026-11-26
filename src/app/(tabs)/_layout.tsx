@@ -11,7 +11,7 @@ const TabIcon = (Icon: LucideIcon) => function TabIconRender({ focused }: { focu
 };
 
 /**
- * Fünf Bereiche wie im Konzept: Heute · Wochenplan · Rezepte · Lebensmittel · Wissen.
+ * Fünf Bereiche: Heute · Woche · Rezepte · Entdecken (Lebensmittel) · Wissen.
  * Familie & Einstellungen liegen im Menü (☰) oben rechts auf „Heute“.
  */
 export default function TabsLayout() {
@@ -34,7 +34,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="heute" options={{ title: 'Heute', tabBarIcon: TabIcon(Home) }} />
       <Tabs.Screen name="woche" options={{ title: 'Woche', tabBarIcon: TabIcon(CalendarDays) }} />
       <Tabs.Screen name="rezepte" options={{ title: 'Rezepte', tabBarIcon: TabIcon(ChefHat) }} />
-      <Tabs.Screen name="lebensmittel" options={{ title: 'Lebensmittel', tabBarIcon: TabIcon(Apple) }} />
+      <Tabs.Screen name="lebensmittel" options={{ title: 'Entdecken', tabBarAccessibilityLabel: 'Lebensmittel entdecken', tabBarIcon: TabIcon(Apple) }} />
       <Tabs.Screen name="wissen" options={{ title: 'Wissen', tabBarIcon: TabIcon(BookOpen) }} />
     </Tabs>
     <GuidedTour />

@@ -35,8 +35,8 @@ test('Neues Lebensmittel heute, Meilensteine, gestern geschmeckt', () => {
   // Tag 8 = eine Woche geschafft
   assert.match(dailyLine({ ...base, today: '2026-11-08' }).text, /Eine Woche Beikost mit Ben/);
   const five = ['karotte', 'pastinake', 'kuerbis', 'kartoffel'].map((f, i) => log(f, `2026-11-0${i + 2}`));
-  assert.match(dailyLine({ ...base, logs: [...five, log('rind', '2026-11-10')], today: '2026-11-10' }).text, /schon 5 verschiedene/);
-  assert.doesNotMatch(dailyLine({ ...base, logs: [...five, log('rind', '2026-11-09')], today: '2026-11-10' }).text, /schon 5/);
+  assert.match(dailyLine({ ...base, logs: [...five, log('rind', '2026-11-10')], today: '2026-11-10' }).text, /5 Lebensmittel hat Ben schon entdeckt/);
+  assert.doesNotMatch(dailyLine({ ...base, logs: [...five, log('rind', '2026-11-09')], today: '2026-11-10' }).text, /schon entdeckt/);
   assert.match(dailyLine({ ...base, logs: [log('kuerbis', '2026-11-11', { liking: 1 })], today: '2026-11-12' }).text, /Gestern hat Ben Kürbis geschmeckt/);
 });
 

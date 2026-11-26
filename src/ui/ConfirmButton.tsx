@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { TriangleAlert } from 'lucide-react-native';
 import type { ViewStyle } from 'react-native';
-import { Button } from './components';
+import { Button, type IconLike } from './components';
 
 /**
  * Zweistufige Bestätigung ohne System-Dialog: Der erste Tipp fragt nach,
@@ -12,7 +13,7 @@ export function ConfirmButton({ label, confirmLabel, onConfirm, variant = 'soft'
   onConfirm: () => void | Promise<void>;
   variant?: 'soft' | 'ghost' | 'danger';
   style?: ViewStyle;
-  icon?: string;
+  icon?: IconLike;
 }) {
   const [armed, setArmed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -24,7 +25,7 @@ export function ConfirmButton({ label, confirmLabel, onConfirm, variant = 'soft'
   return (
     <Button
       label={busy ? 'Einen Moment …' : armed ? confirmLabel : label}
-      icon={armed ? '⚠️' : icon}
+      icon={armed ? TriangleAlert : icon}
       variant={armed ? 'danger' : variant}
       disabled={busy}
       style={style}

@@ -14,7 +14,7 @@ import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { MainMenu } from '@/ui/MainMenu';
 import { Wordmark } from '@/ui/Wordmark';
-import { CalendarDays, ChefHat, Lightbulb, Search, type LucideIcon } from 'lucide-react-native';
+import { Ban, Baby, CalendarDays, ChartColumn, ChefHat, GlassWater, Lightbulb, Milk, RefreshCw, Scale, ScanBarcode, Search, Snowflake, Users, type LucideIcon } from 'lucide-react-native';
 import { SeasonCard, TipOfDayCard } from '@/ui/DailyCards';
 import { portionFor } from '@/domain/portions';
 import { recipeFits } from '@/domain/recipes';
@@ -22,7 +22,7 @@ import { planDayTasks, type ShiftEntry } from '@/domain/shifts';
 import type { Liking, PlannedMeal, Reaction } from '@/domain/types';
 import { listShifts } from '@/db/repo';
 import { useChild } from '@/state/AppContext';
-import { Button, Card, DayDots, FoodBadge, Heading, Hero, Important, P, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
+import { Button, Card, DayDots, FoodBadge, Glyph, Heading, Hero, IconLabel, type IconLike, Important, P, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
 import { QuickLog } from '@/ui/QuickLog';
 import { useToast } from '@/ui/Toast';
 import { openWissen } from '@/ui/nav';
@@ -149,7 +149,7 @@ function ReadinessCard() {
           <Small soft={false} style={{ marginTop: space.xs }}>
             Vier Zeichen, auf die du bei {child.name} achten kannst – als Checkliste zum Abhaken.
           </Small>
-          <Text style={[type.bodyBold, { color: color.sageDeep, marginTop: space.sm }]}>Checkliste öffnen ›</Text>
+          <IconLabel label="Checkliste öffnen" chevron small={false} style={{ marginTop: space.sm }} />
         </View>
       </Row>
     </Card>
@@ -178,25 +178,25 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
               <Text style={[type.title, { color: color.ink }]}>{newFood.name}</Text>
               <Row style={{ gap: space.sm, marginTop: space.xs }}>
                 <DayDots day={meal.newFoodDay ?? 1} total={introDays(newFood)} />
-                <Small>Tag {meal.newFoodDay} von {introDays(newFood)}</Small>
+                <Small soft={false}>Tag {meal.newFoodDay} von {introDays(newFood)}</Small>
               </Row>
             </View>
           </Row>
           <P style={{ marginTop: space.lg }}>{preparationFor(newFood, child)}</P>
           {newFood.hint ? <View style={{ marginTop: space.md }}><Important>{newFood.hint}</Important></View> : null}
-          {others.length ? <Small style={{ marginBottom: space.sm }}>Dazu: {others.map((f) => f.name).join(', ')}</Small> : null}
+          {others.length ? <Small soft={false} style={{ marginBottom: space.sm }}>Dazu: {others.map((f) => f.name).join(', ')}</Small> : null}
         </>
       ) : (
         <>
           <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start', marginTop: space.sm }}>
             <Text style={[type.title, { color: color.ink, flex: 1 }]}>{meal.title}</Text>
             <Pressable onPress={() => setSwapOpen(true)} accessibilityRole="button" accessibilityLabel="Mahlzeit tauschen" hitSlop={8} style={{ paddingTop: 6 }}>
-              <Text style={[type.smallBold, { color: color.sageDeep }]}>🔄 Tauschen</Text>
+              <IconLabel icon={RefreshCw} label="Tauschen" />
             </Pressable>
           </Row>
           {meal.recipeId ? (
             <Pressable onPress={() => router.push(`/rezept/${meal.recipeId}`)} accessibilityRole="link">
-              <Text style={[type.smallBold, { color: color.sageDeep, marginTop: space.xs }]}>Zum Rezept ›</Text>
+              <IconLabel icon={ChefHat} label="Zum Rezept" chevron style={{ marginTop: space.xs }} />
             </Pressable>
           ) : null}
           <Row style={{ flexWrap: 'wrap', gap: space.sm, marginVertical: space.md }}>
@@ -204,7 +204,7 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
               <Pressable key={f.id} onPress={() => router.push(`/food/${f.id}`)} accessibilityRole="link">
                 <View style={{ alignItems: 'center', width: 76 }}>
                   <FoodBadge emoji={f.emoji} size={56} tone="sage" />
-                  <Small style={{ textAlign: 'center' }}>{f.name}</Small>
+                  <Small soft={false} style={{ textAlign: 'center' }}>{f.name}</Small>
                 </View>
               </Pressable>
             ))}
@@ -213,7 +213,7 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
       )}
 
       <Pressable onPress={() => setShowAmount((v) => !v)} accessibilityRole="button" style={{ paddingVertical: space.sm, marginBottom: space.sm }}>
-        <Text style={[type.smallBold, { color: color.sageDeep }]}>⚖️ {showAmount ? 'Menge ausblenden' : 'Wie viel?'}</Text>
+        <IconLabel icon={Scale} label={showAmount ? 'Menge ausblenden' : 'Wie viel?'} />
       </Pressable>
       {showAmount ? (
         <View style={{ backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: radius.sm, padding: space.md, marginBottom: space.md }}>
@@ -223,13 +223,13 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
               <Small bold soft={false}>{l.amount}</Small>
             </Row>
           ))}
-          <Small style={{ marginTop: space.xs }}>{portion.note}</Small>
+          <Small soft={false} style={{ marginTop: space.xs }}>{portion.note}</Small>
         </View>
       ) : null}
 
       {frozen ? (
         <View style={{ backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: radius.sm, padding: space.md, marginBottom: space.md }}>
-          <Small bold soft={false}>❄️ Im Gefrierfach: {frozen.portions} {frozen.portions === 1 ? 'Portion' : 'Portionen'} {frozen.name}</Small>
+          <Small bold soft={false}>Im Gefrierfach: {frozen.portions} {frozen.portions === 1 ? 'Portion' : 'Portionen'} {frozen.name}</Small>
           <Pressable
             onPress={async () => {
               await saveStock({ ...frozen, portions: frozen.portions - 1 });
@@ -314,13 +314,13 @@ function Tiles() {
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
       <Tile
-        emoji="🧷"
+        emoji={Baby}
         title="Windel"
         sub={stoolToday ? `${stoolToday}× notiert` : 'Noch nichts notiert'}
         onPress={() => router.push('/verdauung')}
       />
       <Tile
-        emoji="👥"
+        emoji={Users}
         title="Wer ist dran?"
         sub={!caregivers.length ? 'Dienste planen' : nextTask ? `${nextTask.time} ${nextTask.label}: ${nextWho ? nextWho.name : '–'}` : 'Heute nichts'}
         alert={gaps ? `${gaps} ${gaps === 1 ? 'Lücke' : 'Lücken'}` : undefined}
@@ -329,19 +329,19 @@ function Tiles() {
       {recipe ? (
         <Tile emoji={recipe.recipe.emoji} title="Familienessen" sub={recipe.recipe.name} onPress={() => router.push(`/rezept/${recipe.recipe.id}`)} />
       ) : (
-        <Tile emoji="⚖️" title="Mengen" sub="Wie viel Brei?" onPress={() => openWissen('portionen', 'brei')} />
+        <Tile emoji={Scale} title="Mengen" sub="Wie viel Brei?" onPress={() => openWissen('portionen', 'brei')} />
       )}
-      <Tile emoji="📷" title="Im Regal scannen" sub="Was steckt drin?" onPress={() => router.push('/scanner')} />
+      <Tile emoji={ScanBarcode} title="Im Regal scannen" sub="Was steckt drin?" onPress={() => router.push('/scanner')} />
       <Tile
-        emoji="❄️"
+        emoji={Snowflake}
         title="Gefrierfach"
         sub={frozenCount ? `${frozenCount} ${frozenCount === 1 ? 'Portion' : 'Portionen'} vorgekocht` : 'Vorkochen & Vorrat'}
         onPress={() => router.push('/vorrat')}
       />
-      <Tile emoji="🚫" title="Tabu im 1. Jahr" sub="Honig, Nüsse, Salz …" red onPress={() => openWissen('sicherheit')} />
+      <Tile emoji={Ban} title="Tabu im 1. Jahr" sub="Honig, Nüsse, Salz …" red onPress={() => openWissen('sicherheit')} />
       {logs.some((l) => l.childId === child.id) ? (
         <Tile
-          emoji="📊"
+          emoji={ChartColumn}
           title={`${genitive(child.name)} Beikost`}
           sub="Heute & Woche im Überblick"
           onPress={() => router.push('/uebersicht')}
@@ -349,7 +349,7 @@ function Tiles() {
       ) : null}
       {drink !== 'noch_nicht' ? (
         <Tile
-          emoji={drink === 'kuhmilch' ? '🥛' : '💧'}
+          emoji={drink === 'kuhmilch' ? Milk : GlassWater}
           title="Trinken"
           sub={drink === 'kuhmilch' ? 'Milch aus dem Becher' : 'Wasser zu jedem Brei'}
           onPress={() => openWissen('portionen', 'trinken')}
@@ -360,7 +360,7 @@ function Tiles() {
 }
 
 function Tile({ emoji, title, sub, alert, red, onPress }: {
-  emoji: string; title: string; sub: string; alert?: string; red?: boolean; onPress: () => void;
+  emoji: IconLike; title: string; sub: string; alert?: string; red?: boolean; onPress: () => void;
 }) {
   return (
     <Pressable
@@ -374,7 +374,7 @@ function Tile({ emoji, title, sub, alert, red, onPress }: {
         transform: [{ scale: pressed ? 0.98 : 1 }],
       })}
     >
-      <Text style={{ fontSize: 28 }}>{emoji}</Text>
+      <Glyph icon={emoji} size={28} color={red ? color.redDeep : brand.blue} />
       <Text style={[type.bodyBold, { color: red ? color.redDeep : color.ink, marginTop: space.xs }]}>{title}</Text>
       {alert ? (
         <Text style={[type.smallBold, { color: color.red }]} numberOfLines={2}>! {alert}</Text>

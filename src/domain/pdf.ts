@@ -13,16 +13,16 @@ import type { Child, FoodLog, PlanDay } from './types';
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 const STYLE = `
-  body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #1F2A2E; margin: 32px; font-size: 12pt; }
-  h1 { font-size: 22pt; margin: 0 0 4px; }
-  h2 { font-size: 14pt; margin: 24px 0 8px; }
-  .meta { color: #56656A; margin-bottom: 16px; }
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #20213D; margin: 32px; font-size: 12pt; }
+  h1 { font-size: 22pt; margin: 0 0 4px; color: #313D8E; }
+  h2 { font-size: 14pt; margin: 24px 0 8px; color: #313D8E; }
+  .meta { color: #66677A; margin-bottom: 16px; }
   table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid #DCE2E0; }
-  th { font-size: 11pt; color: #56656A; }
-  .new { color: #B15F00; font-weight: 600; }
-  .warn { border: 2px solid #B3261E; padding: 12px; border-radius: 8px; }
-  .small { font-size: 10pt; color: #56656A; }
+  th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid #E6E2DA; }
+  th { font-size: 11pt; color: #66677A; }
+  .new { color: #A0452A; font-weight: 600; }
+  .warn { border: 2px solid #B93838; padding: 12px; border-radius: 8px; }
+  .small { font-size: 10pt; color: #66677A; }
 `;
 
 /** Wochenplan zum Ausdrucken, z. B. für Großeltern oder die Kita. */
@@ -57,7 +57,7 @@ export function planHtml(child: Child, days: PlanDay[]): string {
     ${prep ? `<h2>Zubereitung neuer Lebensmittel</h2>${prep}` : ''}
     <h2>Bitte nicht geben</h2>
     <p class="small">${AVOID_FIRST_YEAR.map((a) => esc(a.name)).join(' · ')}</p>
-    <p class="small">Erstellt mit dem Beikost-Begleiter. Ersetzt keine ärztliche Beratung.</p>
+    <p class="small">Erstellt mit nimou. Ersetzt keine ärztliche Beratung.</p>
   </body></html>`;
 }
 
@@ -136,7 +136,7 @@ export function doctorReportHtml(child: Child, logs: FoodLog[], digestion: Diges
     .join(' · ');
   const iron = ironWeek(child, own, today);
 
-  return `<html><head><meta charset="utf-8"/><style>${STYLE} .red { color: #B3261E; font-weight: 600; }</style></head><body>
+  return `<html><head><meta charset="utf-8"/><style>${STYLE} .red { color: #B93838; font-weight: 600; }</style></head><body>
     <h1>Beikost-Bericht: ${esc(child.name)}</h1>
     <div class="meta">Stand ${formatDayLong(today)} · geboren im ${formatMonth(child.birthDate)} (${ageInMonths(child.birthDate, today)} Monate)</div>
     <table>
@@ -161,6 +161,6 @@ export function doctorReportHtml(child: Child, logs: FoodLog[], digestion: Diges
     <h2>Verdauung (letzte 14 Tage)</h2>
     <p>${stoolCounts || 'Nichts notiert'}</p>
 
-    <p class="small" style="margin-top:32px">Elternprotokoll aus dem Beikost-Begleiter. Die Angaben wurden von den Eltern eingetragen und ersetzen keine ärztliche Untersuchung oder Diagnose.</p>
+    <p class="small" style="margin-top:32px">Elternprotokoll aus nimou. Die Angaben wurden von den Eltern eingetragen und ersetzen keine ärztliche Untersuchung oder Diagnose.</p>
   </body></html>`;
 }

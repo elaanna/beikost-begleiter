@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Baby, BookOpen, Users, FileText, GraduationCap, Lock, Mail, Plus, Star, Stethoscope } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { ageInMonths, formatDayLong, formatMonth, todayIso } from '@/domain/dates';
@@ -12,7 +13,7 @@ import { FamilySharing } from '@/ui/FamilySharing';
 import { openWissen } from '@/ui/nav';
 import { remindersSupported, requestReminderPermission } from '@/notifications/reminders';
 import { Switch } from 'react-native';
-import { color, space } from '@/ui/theme';
+import { brand, color, space } from '@/ui/theme';
 
 export default function Familie() {
   const app = useChild();
@@ -30,18 +31,18 @@ export default function Familie() {
         {children.map((c) => (
           <ListItem
             key={c.id}
-            emoji="👶"
+            emoji={Baby}
             title={c.name}
             subtitle={`${ageInMonths(c.birthDate, today)} Monate · geboren im ${formatMonth(c.birthDate)}`}
             onPress={() => router.push({ pathname: '/kind', params: { id: c.id } })}
           />
         ))}
-        {isPro ? <ListItem emoji="➕" title="Weiteres Kind anlegen" onPress={() => router.push('/kind')} /> : null}
+        {isPro ? <ListItem emoji={Plus} title="Weiteres Kind anlegen" onPress={() => router.push('/kind')} /> : null}
       </Card>
 
       <Card tone="peach" onPress={() => router.push('/dienste')} accessibilityLabel="Dienstplan öffnen">
         <Row>
-          <Text style={{ fontSize: 36 }}>👥</Text>
+          <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: color.surface, alignItems: 'center', justifyContent: 'center' }}><Users size={26} strokeWidth={1.75} color={brand.blue} /></View>
           <View style={{ flex: 1 }}>
             <P bold>Dienstplan & Kita</P>
             <Small soft={false}>Wer füttert, wer bringt, wer holt ab – Lücken in Rot</Small>
@@ -62,7 +63,7 @@ export default function Familie() {
           autoComplete="name"
           maxLength={40}
         />
-        <ListItem emoji="📧" title="Konto & Handywechsel" subtitle={app.accountEmail ?? 'Noch kein Konto'} onPress={() => router.push('/konto')} />
+        <ListItem emoji={Mail} title="Konto & Handywechsel" subtitle={app.accountEmail ?? 'Noch kein Konto'} onPress={() => router.push('/konto')} />
       </Card>
 
       <Title>Gemeinsam planen</Title>
@@ -125,7 +126,7 @@ export default function Familie() {
         </P>
         <Button
           label="Bericht als PDF"
-          icon="🩺"
+          icon={Stethoscope}
           onPress={() => shareHtmlAsPdf(doctorReportHtml(child, logs, digestion, today), `Beikost-Bericht ${child.name}`)}
         />
       </Card>
@@ -137,20 +138,20 @@ export default function Familie() {
         </P>
         <Field label="Telefon Eltern" value={parentContact} onChangeText={setParentContact} placeholder="0151 …" keyboardType="phone-pad" />
         <Field label="Kinderarztpraxis" value={doctor} onChangeText={setDoctor} placeholder="Name und Telefon" />
-        <Button label="Notfallblatt als PDF" icon="📄" variant="soft" onPress={() => shareHtmlAsPdf(emergencyHtml(child, logs, { parent: parentContact, doctor }), 'Notfallblatt')} />
+        <Button label="Notfallblatt als PDF" icon={FileText} variant="soft" onPress={() => shareHtmlAsPdf(emergencyHtml(child, logs, { parent: parentContact, doctor }), 'Notfallblatt')} />
       </Card>
 
       <Title>Mehr</Title>
       <Card style={{ paddingVertical: space.sm, paddingHorizontal: space.sm }}>
         <ListItem
-          emoji="⭐"
+          emoji={Star}
           title="Beikost-Paket"
           subtitle={previewMode ? 'Testversion: alles freigeschaltet' : isPro ? `Aktiv${until ? ` bis ${formatDayLong(until.slice(0, 10))}` : ''}` : '12 Monate, einmal zahlen'}
           onPress={() => router.push('/paywall')}
         />
-        <ListItem emoji="🎓" title="Geführte Tour noch einmal starten" onPress={() => app.restartTutorial()} />
-        <ListItem emoji="📖" title="Leitlinien & Quellen" onPress={() => openWissen('leitlinien')} />
-        <ListItem emoji="🔒" title="Datenschutz, Impressum & Hinweis" onPress={() => router.push('/rechtliches')} />
+        <ListItem emoji={GraduationCap} title="Geführte Tour noch einmal starten" onPress={() => app.restartTutorial()} />
+        <ListItem emoji={BookOpen} title="Leitlinien & Quellen" onPress={() => openWissen('leitlinien')} />
+        <ListItem emoji={Lock} title="Datenschutz, Impressum & Hinweis" onPress={() => router.push('/rechtliches')} />
       </Card>
     </Screen>
   );

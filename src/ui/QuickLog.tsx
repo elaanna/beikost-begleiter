@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Heart } from 'lucide-react-native';
 import { Alert, Linking, Platform, Text, View } from 'react-native';
 import { EMERGENCY_SIGNS } from '@/data/guidelines';
 import type { Liking, Reaction } from '@/domain/types';
@@ -36,7 +37,7 @@ export function QuickLog({ onLog, compact }: { onLog: (liking: Liking, reaction:
   return (
     <View style={{ gap: space.sm }}>
       <View style={{ flexDirection: compact ? 'row' : 'column', gap: space.sm }}>
-        <Button label="Hat geschmeckt" icon="♥" onPress={() => onLog(1, 'keine')} style={compact ? { flex: 1 } : undefined} />
+        <Button label="Hat geschmeckt" icon={Heart} onPress={() => onLog(1, 'keine')} style={compact ? { flex: 1 } : undefined} />
         <Button label="Lieber nicht" variant="soft" onPress={() => onLog(-1, 'keine')} style={compact ? { flex: 1 } : undefined} />
       </View>
       <Button

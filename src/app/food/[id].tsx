@@ -11,7 +11,7 @@ import { useChild } from '@/state/AppContext';
 import { Button, Card, Hero, Important, P, Row, Screen, Small, SourceLink, Title } from '@/ui/components';
 import { QuickLog } from '@/ui/QuickLog';
 import { useToast } from '@/ui/Toast';
-import { color, radius, space, type } from '@/ui/theme';
+import { brand, color, radius, space, type } from '@/ui/theme';
 import type { FoodCategory } from '@/domain/types';
 
 const RISK = {
@@ -145,7 +145,7 @@ function FoodHero({ foodId }: { foodId: string }) {
   const status = reason
     ? { title: 'Pausiert', text: reason, bg: color.redSoft, fg: color.redDeep }
     : history.length
-      ? { title: liked ? 'Schon probiert ♥' : 'Schon probiert', text: `${history.length}× angeboten${liked ? ' – schmeckt!' : ''}`, bg: color.sageSoft, fg: color.sageDeep }
+      ? { title: liked ? 'Schon probiert ♥' : 'Schon probiert', text: `${history.length}× angeboten${liked ? ' – schmeckt!' : ''}`, bg: brand.successBg, fg: brand.success }
       : planned
         ? { title: `Im Plan ab ${formatDayLong(planned)}`, text: 'Wird dann ein paar Tage hintereinander eingeführt.', bg: color.butter, fg: color.peachDeep }
         : { title: 'Noch nicht probiert', text: 'Kommt später in den Plan.', bg: color.creme, fg: color.ink };

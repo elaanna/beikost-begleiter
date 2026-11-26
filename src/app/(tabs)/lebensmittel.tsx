@@ -6,12 +6,12 @@ import { milestones } from '@/domain/pass';
 import { blockReason } from '@/domain/planner';
 import type { FoodCategory } from '@/domain/types';
 import { useChild } from '@/state/AppContext';
-import { Card, Heading, Hero, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
-import { color, radius, space, TOUCH, type } from '@/ui/theme';
+import { Card, Heading, Hero, Pill, PillRow, Row, Screen, Small } from '@/ui/components';
+import { brand, color, radius, space, TOUCH, type } from '@/ui/theme';
 
 type Filter = 'alle' | 'probiert' | 'offen';
 
-/** Probier-Pass: alle Lebensmittel als Sticker – bunt, sobald probiert. */
+/** Lebensmittel: alle als Sticker – bunt, sobald entdeckt. Bewusst ohne Fortschrittsbalken (Kommunikationsleitlinie: kein Leistungsdruck). */
 export default function ProbierPass() {
   const { activeChild: child, logs } = useChild();
   const [query, setQuery] = useState('');
@@ -36,27 +36,29 @@ export default function ProbierPass() {
 
   return (
     <Screen>
-      <Hero>Lebensmittel</Hero>
-      <Small style={{ marginBottom: space.lg }}>{child.name} hat {triedCount} von {FOODS.length} Lebensmitteln probiert</Small>
+      <Hero>Lebensmittel entdecken</Hero>
+      <Small style={{ marginBottom: space.lg }}>
+        {triedCount === 0
+          ? `Eure Beikostreise beginnt gerade. Jedes Kind hat sein eigenes Tempo.`
+          : `${triedCount} ${triedCount === 1 ? 'Lebensmittel' : 'Lebensmittel'} entdeckt – jedes Kind hat sein eigenes Tempo.`}
+      </Small>
 
-      <Card tone="peach" style={{ paddingVertical: space.lg }}>
-        <ProgressBar value={triedCount} max={FOODS.length} />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: space.lg, marginHorizontal: -space.sm }}>
-          {ms.map((m) => (
-            <View key={m.id} style={{ width: 88, alignItems: 'center', marginHorizontal: space.xs }} accessibilityLabel={`${m.title}: ${m.reached ? 'erreicht' : m.progress}`}>
-              <View style={{
-                width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center',
-                backgroundColor: m.reached ? color.surface : 'rgba(255,255,255,0.5)',
-                borderWidth: m.reached ? 3 : 0, borderColor: color.peach,
-              }}>
-                <Text style={{ fontSize: 28, opacity: m.reached ? 1 : 0.3 }}>{m.emoji}</Text>
+      {/* Erinnerungen statt Fortschrittsbalken: nur Erreichtes, ohne Zähler und Vorgaben (kein Leistungsdruck) */}
+      {ms.some((m) => m.reached) ? (
+        <Card tone="yellow" style={{ paddingVertical: space.lg }}>
+          <Text style={[type.cardTitle, { color: brand.blue }]}>Eure kleinen Erinnerungen</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: space.md, marginHorizontal: -space.sm }}>
+            {ms.filter((m) => m.reached).map((m) => (
+              <View key={m.id} style={{ width: 88, alignItems: 'center', marginHorizontal: space.xs }} accessibilityLabel={m.title}>
+                <View style={{ width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: color.surface }}>
+                  <Text style={{ fontSize: 28 }}>{m.emoji}</Text>
+                </View>
+                <Text style={[type.caption, { textAlign: 'center', color: color.ink, marginTop: 4 }]} numberOfLines={2}>{m.title}</Text>
               </View>
-              <Text style={[type.small, { fontSize: 11, textAlign: 'center', color: color.ink, marginTop: 4 }]} numberOfLines={2}>{m.title}</Text>
-              {!m.reached ? <Text style={[type.small, { fontSize: 11, color: color.inkSoft }]}>{m.progress}</Text> : null}
-            </View>
-          ))}
-        </ScrollView>
-      </Card>
+            ))}
+          </ScrollView>
+        </Card>
+      ) : null}
 
       <TextInput
         accessibilityLabel="Lebensmittel suchen"
@@ -71,7 +73,7 @@ export default function ProbierPass() {
       />
       <PillRow>
         {(['alle', 'offen', 'probiert'] as Filter[]).map((f) => (
-          <Pill key={f} label={{ alle: 'Alle', offen: 'Noch offen', probiert: 'Probiert' }[f]} selected={filter === f} onPress={() => setFilter(f)} />
+          <Pill key={f} label={{ alle: 'Alle', offen: 'Noch zu entdecken', probiert: 'Entdeckt' }[f]} selected={filter === f} onPress={() => setFilter(f)} />
         ))}
       </PillRow>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: -space.sm, marginBottom: space.xl, marginHorizontal: -space.screenX }}
@@ -88,7 +90,7 @@ export default function ProbierPass() {
         <View key={cat} style={{ marginBottom: space.xxl, paddingTop: gi ? space.xl : 0, borderTopWidth: gi ? 1 : 0, borderTopColor: color.line }}>
           <Row style={{ justifyContent: 'space-between', alignItems: 'baseline', marginBottom: space.md }}>
             <Heading>{CATEGORY_LABEL[cat]}</Heading>
-            <Small>{items.filter((f) => tried.has(f.id)).length} von {items.length} probiert</Small>
+            {items.some((f) => tried.has(f.id)) ? <Small>{items.filter((f) => tried.has(f.id)).length} entdeckt</Small> : null}
           </Row>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
             {items.map((f) => {

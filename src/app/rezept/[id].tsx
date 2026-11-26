@@ -1,4 +1,5 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { Snowflake } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 import { RECIPE_BY_ID } from '@/data/allRecipes';
 import { CATEGORY_INFO, MEAL_PREP_RULES, STORAGE_SOURCES } from '@/data/babyRecipes';
@@ -73,7 +74,7 @@ export default function Rezept() {
         </P>
         {recipe.storage.thaw ? <P style={{ marginTop: space.sm }}><Text style={type.bodyBold}>Auftauen: </Text>{recipe.storage.thaw}</P> : null}
         {recipe.storage.freeze ? (
-          <Button label="Portionen ins Gefrierfach eintragen" icon="❄️" variant="soft" style={{ marginTop: space.md }}
+          <Button label="Portionen ins Gefrierfach eintragen" icon={Snowflake} variant="soft" style={{ marginTop: space.md }}
             onPress={() => router.push({ pathname: '/vorrat', params: { add: recipe.id } })} />
         ) : null}
       </Card>

@@ -13,9 +13,10 @@ import { prepTasks, shoppingList } from '@/domain/shopping';
 import { pantryFoodIds } from '@/domain/stock';
 import { listChecks, toggleCheck } from '@/db/repo';
 import { useChild } from '@/state/AppContext';
-import { Button, Card, FoodBadge, Heading, Hero, LockedNotice, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
+import { Button, Card, FoodBadge, Heading, Hero, IconLabel, LockedNotice, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
+import { ChevronLeft, ChevronRight, FileText, RefreshCw, Scale, ScanBarcode, ShoppingBasket } from 'lucide-react-native';
 import { shareHtmlAsPdf } from '@/ui/exportPdf';
-import { color, radius, space, type } from '@/ui/theme';
+import { brand, color, ICON, radius, space, type } from '@/ui/theme';
 
 type View_ = 'woche' | 'einkauf';
 
@@ -44,8 +45,8 @@ export default function Plan() {
       <Hero style={{ marginBottom: space.lg }}>Woche</Hero>
       <Segmented<View_>
         options={[
-          { id: 'woche', label: '🗓️ Plan' },
-          { id: 'einkauf', label: '🛒 Einkauf' },
+          { id: 'woche', label: 'Plan' },
+          { id: 'einkauf', label: 'Einkauf' },
         ]}
         value={mode}
         onChange={setMode}
@@ -96,7 +97,7 @@ export default function Plan() {
                       accessibilityRole="button"
                       accessibilityLabel={`${SLOT_LABEL[m.slot]} am ${formatDay(d.date)}: ${m.title}. Mengen und Zubereitung öffnen`}
                       style={({ pressed }) => ({
-                        backgroundColor: m.newFoodId ? color.peachSoft : color.creme,
+                        backgroundColor: m.newFoodId ? brand.yellowSoft : color.creme,
                         borderRadius: radius.md,
                         padding: space.md,
                         marginBottom: space.sm,
@@ -116,7 +117,7 @@ export default function Plan() {
                             hitSlop={10}
                             style={{ backgroundColor: color.surface, borderRadius: radius.pill, paddingHorizontal: 12, paddingVertical: 6 }}
                           >
-                            <Text style={[type.smallBold, { color: color.sageDeep }]}>🔄 Tauschen</Text>
+                            <IconLabel icon={RefreshCw} label="Tauschen" />
                           </Pressable>
                         ) : null}
                       </Row>
@@ -134,7 +135,7 @@ export default function Plan() {
                           );
                         })}
                       </Row>
-                      <Text style={[type.smallBold, { color: color.sageDeep, marginTop: space.sm }]}>⚖️ Mengen & Zubereitung ›</Text>
+                      <IconLabel icon={Scale} label="Mengen & Zubereitung" chevron style={{ marginTop: space.sm }} />
                     </Pressable>
                   );
                 })}
@@ -142,15 +143,15 @@ export default function Plan() {
             );
           })}
           {isPro ? (
-            <Button label="Wochenplan als PDF teilen" icon="📄" variant="soft" onPress={() => shareHtmlAsPdf(planHtml(child, days), 'Wochenplan')} />
+            <Button label="Wochenplan als PDF teilen" icon={FileText} variant="soft" onPress={() => shareHtmlAsPdf(planHtml(child, days), 'Wochenplan')} />
           ) : null}
         </>
       ) : (
         <>
           {items.length === 0 ? <P soft>In dieser Woche ist noch keine Beikost geplant.</P> : null}
           <Row style={{ gap: space.sm, marginBottom: space.md }}>
-            <Button label="Vorrat" icon="🧺" variant="soft" style={{ flex: 1 }} onPress={() => router.push('/vorrat')} />
-            <Button label="Scannen" icon="📷" variant="soft" style={{ flex: 1 }} onPress={() => router.push('/scanner')} />
+            <Button label="Vorrat" icon={ShoppingBasket} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/vorrat')} />
+            <Button label="Scannen" icon={ScanBarcode} variant="soft" style={{ flex: 1 }} onPress={() => router.push('/scanner')} />
           </Row>
           {groupByCategory(items).map(([cat, list]) => (
             <Card key={cat} style={{ paddingVertical: space.lg }}>
@@ -209,7 +210,7 @@ function WeekArrow({ label, a11y, onPress }: { label: string; a11y: string; onPr
       accessibilityLabel={a11y}
       style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: color.surface, alignItems: 'center', justifyContent: 'center' }}
     >
-      <Text style={{ fontSize: 30, color: color.sageDeep, marginTop: -3 }}>{label}</Text>
+      {label === '‹' ? <ChevronLeft size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} /> : <ChevronRight size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} />}
     </Pressable>
   );
 }

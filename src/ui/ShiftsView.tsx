@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { RotateCcw, Settings } from 'lucide-react-native';
 import { Modal, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite';
 import { addDays, formatDay, parseDay } from '@/domain/dates';
@@ -122,7 +123,7 @@ export function ShiftsView({ from }: { from: string }) {
   return (
     <>
       {/* Dienstplan-Raster: Antippen öffnet die Auswahl */}
-      <Button label="Wie letzte Woche übernehmen" icon="↺" variant="soft" style={{ marginBottom: space.md }} onPress={copyLastWeek} />
+      <Button label="Wie letzte Woche übernehmen" icon={RotateCcw} variant="soft" style={{ marginBottom: space.md }} onPress={copyLastWeek} />
       <Card style={{ paddingHorizontal: space.md }}>
         <Small style={{ marginBottom: space.sm }}>Tippe auf einen Tag, um den Dienst zu wählen.</Small>
         <Row style={{ gap: 4 }}>
@@ -200,7 +201,7 @@ export function ShiftsView({ from }: { from: string }) {
       <Button
         label={showSettings ? 'Einstellungen schließen' : 'Personen, Kita & Zeiten'}
         variant="soft"
-        icon="⚙️"
+        icon={Settings}
         onPress={() => setShowSettings((v) => !v)}
       />
       {showSettings ? (
