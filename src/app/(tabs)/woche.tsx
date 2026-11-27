@@ -3,8 +3,8 @@ import { Pressable, Share, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { CATEGORY_LABEL, FOOD_BY_ID } from '@/data/foods';
-import { addDays, formatDay, todayIso, weekStart } from '@/domain/dates';
-import { SLOT_LABEL } from '@/domain/planner';
+import { addDays, ageInMonths, formatDay, todayIso, weekStart } from '@/domain/dates';
+import { effectiveStartDate, SLOT_LABEL } from '@/domain/planner';
 import type { PlannedMeal } from '@/domain/types';
 import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
@@ -14,7 +14,8 @@ import { pantryFoodIds } from '@/domain/stock';
 import { listChecks, toggleCheck } from '@/db/repo';
 import { useChild } from '@/state/AppContext';
 import { Button, Card, FoodBadge, Heading, Hero, IconLabel, LockedNotice, P, Row, Screen, Segmented, Small, Title } from '@/ui/components';
-import { ChevronLeft, ChevronRight, CookingPot, FileText, RefreshCw, Sandwich, Scale, ScanBarcode, Share2, ShoppingBasket } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, CookingPot, FileText, RefreshCw, Sandwich, Scale, ScanBarcode, Share2, ShoppingBasket, Snowflake } from 'lucide-react-native';
+import { ToolRow, type Tool } from '@/ui/ToolRow';
 import { shoppingText } from '@/domain/shareText';
 import { isTablePhase, tableDays, type TableDay } from '@/domain/toddler';
 import { TABLE_SLOT_INFO } from '@/data/toddler';
@@ -35,6 +36,14 @@ export default function Plan() {
   const from = addDays(weekStart(today), offset * 7);
   const days = usePlanDays(from, 7);
   const [swapping, setSwapping] = useState<{ date: string; meal: PlannedMeal } | null>(null);
+  // Kochen & Vorrat: Werkzeuge rund um den Plan
+  const frozen = stock.filter((x) => x.kind === 'gefroren').reduce((n, x) => n + x.portions, 0);
+  const started = effectiveStartDate(child) <= today;
+  const kitchenTools: Tool[] = [
+    ...(!table && started ? [{ icon: CookingPot, label: t('Vorkoch-Sonntag'), sub: t('Geführt kochen & einfrieren'), onPress: () => router.push('/vorkochen') }] : []),
+    { icon: Snowflake, label: t('Gefrierfach'), sub: frozen ? (frozen === 1 ? t('1 Portion vorgekocht') : t('{0} Portionen vorgekocht', { 0: frozen })) : t('Vorrat & Gefrierfach'), onPress: () => router.push('/vorrat') },
+    ...(table || ageInMonths(child.birthDate, today) >= 10 ? [{ icon: Sandwich, label: t('Kita-Brotdose'), sub: t('Ideen für die Woche'), onPress: () => router.push('/brotdose') }] : []),
+  ];
   const tDays = useMemo(() => (table ? tableDays(child, logs, from, 7) : []), [table, child, logs, from]);
   // Einkauf: im Familientisch-Modus aus dem Familien-Wochenplan
   const items = useMemo(
@@ -52,15 +61,17 @@ export default function Plan() {
 
   return (
     <Screen>
-      <Hero style={{ marginBottom: space.lg }}>{t('Woche')}</Hero>
+      <Hero style={{ marginBottom: space.lg }}>{t('Plan')}</Hero>
       <Segmented<View_>
         options={[
-          { id: 'woche', label: t('Plan') },
+          { id: 'woche', label: t('Woche') },
           { id: 'einkauf', label: t('Einkauf') },
         ]}
         value={mode}
         onChange={setMode}
       />
+
+      {mode === 'woche' ? <ToolRow tools={kitchenTools} /> : null}
 
       <SwapSheet date={swapping?.date ?? today} meal={swapping?.meal ?? null} onClose={() => setSwapping(null)} />
 

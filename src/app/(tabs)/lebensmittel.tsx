@@ -5,7 +5,11 @@ import { CATEGORY_LABEL, FOOD_BY_ID, FOODS } from '@/data/foods';
 import { milestones } from '@/domain/pass';
 import { reofferList } from '@/domain/toddler';
 import { todayIso } from '@/domain/dates';
-import { RotateCcw } from 'lucide-react-native';
+import { ChartColumn, RotateCcw, ScanBarcode } from 'lucide-react-native';
+import { genitive } from '@/domain/beikostOverview';
+import { ToolRow } from '@/ui/ToolRow';
+import { Revisit } from '@/ui/Revisit';
+import { SeasonCard } from '@/ui/DailyCards';
 import { blockReason } from '@/domain/planner';
 import type { FoodCategory } from '@/domain/types';
 import { useChild } from '@/state/AppContext';
@@ -48,6 +52,11 @@ export default function ProbierPass() {
           : t('{0} {1} entdeckt – jedes Kind hat sein eigenes Tempo.', { 0: triedCount, 1: triedCount === 1 ? 'Lebensmittel' : 'Lebensmittel' })}
       </Small>
 
+      <ToolRow tools={[
+        { icon: ScanBarcode, label: t('Im Regal scannen'), sub: t('Was steckt drin?'), onPress: () => router.push('/scanner') },
+        ...(triedCount ? [{ icon: ChartColumn, label: t('{0} Beikost', { 0: genitive(child.name) }), sub: t('Heute & Woche im Überblick'), onPress: () => router.push('/uebersicht') }] : []),
+      ]} />
+
       {reoffer.length ? (
         <Card tone="peach" onPress={() => router.push('/wiederanbieten')} accessibilityLabel={t('Noch mal anbieten')} style={{ paddingVertical: space.lg }}>
           <Row>
@@ -76,6 +85,9 @@ export default function ProbierPass() {
           </ScrollView>
         </Card>
       ) : null}
+
+      <Revisit />
+      <SeasonCard />
 
       <TextInput
         accessibilityLabel={t('Lebensmittel suchen')}

@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { router, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/state/AppContext';
 import { openWissen } from './nav';
-import { BookOpen, CalendarHeart, ChevronRight, Globe, GraduationCap, Lock, Mail, Menu, Settings, Star, Users, X, type LucideIcon } from 'lucide-react-native';
+import { Baby, BookOpen, CalendarHeart, Luggage, Sparkles, ChevronRight, Globe, GraduationCap, Lock, Mail, Menu, Settings, Star, Users, X, type LucideIcon } from 'lucide-react-native';
 import { brand, color, font, ICON, radius, space, type } from './theme';
 import { LANG_LABEL, LANGS, t } from '@/i18n';
 
@@ -16,16 +16,25 @@ export function MainMenu() {
   const [open, setOpen] = useState(false);
 
   const go = (href: Href) => { setOpen(false); router.push(href); };
-  const items: { emoji: LucideIcon; label: string; sub?: string; onPress: () => void }[] = [
-    { emoji: Settings, label: t('Familie & Einstellungen'), sub: t('Kinder, Einladen, Erinnerungen, Berichte'), onPress: () => go('/familie') },
-    { emoji: CalendarHeart, label: t('Familienkalender'), sub: t('U-Untersuchungen, Impftermine, Kita'), onPress: () => go('/termine') },
+  const items: { emoji: LucideIcon; label: string; sub?: string; onPress: () => void; group?: string }[] = [
+    { group: t('Familie & Alltag'), emoji: CalendarHeart, label: t('Familienkalender'), sub: t('U-Untersuchungen, Impftermine, Kita'), onPress: () => go('/termine') },
     { emoji: Users, label: t('Dienstplan & Kita'), sub: t('Wer füttert, bringt, holt ab'), onPress: () => go('/dienste') },
+    { emoji: Sparkles, label: t('Erste Male'), sub: t('Kleine Momente festhalten'), onPress: () => go('/journal') },
+    { emoji: Baby, label: t('Windel & Verdauung'), sub: t('Verlauf und Hinweise'), onPress: () => go('/verdauung') },
+    { emoji: Luggage, label: t('Unterwegs'), sub: t('Packliste, Restaurant, Kühlung'), onPress: () => go('/unterwegs') },
+    { group: t('Einstellungen'), emoji: Settings, label: t('Familie & Einstellungen'), sub: t('Kinder, Einladen, Erinnerungen, Berichte'), onPress: () => go('/familie') },
     { emoji: Mail, label: t('Konto & Handywechsel'), sub: app.accountEmail ?? t('Noch kein Konto'), onPress: () => go('/konto') },
     { emoji: Star, label: t('Beikost-Paket'), onPress: () => go('/paywall') },
     { emoji: GraduationCap, label: t('Geführte Tour starten'), onPress: () => { setOpen(false); void app.restartTutorial(); } },
     { emoji: BookOpen, label: t('Leitlinien & Quellen'), onPress: () => { setOpen(false); openWissen('leitlinien'); } },
     { emoji: Lock, label: t('Datenschutz & Impressum'), onPress: () => go('/rechtliches') },
   ];
+  // Abschnitte aus den Gruppenköpfen bilden
+  const sections: { title: string; items: typeof items }[] = [];
+  for (const it of items) {
+    if (it.group || !sections.length) sections.push({ title: it.group ?? '', items: [] });
+    sections[sections.length - 1].items.push(it);
+  }
 
   return (
     <>
@@ -46,20 +55,26 @@ export function MainMenu() {
               </Pressable>
             </View>
             {app.parentName.trim() ? <Text style={[type.small, { color: color.inkSoft, marginBottom: space.md }]}>{t('Hallo {0} 👋', { 0: app.parentName.trim() })}</Text> : null}
-            <View style={{ backgroundColor: color.surface, borderRadius: radius.lg, paddingVertical: space.xs }}>
-              {items.map((it, k) => (
-                <Pressable key={it.label} onPress={it.onPress} accessibilityRole="button"
-                  style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, paddingHorizontal: space.md, borderTopWidth: k ? 1 : 0, borderTopColor: color.line, opacity: pressed ? 0.6 : 1 })}>
-                  <View style={{ width: 30, alignItems: 'center' }}><it.emoji size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} /></View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[type.bodyBold, { color: color.ink }]}>{t(it.label)}</Text>
-                    {it.sub ? <Text style={[type.small, { color: color.inkSoft }]} numberOfLines={1}>{t(it.sub)}</Text> : null}
-                  </View>
-                  <ChevronRight size={20} strokeWidth={ICON.stroke} color={color.inkSoft} />
-                </Pressable>
-              ))}
-            </View>
-            <View style={{ marginTop: space.lg, backgroundColor: color.surface, borderRadius: radius.lg, padding: space.md }}>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: space.lg }} showsVerticalScrollIndicator={false}>
+            {sections.map((sec) => (
+              <View key={sec.title} style={{ marginBottom: space.lg }}>
+                <Text style={[type.smallBold, { color: color.inkSoft, marginBottom: space.xs, marginLeft: space.xs }]} accessibilityRole="header">{sec.title}</Text>
+                <View style={{ backgroundColor: color.surface, borderRadius: radius.lg, paddingVertical: space.xs }}>
+                  {sec.items.map((it, k) => (
+                    <Pressable key={it.label} onPress={it.onPress} accessibilityRole="button"
+                      style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, paddingHorizontal: space.md, borderTopWidth: k ? 1 : 0, borderTopColor: color.line, opacity: pressed ? 0.6 : 1 })}>
+                      <View style={{ width: 30, alignItems: 'center' }}><it.emoji size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} /></View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[type.bodyBold, { color: color.ink }]}>{it.label}</Text>
+                        {it.sub ? <Text style={[type.small, { color: color.inkSoft }]} numberOfLines={1}>{it.sub}</Text> : null}
+                      </View>
+                      <ChevronRight size={20} strokeWidth={ICON.stroke} color={color.inkSoft} />
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            ))}
+            <View style={{ backgroundColor: color.surface, borderRadius: radius.lg, padding: space.md }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, marginBottom: space.sm }}>
                 <View style={{ width: 30, alignItems: 'center' }}><Globe size={ICON.size} strokeWidth={ICON.stroke} color={brand.blue} /></View>
                 <Text style={[type.bodyBold, { color: color.ink }]}>{t('Sprache')}</Text>
@@ -78,6 +93,7 @@ export function MainMenu() {
                 })}
               </View>
             </View>
+            </ScrollView>
           </View>
         </View>
       </Modal>

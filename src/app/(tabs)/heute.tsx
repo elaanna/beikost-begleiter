@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { FOOD_BY_ID } from '@/data/foods';
-import { FAMILY_FROM_MONTHS } from '@/data/recipes';
 import { addDays, ageInMonths, diffDays, formatDayLong, todayIso } from '@/domain/dates';
-import { drinkStage, ironWeek, revisitFoods } from '@/domain/care';
-import { genitive } from '@/domain/beikostOverview';
 import { dailyLine, greetingTitle } from '@/domain/greeting';
 import { effectiveStartDate, introDays, planDays, preparationFor, SLOT_LABEL } from '@/domain/planner';
 import { matchingFrozen } from '@/domain/stock';
@@ -15,22 +12,21 @@ import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { MainMenu } from '@/ui/MainMenu';
 import { Wordmark } from '@/ui/Wordmark';
-import { CalendarHeart, ChevronRight, CookingPot, Luggage, Sparkles, RotateCcw, Sandwich, Ban, Baby, CalendarDays, ChartColumn, ChefHat, GlassWater, Lightbulb, Milk, RefreshCw, Scale, ScanBarcode, Search, Snowflake, Users, type LucideIcon } from 'lucide-react-native';
-import { SeasonCard, TipOfDayCard } from '@/ui/DailyCards';
+import { CalendarHeart, ChevronRight, Sandwich, Baby, ChefHat, Milk, RefreshCw, Scale, Search, Users } from 'lucide-react-native';
+import { TipOfDayCard } from '@/ui/DailyCards';
+import { ToolRow, type Tool } from '@/ui/ToolRow';
 import { portionFor } from '@/domain/portions';
-import { recipeFits } from '@/domain/recipes';
 import { planDayTasks, type ShiftEntry } from '@/domain/shifts';
 import type { Liking, PlannedMeal, Reaction } from '@/domain/types';
 import { getMeta, listAppointments, listShifts, setMeta } from '@/db/repo';
 import { calendarHint, kindInfo, type Appointment } from '@/domain/calendar';
 import { allergenKeepUp } from '@/domain/allergenStatus';
-import { isTablePhase, reofferList, suggestTable } from '@/domain/toddler';
+import { isTablePhase, suggestTable } from '@/domain/toddler';
 import { TableSwitchCard, TableToday } from '@/ui/TableToday';
 import { useChild } from '@/state/AppContext';
-import { Button, Card, DayDots, FoodBadge, Glyph, Heading, Hero, IconLabel, type IconLike, Important, LockedNotice, P, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
+import { Button, Card, DayDots, FoodBadge, Glyph, Heading, Hero, IconLabel, Important, LockedNotice, P, Pill, PillRow, ProgressBar, Row, Screen, Small } from '@/ui/components';
 import { QuickLog } from '@/ui/QuickLog';
 import { useToast } from '@/ui/Toast';
-import { openWissen } from '@/ui/nav';
 import { brand, color, ICON, radius, space, type } from '@/ui/theme';
 import { t } from '@/i18n';
 
@@ -102,6 +98,8 @@ export default function Heute() {
         <Text style={[type.body, { color: color.inkSoft }]}>{t('Darf {0} schon …?', { 0: child.name })}</Text>
       </Pressable>
 
+      <QuickBar />
+
       {suggestTable(child, today) && (!tableLater || diffDays(tableLater, today) >= 30) ? (
         <TableSwitchCard
           onYes={() => saveChild({ ...child, tableSince: today })}
@@ -134,7 +132,7 @@ export default function Heute() {
             <Card tone="sage" style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 48 }}>🎉</Text>
               <Heading style={{ marginTop: space.sm, textAlign: 'center' }}>{t('Alles notiert für heute')}</Heading>
-              <P soft style={{ textAlign: 'center' }}>{t('Was morgen kommt, siehst du unter „Woche“.')}</P>
+              <P soft style={{ textAlign: 'center' }}>{t('Was morgen kommt, siehst du unter „Plan“.')}</P>
             </Card>
           )}
           {later.length ? (
@@ -149,14 +147,7 @@ export default function Heute() {
       <CalendarCard />
       {daysToStart <= 0 ? <KeepUpCard plannedToday={isTablePhase(child) ? [] : day.meals.flatMap((m) => m.foodIds)} /> : null}
 
-      <BrandTiles />
-
-      {daysToStart <= 0 ? <Revisit /> : null}
       <TipOfDayCard />
-      <SeasonCard />
-
-      <Heading style={{ marginBottom: space.md }}>{t('Heute auch')}</Heading>
-      <Tiles />
     </Screen>
   );
 }
@@ -359,47 +350,11 @@ function MealFocus({ meal, dayIndex, onLog }: { meal: PlannedMeal; dayIndex: num
 }
 
 /** Abwechslung: schon Angebotenes, das länger nicht dabei war – reine Organisationshilfe. */
-function Revisit() {
-  const { activeChild: child, logs, addLog, removeLog } = useChild();
-  const toast = useToast();
-  const today = todayIso();
-  const items = useMemo(() => revisitFoods(child, logs, today).slice(0, 3), [child, logs, today]);
-  if (!items.length) return null;
-  return (
-    <Card tone="butter">
-      <Row style={{ alignItems: 'flex-start' }}>
-        <Text style={{ fontSize: 30 }}>🔁</Text>
-        <View style={{ flex: 1 }}>
-          <P bold>{t('Mal wieder anbieten?')}</P>
-          <Small soft={false}>{t('Schon probiert, aber länger nicht dabei.')}</Small>
-        </View>
-      </Row>
-      {items.map((r) => {
-        const food = FOOD_BY_ID[r.foodId];
-        return (
-          <Row key={r.foodId} style={{ marginTop: space.md, justifyContent: 'space-between' }}>
-            <Pressable style={{ flex: 1 }} onPress={() => router.push(`/food/${food.id}`)} accessibilityRole="link">
-              <P bold>{food.emoji} {food.name}{r.liked ? ' ♥' : ''}</P>
-              <Small>{t('zuletzt vor {0} Tagen', { 0: r.daysSince })}</Small>
-            </Pressable>
-            <Pill
-              label={t('Heute gegeben')}
-              onPress={async () => {
-                const id = await addLog({ foodId: food.id, date: today, liking: 0, reaction: 'keine', note: '' });
-                toast({ emoji: '✓', text: t('{0} notiert', { 0: food.name }), undo: id ? () => removeLog(id) : undefined });
-              }}
-            />
-          </Row>
-        );
-      })}
-    </Card>
-  );
-}
 
-/** Kompakte Kacheln statt langer Karten. */
-function Tiles() {
+/** Schnellleiste: Windel eintragen und wer gerade dran ist (ohne Dienstplan: Einstieg zum Anlegen). */
+function QuickBar() {
   const db = useSQLiteContext();
-  const { activeChild: child, logs, digestion, caregivers, familySettings, shiftsVersion, stock } = useChild();
+  const { activeChild: child, logs, digestion, caregivers, familySettings, shiftsVersion } = useChild();
   const today = todayIso();
   const [shifts, setShifts] = useState<ShiftEntry[]>([]);
   useEffect(() => {
@@ -413,105 +368,19 @@ function Tiles() {
   const nowHm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   const nextTask = tasks.find((tx) => tx.time >= nowHm) ?? tasks[0];
   const nextWho = nextTask ? caregivers.find((c) => c.id === nextTask.caregiverId) : undefined;
-
   const stoolToday = digestion.filter((d) => d.date === today).length;
-  const age = ageInMonths(child.birthDate, today);
-  const recipe = age >= FAMILY_FROM_MONTHS ? recipeFits(child, logs, { category: 'familie' }).find((f) => !f.blocked) : undefined;
-  const iron = ironWeek(child, logs, today);
-  const frozenCount = stock.filter((x) => x.kind === 'gefroren').reduce((n, x) => n + x.portions, 0);
-  const drink = drinkStage(child, today);
-  const reofferCount = reofferList(child, logs, today).length;
-  const daysToStartLocal = diffDays(today, effectiveStartDate(child));
 
-  return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
-      <Tile
-        emoji={Baby}
-        title={t('Windel')}
-        sub={stoolToday ? t('{0}× notiert', { 0: stoolToday }) : t('Noch nichts notiert')}
-        onPress={() => router.push('/verdauung')}
-      />
-      <Tile
-        emoji={Users}
-        title={t('Wer ist dran?')}
-        sub={!caregivers.length ? t('Dienste planen') : nextTask ? `${nextTask.time} ${nextTask.label}: ${nextWho ? nextWho.name : '–'}` : t('Heute nichts')}
-        alert={gaps ? `${gaps} ${gaps === 1 ? 'Lücke' : 'Lücken'}` : undefined}
-        onPress={() => router.push('/dienste')}
-      />
-      {isTablePhase(child) ? (
-        <>
-          <Tile emoji={Sandwich} title={t('Kita-Brotdose')} sub={t('Ideen für die Woche')} onPress={() => router.push('/brotdose')} />
-          <Tile emoji={RotateCcw} title={t('Noch mal anbieten')} sub={t('Ohne Druck, im eigenen Tempo')} onPress={() => router.push('/wiederanbieten')} />
-        </>
-      ) : null}
-      {!isTablePhase(child) && reofferCount ? (
-        <Tile emoji={RotateCcw} title={t('Noch mal anbieten')} sub={t('{0} Lebensmittel, ohne Druck', { 0: reofferCount })} onPress={() => router.push('/wiederanbieten')} />
-      ) : null}
-      {!isTablePhase(child) && age >= 10 ? (
-        <Tile emoji={Sandwich} title={t('Kita-Brotdose')} sub={t('Ideen für die Woche')} onPress={() => router.push('/brotdose')} />
-      ) : null}
-      {isTablePhase(child) ? null : recipe ? (
-        <Tile emoji={recipe.recipe.emoji} title={t('Familienessen')} sub={recipe.recipe.name} onPress={() => router.push(`/rezept/${recipe.recipe.id}`)} />
-      ) : (
-        <Tile emoji={Scale} title={t('Mengen')} sub={t('Wie viel Brei?')} onPress={() => openWissen('portionen', 'brei')} />
-      )}
-      <Tile emoji={Sparkles} title={t('Erste Male')} sub={t('Kleine Momente festhalten')} onPress={() => router.push('/journal')} />
-      {!isTablePhase(child) && daysToStartLocal <= 0 ? (
-        <Tile emoji={CookingPot} title={t('Vorkoch-Sonntag')} sub={t('Geführt kochen & einfrieren')} onPress={() => router.push('/vorkochen')} />
-      ) : null}
-      <Tile emoji={Luggage} title={t('Unterwegs')} sub={t('Packliste, Restaurant, Kühlung')} onPress={() => router.push('/unterwegs')} />
-      <Tile emoji={ScanBarcode} title={t('Im Regal scannen')} sub={t('Was steckt drin?')} onPress={() => router.push('/scanner')} />
-      <Tile
-        emoji={Snowflake}
-        title={t('Gefrierfach')}
-        sub={frozenCount ? t('{0} {1} vorgekocht', { 0: frozenCount, 1: frozenCount === 1 ? 'Portion' : 'Portionen' }) : t('Vorkochen & Vorrat')}
-        onPress={() => router.push('/vorrat')}
-      />
-      <Tile emoji={Ban} title={t('Tabu im 1. Jahr')} sub={t('Honig, Nüsse, Salz …')} red onPress={() => openWissen('sicherheit')} />
-      {logs.some((l) => l.childId === child.id) ? (
-        <Tile
-          emoji={ChartColumn}
-          title={t('{0} Beikost', { 0: genitive(child.name) })}
-          sub={t('Heute & Woche im Überblick')}
-          onPress={() => router.push('/uebersicht')}
-        />
-      ) : null}
-      {drink !== 'noch_nicht' ? (
-        <Tile
-          emoji={drink === 'kuhmilch' ? Milk : GlassWater}
-          title={t('Trinken')}
-          sub={drink === 'kuhmilch' ? t('Milch aus dem Becher') : t('Wasser zu jedem Brei')}
-          onPress={() => openWissen('portionen', 'trinken')}
-        />
-      ) : null}
-    </View>
-  );
-}
-
-function Tile({ emoji, title, sub, alert, red, onPress }: {
-  emoji: IconLike; title: string; sub: string; alert?: string; red?: boolean; onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={`${title}: ${alert ?? sub}`}
-      style={({ pressed }) => ({
-        width: '47.5%', minHeight: 116, borderRadius: radius.lg, padding: space.lg,
-        backgroundColor: red ? color.redSoft : color.surface,
-        borderWidth: alert ? 2 : 0, borderColor: color.red,
-        transform: [{ scale: pressed ? 0.98 : 1 }],
-      })}
-    >
-      <Glyph icon={emoji} size={28} color={red ? color.redDeep : brand.blue} />
-      <Text style={[type.bodyBold, { color: red ? color.redDeep : color.ink, marginTop: space.xs }]}>{title}</Text>
-      {alert ? (
-        <Text style={[type.smallBold, { color: color.red }]} numberOfLines={2}>! {alert}</Text>
-      ) : (
-        <Text style={[type.small, { color: red ? color.redDeep : color.inkSoft }]} numberOfLines={2}>{sub}</Text>
-      )}
-    </Pressable>
-  );
+  const tools: Tool[] = [
+    { icon: Baby, label: t('Windel'), sub: stoolToday ? t('{0}× notiert', { 0: stoolToday }) : t('Eintragen'), onPress: () => router.push('/verdauung') },
+  ];
+  tools.push({
+    icon: Users,
+    label: t('Wer ist dran?'),
+    sub: !caregivers.length ? t('Dienste planen') : nextTask ? `${nextTask.time} ${nextTask.label}: ${nextWho ? nextWho.name : '–'}` : t('Heute nichts'),
+    alert: gaps ? (gaps === 1 ? t('1 Lücke') : t('{0} Lücken', { 0: gaps })) : undefined,
+    onPress: () => router.push('/dienste'),
+  });
+  return <ToolRow tools={tools} />;
 }
 
 function DailyGreeting({ child, logs, today, startDate, meal }: {
@@ -530,22 +399,3 @@ function DailyGreeting({ child, logs, today, startDate, meal }: {
   );
 }
 
-/** Drei Einstiege wie im Mockup – Farben nach Rolle: Gelb = Planung, Peach = Rezepte, Lilac = Wissen. */
-function BrandTiles() {
-  const tiles: { label: string; Icon: LucideIcon; bg: string; href: '/woche' | '/rezepte' | '/wissen' }[] = [
-    { label: t('Wochenplan'), Icon: CalendarDays, bg: brand.yellowSoft, href: '/woche' },
-    { label: t('Rezepte'), Icon: ChefHat, bg: brand.peachSoft, href: '/rezepte' },
-    { label: t('Wissen'), Icon: Lightbulb, bg: brand.lilacSoft, href: '/wissen' },
-  ];
-  return (
-    <Row style={{ gap: space.md, marginBottom: space.xl }}>
-      {tiles.map(({ label, Icon, bg, href }) => (
-        <Pressable key={label} onPress={() => router.navigate(href)} accessibilityRole="button" accessibilityLabel={label}
-          style={({ pressed }) => ({ flex: 1, backgroundColor: bg, borderRadius: radius.lg, paddingVertical: space.lg, alignItems: 'center', gap: space.sm, opacity: pressed ? 0.8 : 1 })}>
-          <Icon size={ICON.size + 4} strokeWidth={ICON.stroke} color={brand.blue} />
-          <Text style={[type.smallBold, { color: brand.text }]}>{label}</Text>
-        </Pressable>
-      ))}
-    </Row>
-  );
-}

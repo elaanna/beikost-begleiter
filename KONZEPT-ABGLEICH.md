@@ -94,3 +94,14 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 - **Allergene dranhalten** (S3-Leitlinie): Karte auf „Heute“, wenn ein eingeführtes und vertragenes Allergen seit 7 Tagen nicht mehr notiert wurde und heute nicht im Plan steht. Nie bei Reaktion oder ärztlich bekannter Allergie. Lässt sich für den Tag ausblenden.
 - Frei nutzbar (kein Paket), weil Sicherheit und Organisation.
 - Widget für den Homescreen: geparkt bis zur eigenen Test-App (EAS), in Expo Go nicht möglich.
+
+## Nachtrag 27.11.2026 – Neue Aufteilung der App
+
+Jeder Reiter beantwortet eine Frage:
+- **Heute** – Was ist jetzt dran? Mahlzeit, Hinweise des Tages (Termin, Allergene, Frühstück, Tipp), Schnellleiste Windel und „Wer ist dran?“.
+- **Plan** (vorher „Woche“) – Was koche und kaufe ich? Wochenplan, Einkauf, Vorkoch-Sonntag, Gefrierfach, Kita-Brotdose.
+- **Rezepte** – Was mache ich daraus?
+- **Entdecken** – Was kann mein Kind essen? Lebensmittel, Scanner, Übersicht, Mal wieder anbieten, Saison.
+- **Wissen** – Wie geht das richtig? Mengen, Tabu im 1. Jahr, Allergene, Trinken, Quellen.
+- **Menü** – Familie & Alltag (Familienkalender, Dienstplan, Erste Male, Windel & Verdauung, Unterwegs) und Einstellungen.
+Entfernt: Kachelraster „Heute auch“ und die doppelten Kacheln Wochenplan/Rezepte/Wissen auf „Heute“.

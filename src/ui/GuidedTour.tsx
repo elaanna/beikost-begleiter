@@ -25,11 +25,11 @@ export function tourSteps(parentName: string, childName: string): Step[] {
     { tab: 'heute', emoji: '👋', title: hi, text: t('Ich bin dein Beikost-Assistent und zeige dir in einer Minute, wie alles funktioniert. Du kannst jederzeit überspringen.') },
     { tab: 'heute', emoji: '☀️', title: t('Jeden Tag das Wichtigste'), text: t('Unter „Heute“ steht, was für {0} gerade dran ist – mit Menge und Zubereitung. Nach dem Essen tippst du „Hat geschmeckt“ oder „Lieber nicht“. Fertig.', { 0: childName }), mark: 'tab' },
     { tab: 'heute', emoji: '🔍', title: t('„Darf {0} schon …?“', { 0: childName }), text: t('Ganz oben fragst du nach jedem Lebensmittel und siehst sofort, ob und wie es geht. Neues kommt immer einzeln: 2 Tage, Allergene 3 Tage.'), mark: 'tab' },
-    { tab: 'woche', emoji: '🗓️', title: t('Der Wochenplan'), text: t('Tippe auf einen Tag oder eine Mahlzeit, um Mengen und Zubereitung zu sehen. „Tauschen“ ersetzt eine Mahlzeit, unter „Einkauf“ entsteht die Einkaufsliste.'), mark: 'tab' },
+    { tab: 'woche', emoji: '🗓️', title: t('Der Plan'), text: t('Tippe auf einen Tag oder eine Mahlzeit, um Mengen und Zubereitung zu sehen. „Tauschen“ ersetzt eine Mahlzeit, unter „Einkauf“ entsteht die Einkaufsliste. Vorkoch-Sonntag und Gefrierfach findest du hier auch.'), mark: 'tab' },
     { tab: 'rezepte', emoji: '🍲', title: t('Rezepte nach Alter'), text: t('Gefiltert für {0} oder nach Alter und Kategorie. Mit „Was habe ich da?“ findest du Rezepte zu dem, was im Kühlschrank ist.', { 0: childName }), mark: 'tab' },
     { tab: 'lebensmittel', emoji: '🥕', title: t('Lebensmittel entdecken'), text: t('Alle Lebensmittel auf einen Blick: was {0} schon entdeckt hat, was geschmeckt hat und was als Nächstes kommt – ganz im eigenen Tempo.', { 0: childName }), mark: 'tab' },
     { tab: 'wissen', emoji: '📖', title: t('Wissen mit Quellen'), text: t('Mengen, Trinken, Allergene und Leitlinien – alles mit Quellen. Rot markiert heißt immer: wichtig.'), mark: 'tab' },
-    { tab: 'heute', emoji: '☰', title: t('Das Menü'), text: t('Oben rechts auf „Heute“: Familie und Einstellungen, Partner und Kita einladen, Konto, Erinnerungen, Bericht für die Kinderarztpraxis – und diese Tour noch einmal starten.'), mark: 'familie' },
+    { tab: 'heute', emoji: '☰', title: t('Das Menü'), text: t('Oben rechts auf „Heute“: Familienkalender, Dienstplan, Erste Male und Unterwegs – dazu Einstellungen, Partner und Kita einladen, Konto und diese Tour noch einmal starten.'), mark: 'familie' },
   ];
 }
 

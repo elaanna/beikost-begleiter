@@ -33,7 +33,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen name="heute" options={{ title: t('Heute'), tabBarIcon: TabIcon(Home) }} />
-      <Tabs.Screen name="woche" options={{ title: t('Woche'), tabBarIcon: TabIcon(CalendarDays) }} />
+      <Tabs.Screen name="woche" options={{ title: t('Plan'), tabBarIcon: TabIcon(CalendarDays) }} />
       <Tabs.Screen name="rezepte" options={{ title: t('Rezepte'), tabBarIcon: TabIcon(ChefHat) }} />
       <Tabs.Screen name="lebensmittel" options={{ title: t('Entdecken'), tabBarAccessibilityLabel: t('Lebensmittel entdecken'), tabBarIcon: TabIcon(Apple) }} />
       <Tabs.Screen name="wissen" options={{ title: t('Wissen'), tabBarIcon: TabIcon(BookOpen) }} />
