@@ -69,3 +69,10 @@ Beitritt mit eigenen Daten → Kind und Log landen korrekt in der neuen Familie.
 - **Vorname** für die Begrüßung bleibt nur lokal (wird nicht synchronisiert).
 - **Direkt geöffnete Seiten** (Link, Erinnerung) warten jetzt, bis die Daten geladen sind – vorher konnte die App dabei abstürzen.
 - Offen: OTP-Länge/Ablauf und SMTP im Dashboard; Rate Limits für E-Mail-Versand prüfen.
+
+## Nachtrag 27.11.2026 – Familienkalender
+
+- Tabelle `appointments` liegt **nur lokal** (SQLite), ist nicht in `TABLES` der Synchronisation und hat keine Supabase-Tabelle – Arzt- und Impftermine sind Gesundheitsdaten, Datensparsamkeit (Art. 5, 25 DSGVO).
+- Enthalten im Datenexport (Art. 15/20), gelöscht bei „Alle Daten löschen“ und beim Löschen des Kindes (hart, nicht nur markiert).
+- Erinnerungen plant das Gerät selbst (expo-notifications, kein Push-Server); „Details auf dem Sperrbildschirm ausblenden“ gilt auch hier („Morgen steht ein Termin an“ ohne Art und Namen). Beim Löschen aller Daten werden alle geplanten Erinnerungen entfernt.
+- Eingaben begrenzt (Titel 60, Notiz 200 Zeichen), Datum/Uhrzeit per Format geprüft, Art gegen feste Liste geprüft; alle SQL-Aufrufe mit Platzhaltern.

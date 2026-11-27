@@ -80,6 +80,7 @@ function Navigation() {
             <Stack.Screen name="unterwegs" options={{ title: t('Unterwegs') }} />
             <Stack.Screen name="vorkochen" options={{ title: t('Vorkoch-Sonntag') }} />
             <Stack.Screen name="journal" options={{ title: t('Erste Male') }} />
+            <Stack.Screen name="termine" options={{ title: t('Familienkalender') }} />
             <Stack.Screen name="konto" options={{ title: t('Konto & Handywechsel') }} />
             <Stack.Screen name="willkommen" options={{ headerShown: false }} />
             <Stack.Screen name="vorrat" options={{ title: t('Vorrat & Gefrierfach') }} />

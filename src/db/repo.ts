@@ -1,4 +1,5 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
+import type { Appointment } from '@/domain/calendar';
 import * as Crypto from 'expo-crypto';
 import type { Child, FoodLog, Liking, MealSlot, Reaction } from '@/domain/types';
 import type { DigestionLog, StoolKind } from '@/domain/digestion';
@@ -88,6 +89,8 @@ export async function saveChild(db: SQLiteDatabase, child: Child): Promise<void>
 
 export async function deleteChild(db: SQLiteDatabase, id: string): Promise<void> {
   await db.runAsync('UPDATE children SET deleted = 1, dirty = 1, updated_at = ? WHERE id = ?', now(), id);
+  // Termine liegen nur lokal und werden sofort mit gelöscht
+  await db.runAsync('DELETE FROM appointments WHERE child_id = ?', id);
 }
 
 // ---------- Tracker ----------
@@ -307,4 +310,34 @@ export async function saveJournal(db: SQLiteDatabase, familyId: string, e: Journ
 
 export async function deleteJournal(db: SQLiteDatabase, id: string): Promise<void> {
   await db.runAsync('UPDATE journal_entries SET deleted = 1, dirty = 1, updated_at = ? WHERE id = ?', now(), id);
+}
+
+// ---------- Familienkalender (nur lokal, keine Synchronisation) ----------
+
+const KINDS: Appointment['kind'][] = ['u', 'impfung', 'kita', 'sonstiges'];
+
+export async function listAppointments(db: SQLiteDatabase): Promise<Appointment[]> {
+  const rows = await db.getAllAsync<{ id: string; child_id: string; kind: string; title: string; date: string; time: string | null; note: string; remind: number }>(
+    'SELECT id, child_id, kind, title, date, time, note, remind FROM appointments ORDER BY date, time',
+  );
+  return rows.map((r) => ({
+    id: r.id, childId: r.child_id, kind: (KINDS.includes(r.kind as Appointment['kind']) ? r.kind : 'sonstiges') as Appointment['kind'],
+    title: r.title, date: r.date, time: r.time, note: r.note, remind: r.remind === 1,
+  }));
+}
+
+export async function saveAppointment(db: SQLiteDatabase, a: Appointment): Promise<void> {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(a.date)) throw new Error('invalid date');
+  const time = a.time && /^\d{2}:\d{2}$/.test(a.time) ? a.time : null;
+  await db.runAsync(
+    `INSERT INTO appointments (id, child_id, kind, title, date, time, note, remind, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET kind = excluded.kind, title = excluded.title, date = excluded.date, time = excluded.time,
+       note = excluded.note, remind = excluded.remind, updated_at = excluded.updated_at`,
+    a.id, a.childId, KINDS.includes(a.kind) ? a.kind : 'sonstiges', a.title.slice(0, 60), a.date, time, a.note.slice(0, 200), a.remind ? 1 : 0, now(),
+  );
+}
+
+export async function deleteAppointment(db: SQLiteDatabase, id: string): Promise<void> {
+  await db.runAsync('DELETE FROM appointments WHERE id = ?', id);
 }

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { FOOD_BY_ID } from '@/data/foods';
 import { FAMILY_FROM_MONTHS } from '@/data/recipes';
@@ -15,13 +15,15 @@ import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { MainMenu } from '@/ui/MainMenu';
 import { Wordmark } from '@/ui/Wordmark';
-import { CookingPot, Luggage, Sparkles, RotateCcw, Sandwich, Ban, Baby, CalendarDays, ChartColumn, ChefHat, GlassWater, Lightbulb, Milk, RefreshCw, Scale, ScanBarcode, Search, Snowflake, Users, type LucideIcon } from 'lucide-react-native';
+import { CalendarHeart, ChevronRight, CookingPot, Luggage, Sparkles, RotateCcw, Sandwich, Ban, Baby, CalendarDays, ChartColumn, ChefHat, GlassWater, Lightbulb, Milk, RefreshCw, Scale, ScanBarcode, Search, Snowflake, Users, type LucideIcon } from 'lucide-react-native';
 import { SeasonCard, TipOfDayCard } from '@/ui/DailyCards';
 import { portionFor } from '@/domain/portions';
 import { recipeFits } from '@/domain/recipes';
 import { planDayTasks, type ShiftEntry } from '@/domain/shifts';
 import type { Liking, PlannedMeal, Reaction } from '@/domain/types';
-import { getMeta, listShifts, setMeta } from '@/db/repo';
+import { getMeta, listAppointments, listShifts, setMeta } from '@/db/repo';
+import { calendarHint, kindInfo, type Appointment } from '@/domain/calendar';
+import { allergenKeepUp } from '@/domain/allergenStatus';
 import { isTablePhase, reofferList, suggestTable } from '@/domain/toddler';
 import { TableSwitchCard, TableToday } from '@/ui/TableToday';
 import { useChild } from '@/state/AppContext';
@@ -144,6 +146,9 @@ export default function Heute() {
         </>
       ) : null}
 
+      <CalendarCard />
+      {daysToStart <= 0 ? <KeepUpCard plannedToday={isTablePhase(child) ? [] : day.meals.flatMap((m) => m.foodIds)} /> : null}
+
       <BrandTiles />
 
       {daysToStart <= 0 ? <Revisit /> : null}
@@ -153,6 +158,76 @@ export default function Heute() {
       <Heading style={{ marginBottom: space.md }}>{t('Heute auch')}</Heading>
       <Tiles />
     </Screen>
+  );
+}
+
+/** Nächster Termin oder eine anstehende U-Untersuchung – führt in den Familienkalender. */
+function CalendarCard() {
+  const db = useSQLiteContext();
+  const { activeChild: child } = useChild();
+  const [items, setItems] = useState<Appointment[]>([]);
+  useFocusEffect(useCallback(() => { listAppointments(db).then(setItems).catch(() => undefined); }, [db]));
+  const hint = calendarHint(child, items, todayIso());
+  if (!hint) return null;
+  if (hint.type === 'termin') {
+    const a = hint.appointment;
+    const k = kindInfo(a.kind);
+    const when = hint.inDays === 0 ? t('Heute') : hint.inDays === 1 ? t('Morgen') : t('In {0} Tagen', { 0: hint.inDays });
+    return (
+      <Card onPress={() => router.push('/termine')} accessibilityLabel={t('Familienkalender öffnen')}>
+        <Row style={{ alignItems: 'flex-start' }}>
+          <Glyph icon={k.emoji} />
+          <View style={{ flex: 1 }}>
+            <Small>{a.time ? t('{0}, {1} Uhr', { 0: when, 1: a.time }) : when}</Small>
+            <Text style={[type.bodyBold, { color: brand.blue }]}>{a.title || k.label}</Text>
+          </View>
+        </Row>
+      </Card>
+    );
+  }
+  const w = hint.window;
+  return (
+    <Card onPress={() => router.push({ pathname: '/termine', params: { u: w.id } })} accessibilityLabel={t('Termin für die {0} eintragen', { 0: w.id })}>
+      <Row style={{ alignItems: 'flex-start' }}>
+        <Glyph icon={CalendarHeart} />
+        <View style={{ flex: 1 }}>
+          <Text style={[type.bodyBold, { color: brand.blue }]}>{w.state === 'jetzt' ? t('Zeitraum für die {0} läuft', { 0: w.id }) : t('Bald steht die {0} an', { 0: w.id })}</Text>
+          <Small soft={false} style={{ marginTop: space.xs }}>{t('{0} – schon einen Termin bei der Kinderarztpraxis? Hier eintragen, dann erinnert dich die App.', { 0: w.label })}</Small>
+        </View>
+      </Row>
+    </Card>
+  );
+}
+
+/** Allergene dranhalten: eingeführte Allergene, die seit einer Woche nicht mehr dabei waren (S3-Leitlinie). */
+function KeepUpCard({ plannedToday }: { plannedToday: string[] }) {
+  const db = useSQLiteContext();
+  const { activeChild: child, logs } = useChild();
+  const today = todayIso();
+  const key = `keepup_hide:${child.id}`;
+  const [hidden, setHidden] = useState<string | null>(null);
+  useEffect(() => { getMeta(db, key).then(setHidden); }, [db, key]);
+  const items = allergenKeepUp(child, logs, today, plannedToday).slice(0, 3);
+  if (!items.length || hidden === today) return null;
+  return (
+    <Card tone="lilac">
+      <Text style={[type.bodyBold, { color: brand.blue }]}>{t('Allergene dranhalten')}</Text>
+      <Small soft={false} style={{ marginTop: space.xs, marginBottom: space.sm }}>
+        {t('Eingeführte Allergene am besten etwa zweimal pro Woche weitergeben – regelmäßig zu essen schützt eher, als sie wieder wegzulassen.')}</Small>
+      {items.map((k) => (
+        <Pressable key={k.guide.id} onPress={() => router.push(`/food/${k.foodId}`)} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 48, paddingVertical: space.xs }}>
+          <Text style={{ fontSize: 22 }}>{k.guide.emoji}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[type.bodyBold, { color: color.ink }]}>{t('{0}: zuletzt vor {1} Tagen', { 0: k.guide.name, 1: k.days })}</Text>
+            <Small soft={false} style={{ color: brand.blue }}>{t('Zum Beispiel: {0}', { 0: FOOD_BY_ID[k.foodId]?.name ?? '' })}</Small>
+          </View>
+          <ChevronRight size={20} strokeWidth={ICON.stroke} color={color.inkSoft} />
+        </Pressable>
+      ))}
+      <Pressable onPress={async () => { await setMeta(db, key, today); setHidden(today); }} accessibilityRole="button" hitSlop={8} style={{ marginTop: space.sm }}>
+        <Text style={[type.smallBold, { color: brand.blue }]}>{t('Heute ausblenden')}</Text>
+      </Pressable>
+    </Card>
   );
 }
 

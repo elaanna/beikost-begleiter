@@ -5,6 +5,7 @@ import { addDays, todayIso } from '@/domain/dates';
 import { introDays, planDays, SLOT_LABEL } from '@/domain/planner';
 import type { Child, FoodLog, MealSlot } from '@/domain/types';
 import { t } from '@/i18n';
+import { appointmentReminderText, reminderAt, type Appointment } from '@/domain/calendar';
 
 export interface ReminderSettings {
   enabled: boolean;
@@ -56,7 +57,7 @@ export function reminderText(child: Child, slot: MealSlot, title: string, foodId
     const f = FOOD_BY_ID[newFoodId];
     return {
       title: t('{0}: neu ist {1} {2}', { 0: SLOT_LABEL[slot], 1: f.name, 2: f.emoji }),
-      body: t('Tag {0} von {1} für {2}. {3}', { 0: newFoodDay, 1: introDays(f), 2: child.name, 3: f.hint ? 'Bitte Hinweis in der App beachten.' : '' }).trim(),
+      body: t('Tag {0} von {1} für {2}. {3}', { 0: newFoodDay, 1: introDays(f), 2: child.name, 3: f.hint ? t('Bitte Hinweis in der App beachten.') : '' }).trim(),
     };
   }
   return {
@@ -71,7 +72,7 @@ export function reminderText(child: Child, slot: MealSlot, title: string, foodId
  */
 export async function rescheduleReminders(child: Child | null, logs: FoodLog[], settings: ReminderSettings): Promise<number> {
   if (!remindersSupported) return 0;
-  await Notifications.cancelAllScheduledNotificationsAsync();
+  await cancelScheduled((id) => !id.startsWith(APPOINTMENT_PREFIX));
   // In der Kleinkind-Phase gibt es keinen Breiplan mehr – Brei-Erinnerungen wären falsch
   if (!settings.enabled || !child || child.tableSince) return 0;
 
@@ -85,6 +86,7 @@ export async function rescheduleReminders(child: Child | null, logs: FoodLog[], 
       if (at.getTime() <= now) continue;
       const text = reminderText(child, meal.slot, meal.title, meal.foodIds, meal.newFoodId, meal.newFoodDay, settings.discreet);
       await Notifications.scheduleNotificationAsync({
+        identifier: `meal-${day.date}-${meal.slot}`,
         content: { ...text, data: { url: '/heute' } },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: at, channelId: CHANNEL },
       });
@@ -95,3 +97,42 @@ export async function rescheduleReminders(child: Child | null, logs: FoodLog[], 
 }
 
 export const lastScheduledDay = () => addDays(todayIso(), DAYS_AHEAD - 1);
+
+// ---------- Familienkalender ----------
+
+const APPOINTMENT_PREFIX = 'termin-';
+
+/** Nur ausgewählte geplante Erinnerungen löschen (Mahlzeiten und Termine sind getrennt). */
+async function cancelScheduled(match: (identifier: string) => boolean): Promise<void> {
+  const all = await Notifications.getAllScheduledNotificationsAsync();
+  for (const n of all) if (match(n.identifier)) await Notifications.cancelScheduledNotificationAsync(n.identifier);
+}
+
+/**
+ * Erinnerungen an Termine neu planen: am Vortag um 18 Uhr, höchstens 60 Tage im Voraus.
+ * `discreet` folgt der Einstellung für den Sperrbildschirm (dann ohne Art des Termins und ohne Namen).
+ */
+export async function rescheduleAppointments(appointments: Appointment[], childName: (childId: string) => string, discreet: boolean): Promise<number> {
+  if (!remindersSupported) return 0;
+  await cancelScheduled((id) => id.startsWith(APPOINTMENT_PREFIX));
+  const now = Date.now();
+  const limit = now + 60 * 24 * 3600 * 1000;
+  let count = 0;
+  for (const a of appointments) {
+    if (!a.remind) continue;
+    const at = reminderAt(a);
+    if (at.getTime() <= now || at.getTime() > limit) continue;
+    await Notifications.scheduleNotificationAsync({
+      identifier: `${APPOINTMENT_PREFIX}${a.id}`,
+      content: { ...appointmentReminderText(a, childName(a.childId), discreet), data: { url: '/termine' } },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: at, channelId: CHANNEL },
+    });
+    count += 1;
+  }
+  return count;
+}
+
+/** Beim Löschen aller Daten: auch alle geplanten Erinnerungen entfernen. */
+export async function cancelAllReminders(): Promise<void> {
+  if (remindersSupported) await Notifications.cancelAllScheduledNotificationsAsync();
+}

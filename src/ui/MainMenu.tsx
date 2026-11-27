@@ -4,7 +4,7 @@ import { router, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/state/AppContext';
 import { openWissen } from './nav';
-import { BookOpen, ChevronRight, Globe, GraduationCap, Lock, Mail, Menu, Settings, Star, Users, X, type LucideIcon } from 'lucide-react-native';
+import { BookOpen, CalendarHeart, ChevronRight, Globe, GraduationCap, Lock, Mail, Menu, Settings, Star, Users, X, type LucideIcon } from 'lucide-react-native';
 import { brand, color, font, ICON, radius, space, type } from './theme';
 import { LANG_LABEL, LANGS, t } from '@/i18n';
 
@@ -18,6 +18,7 @@ export function MainMenu() {
   const go = (href: Href) => { setOpen(false); router.push(href); };
   const items: { emoji: LucideIcon; label: string; sub?: string; onPress: () => void }[] = [
     { emoji: Settings, label: t('Familie & Einstellungen'), sub: t('Kinder, Einladen, Erinnerungen, Berichte'), onPress: () => go('/familie') },
+    { emoji: CalendarHeart, label: t('Familienkalender'), sub: t('U-Untersuchungen, Impftermine, Kita'), onPress: () => go('/termine') },
     { emoji: Users, label: t('Dienstplan & Kita'), sub: t('Wer füttert, bringt, holt ab'), onPress: () => go('/dienste') },
     { emoji: Mail, label: t('Konto & Handywechsel'), sub: app.accountEmail ?? t('Noch kein Konto'), onPress: () => go('/konto') },
     { emoji: Star, label: t('Beikost-Paket'), onPress: () => go('/paywall') },

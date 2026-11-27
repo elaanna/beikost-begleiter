@@ -135,6 +135,21 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX IF NOT EXISTS idx_journal_child ON journal_entries (child_id, date);
   `,
+  // 6: Familienkalender – bleibt bewusst nur auf dem Gerät (Impf- und Arzttermine sind Gesundheitsdaten)
+  `
+  CREATE TABLE IF NOT EXISTS appointments (
+    id TEXT PRIMARY KEY NOT NULL,
+    child_id TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    title TEXT NOT NULL DEFAULT '',
+    date TEXT NOT NULL,
+    time TEXT,
+    note TEXT NOT NULL DEFAULT '',
+    remind INTEGER NOT NULL DEFAULT 1,
+    updated_at TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_appointments_child ON appointments (child_id, date);
+  `,
 ];
 
 export async function migrateDb(db: SQLiteDatabase): Promise<void> {

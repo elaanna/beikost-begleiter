@@ -1,6 +1,6 @@
 import { ALLERGEN_GUIDES, type AllergenGuide } from '@/data/allergens';
 import { FOOD_BY_ID } from '@/data/foods';
-import { addDays } from './dates';
+import { addDays, diffDays } from './dates';
 import { buildSchedule, effectiveStartDate } from './planner';
 import type { Child, FoodLog } from './types';
 import { t } from '@/i18n';
@@ -44,4 +44,29 @@ export function allergenStatuses(child: Child, logs: FoodLog[]): AllergenStatus[
     const plannedDate = intro ? addDays(start, intro.fromDay) : undefined;
     return { guide, state: 'geplant', label: plannedDate ? t('Im Plan') : t('Noch nicht im Plan'), plannedDate, triedFoods };
   });
+}
+
+/** Ab so vielen Tagen ohne ein eingeführtes Allergen erinnert die App (Empfehlung: etwa zweimal pro Woche). */
+export const KEEP_UP_AFTER_DAYS = 7;
+
+export interface KeepUpItem {
+  guide: AllergenGuide;
+  /** Tage seit dem letzten Mal. */
+  days: number;
+  /** Ein Lebensmittel mit diesem Allergen, das schon gut vertragen wurde. */
+  foodId: string;
+}
+
+/**
+ * Allergene dranhalten (S3-Leitlinie Allergieprävention): Eingeführte Allergene regelmäßig weitergeben.
+ * Zeigt Allergene, die vertragen wurden und seit mindestens 7 Tagen nicht mehr notiert sind.
+ * Ausgenommen: ärztlich bekannte Allergien und alles mit notierter Reaktion. Geplante Mahlzeiten von heute zählen mit.
+ */
+export function allergenKeepUp(child: Child, logs: FoodLog[], today: string, plannedToday: string[] = []): KeepUpItem[] {
+  return allergenStatuses(child, logs)
+    .filter((s) => s.state === 'eingefuehrt' && s.lastDate)
+    .filter((s) => !plannedToday.some((id) => FOOD_BY_ID[id]?.allergens.includes(s.guide.id)))
+    .map((s) => ({ guide: s.guide, days: diffDays(s.lastDate!, today), foodId: s.triedFoods[0] }))
+    .filter((k) => k.days >= KEEP_UP_AFTER_DAYS)
+    .sort((a, b) => b.days - a.days);
 }

@@ -2,7 +2,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import { Platform, Share } from 'react-native';
 
 /** Tabellen mit personenbezogenen Daten (Art. 15/20 DSGVO: Auskunft und Datenübertragbarkeit). */
-const EXPORT_TABLES = ['children', 'food_logs', 'digestion_logs', 'caregivers', 'shift_entries', 'family_settings', 'stock_items', 'plan_swaps', 'journal_entries', 'shopping_checks'] as const;
+const EXPORT_TABLES = ['children', 'food_logs', 'digestion_logs', 'caregivers', 'shift_entries', 'family_settings', 'stock_items', 'plan_swaps', 'journal_entries', 'shopping_checks', 'appointments'] as const;
 const EXPORT_META = ['consent_health', 'reminders', 'family_role', 'sharing', 'parent_name', 'packliste'];
 
 export async function collectExport(db: SQLiteDatabase): Promise<Record<string, unknown>> {

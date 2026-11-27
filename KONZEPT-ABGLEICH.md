@@ -87,3 +87,10 @@ Leitprinzip: **Organisation statt medizinischer Beratung** – die App dokumenti
 - Notfallblatt, Wochenplan- und Arzt-PDF, alle ~150 Lebensmittel, alle Rezepte und Tipps sind übersetzt (insgesamt rund 2.250 Texte); die Suche versteht englische Begriffe.
 - Nebenbei behoben: In den PDFs standen bei „Bekannte Allergien“ die internen Kürzel (z. B. „ei, milch“) statt der Namen.
 - Vor einem englischen Launch weiterhin: fachliches Gegenlesen der Gesundheitstexte, eigene Quellen für UK/US.
+
+## Nachtrag 27.11.2026 – Familienkalender und „Allergene dranhalten“
+
+- **Familienkalender** (Menü → Familienkalender): Zeiträume der U3–U9 laut Kinder-Richtlinie des G-BA (auf den Monat genau, weil nur der Geburtsmonat bekannt ist), eigene Termine für U-Untersuchung, Impfung, Kita-Eingewöhnung und Sonstiges, Erinnerung am Vortag um 18 Uhr. Keine Impfempfehlung – Hinweis auf die Kinderarztpraxis und die STIKO-Seite des BMG. „Heute“ zeigt den nächsten Termin (14 Tage) oder eine U-Untersuchung, deren Zeitraum läuft und für die noch kein Termin eingetragen ist.
+- **Allergene dranhalten** (S3-Leitlinie): Karte auf „Heute“, wenn ein eingeführtes und vertragenes Allergen seit 7 Tagen nicht mehr notiert wurde und heute nicht im Plan steht. Nie bei Reaktion oder ärztlich bekannter Allergie. Lässt sich für den Tag ausblenden.
+- Frei nutzbar (kein Paket), weil Sicherheit und Organisation.
+- Widget für den Homescreen: geparkt bis zur eigenen Test-App (EAS), in Expo Go nicht möglich.

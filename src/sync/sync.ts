@@ -295,6 +295,6 @@ export async function deleteEverything(db: SQLiteDatabase): Promise<void> {
     }
   }
   await db.withTransactionAsync(async () => {
-    for (const t of [...SYNC_TABLES, 'shopping_checks', 'meta']) await db.runAsync(`DELETE FROM ${t}`);
+    for (const t of [...SYNC_TABLES, 'shopping_checks', 'appointments', 'meta']) await db.runAsync(`DELETE FROM ${t}`);
   });
 }

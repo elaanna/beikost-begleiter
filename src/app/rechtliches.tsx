@@ -7,6 +7,7 @@ import { getMeta } from '@/db/repo';
 import { shareExport } from '@/db/exportData';
 import { useApp } from '@/state/AppContext';
 import { deleteEverything } from '@/sync/sync';
+import { cancelAllReminders } from '@/notifications/reminders';
 import { Button, Card, Heading, Important, P, Screen, Small, SourceLink, Title } from '@/ui/components';
 import { ConfirmButton } from '@/ui/ConfirmButton';
 import { color, space, type } from '@/ui/theme';
@@ -25,6 +26,11 @@ const IMPRESSUM = {
 };
 
 const DATA_ITEMS = tr([
+  {
+    emoji: '🗓️',
+    title: 'Familienkalender',
+    text: 'Termine (U-Untersuchungen, Impftermine, Kita) bleiben immer nur auf deinem Gerät – sie werden weder in die Cloud gesichert noch mit der Familie geteilt. Erinnerungen plant das Handy selbst, ohne Server.',
+  },
   {
     emoji: '📱',
     title: 'Auf deinem Gerät',
@@ -115,6 +121,7 @@ export default function Rechtliches() {
           onConfirm={async () => {
             try {
               await deleteEverything(db);
+              await cancelAllReminders();
               await app.resetApp();
               router.replace('/');
             } catch (e) {
