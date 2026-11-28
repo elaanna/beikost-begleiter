@@ -7,14 +7,16 @@ import { addDays, ageInMonths, diffDays, formatDayLong, todayIso } from '@/domai
 import { dailyLine, greetingTitle } from '@/domain/greeting';
 import { effectiveStartDate, introDays, planDays, preparationFor, SLOT_LABEL } from '@/domain/planner';
 import { matchingFrozen } from '@/domain/stock';
-import { morningInfo } from '@/domain/morning';
+import { currentRhythmId, dayRhythm } from '@/domain/dayRhythm';
+import { drinkStage } from '@/domain/care';
 import { usePlanDays } from '@/state/usePlan';
 import { SwapSheet } from '@/ui/SwapSheet';
 import { MainMenu } from '@/ui/MainMenu';
 import { Wordmark } from '@/ui/Wordmark';
-import { CalendarHeart, ChevronRight, Sandwich, Baby, ChefHat, Milk, RefreshCw, Scale, Search, Users } from 'lucide-react-native';
+import { CalendarHeart, ChevronRight, Baby, ChefHat, RefreshCw, Scale, Search, Users } from 'lucide-react-native';
 import { TipOfDayCard } from '@/ui/DailyCards';
 import { ToolRow, type Tool } from '@/ui/ToolRow';
+import { TimeStepper } from '@/ui/ShiftsView';
 import { portionFor } from '@/domain/portions';
 import { planDayTasks, type ShiftEntry } from '@/domain/shifts';
 import type { Liking, PlannedMeal, Reaction } from '@/domain/types';
@@ -45,7 +47,6 @@ export default function Heute() {
   const isDone = (m: PlannedMeal) => m.foodIds.every((id) => loggedToday.has(id));
   const doneCount = day.meals.filter(isDone).length;
   const current = day.meals.find((m) => !isDone(m));
-  const later = day.meals.filter((m) => m !== current && !isDone(m));
   const logMeal = async (meal: PlannedMeal, liking: Liking, reaction: Reaction) => {
     const ids: string[] = [];
     for (const id of meal.foodIds) {
@@ -135,12 +136,7 @@ export default function Heute() {
               <P soft style={{ textAlign: 'center' }}>{t('Was morgen kommt, siehst du unter „Plan“.')}</P>
             </Card>
           )}
-          {later.length ? (
-            <Small style={{ marginBottom: space.lg, textAlign: 'center' }}>
-              {t('Später:')}{' '}{later.map((m) => `${SLOT_LABEL[m.slot]} (${m.title})`).join(' · ')}
-            </Small>
-          ) : null}
-          <MorningCard />
+          <DayRhythmCard meals={day.meals} isDone={isDone} />
         </>
       ) : null}
 
@@ -222,19 +218,58 @@ function KeepUpCard({ plannedToday }: { plannedToday: string[] }) {
   );
 }
 
-/** Frühstück im Breiplan: morgens Milch, ab etwa 10 Monaten Übergang zum Familienfrühstück. */
-function MorningCard() {
-  const { activeChild: child } = useChild();
-  const info = morningInfo(child, todayIso());
+/** Tagesablauf: Milch und Brei über den ganzen Tag – was wann dran ist, das Aktuelle hervorgehoben. */
+function DayRhythmCard({ meals, isDone }: { meals: PlannedMeal[]; isDone: (m: PlannedMeal) => boolean }) {
+  const { activeChild: child, familySettings, saveFamilySettings } = useChild();
+  const [editTimes, setEditTimes] = useState(false);
+  const today = todayIso();
+  const entries = dayRhythm(child, meals, familySettings.mealTimes, today, drinkStage(child, today) === 'wasser');
+  const now = new Date();
+  const currentId = currentRhythmId(entries, `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`);
   return (
-    <Card tone={info.stage === 'uebergang' ? 'yellow' : undefined}>
-      <Row style={{ alignItems: 'flex-start' }}>
-        <Glyph icon={info.stage === 'uebergang' ? Sandwich : Milk} />
-        <View style={{ flex: 1 }}>
-          <Text style={[type.bodyBold, { color: brand.blue }]}>{info.title}</Text>
-          <Small soft={false} style={{ marginTop: space.xs }}>{info.text}</Small>
-        </View>
+    <Card>
+      <Row style={{ justifyContent: 'space-between', marginBottom: space.sm }}>
+        <Text style={[type.cardTitle, { color: brand.blue }]}>{t('Der Tag von {0}', { 0: child.name })}</Text>
+        <Pressable onPress={() => setEditTimes(!editTimes)} accessibilityRole="button" accessibilityState={{ expanded: editTimes }} hitSlop={8}>
+          <Text style={[type.smallBold, { color: brand.blue }]}>{editTimes ? t('Fertig') : t('Zeiten anpassen')}</Text>
+        </Pressable>
       </Row>
+      {editTimes ? (
+        <View style={{ marginBottom: space.md }}>
+          {(['mittag', 'nachmittag', 'abend'] as const).map((slot) => (
+            <TimeStepper key={slot} label={SLOT_LABEL[slot]} value={familySettings.mealTimes[slot]}
+              onChange={(v) => void saveFamilySettings({ ...familySettings, mealTimes: { ...familySettings.mealTimes, [slot]: v } })} />
+          ))}
+        </View>
+      ) : null}
+      {entries.map((e, k) => {
+        const active = e.id === currentId;
+        const done = e.meal ? isDone(e.meal) : false;
+        const icon = e.kind === 'brei' ? '🥣' : e.kind === 'fruehstueck' ? '🍞' : child.milk === 'stillen' ? '🤱' : '🍼';
+        const body = (
+          <Row style={{ alignItems: 'flex-start', paddingVertical: space.sm, paddingHorizontal: space.sm, borderRadius: radius.md, backgroundColor: active ? brand.yellowSoft : 'transparent' }}>
+            <View style={{ width: 86 }}>
+              <Text style={[type.smallBold, { color: active ? brand.blue : color.ink }]}>{e.time ?? ''}</Text>
+              <Text style={[type.caption, { color: color.inkSoft }]}>{e.when}</Text>
+            </View>
+            <Text style={{ fontSize: 20, width: 28, opacity: done ? 0.4 : 1 }}>{done ? '✓' : icon}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[type.bodyBold, { color: done ? color.inkSoft : color.ink, textDecorationLine: done ? 'line-through' : 'none' }]}>{e.title}</Text>
+              <Small>{e.detail}</Small>
+            </View>
+            {e.meal ? <ChevronRight size={18} strokeWidth={ICON.stroke} color={color.inkSoft} /> : null}
+          </Row>
+        );
+        return e.meal ? (
+          <Pressable key={e.id} onPress={() => router.push({ pathname: '/mahlzeit', params: { date: today, slot: e.meal!.slot } })} accessibilityRole="button"
+            accessibilityLabel={`${e.when}${e.time ? ` ${e.time}` : ''}: ${e.title}${done ? `, ${t('erledigt')}` : ''}`} style={{ marginTop: k ? 2 : 0 }}>
+            {body}
+          </Pressable>
+        ) : (
+          <View key={e.id} accessible accessibilityLabel={`${e.when}${e.time ? ` ${e.time}` : ''}: ${e.title}. ${e.detail}`} style={{ marginTop: k ? 2 : 0 }}>{body}</View>
+        );
+      })}
+      <Small style={{ marginTop: space.sm }}>{t('Milch und Brei als Orientierung nach Gesund ins Leben – jedes Kind hat seinen eigenen Rhythmus.')}</Small>
     </Card>
   );
 }
